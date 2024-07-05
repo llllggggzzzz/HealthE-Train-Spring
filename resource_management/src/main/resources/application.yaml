@@ -1,0 +1,41 @@
+server:
+  port: 8300
+spring:
+  application:
+    name: resource_management
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://111.231.136.188:3306/resource_management
+    username: code
+    password: 410782
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8849
+      http-method-specify: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    virtual-host: /
+    username: rabbitmq
+    password: rabbitmq
+    listener:
+      direct:
+        prefetch: 1
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 1
+          max-attempts: 3
+          stateless: false
+    connection-timeout: 1s
+    template:
+      retry:
+        enabled: true
+        initial-interval: 200ms # 间隔重连时间
+        multiplier: 1 # 等待时间增长倍数
+        max-attempts: 3 # 最大请求次数

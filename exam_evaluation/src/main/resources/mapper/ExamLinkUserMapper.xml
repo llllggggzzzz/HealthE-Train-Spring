@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.ExamLinkUserMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamLinkUser">
+            <id property="eluId" column="elu_id" jdbcType="INTEGER"/>
+            <result property="examId" column="exam_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="score" column="score" jdbcType="INTEGER"/>
+            <result property="timeCost" column="time_cost" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        elu_id,exam_id,user_id,
+        score,time_cost
+    </sql>
+</mapper>

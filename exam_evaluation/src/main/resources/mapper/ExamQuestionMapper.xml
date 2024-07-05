@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.ExamQuestionMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamQuestion">
+            <id property="eqId" column="eq_id" jdbcType="INTEGER"/>
+            <result property="eqTypeId" column="eq_type_id" jdbcType="INTEGER"/>
+            <result property="eqTitle" column="eq_title" jdbcType="VARCHAR"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="qbId" column="qb_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        eq_id,eq_type_id,eq_title,
+        answer,qb_id
+    </sql>
+</mapper>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.CheckpointMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Checkpoint">
+            <id property="checkpointId" column="checkpoint_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="sectionId" column="section_id" jdbcType="INTEGER"/>
+            <result property="chapterId" column="chapter_id" jdbcType="INTEGER"/>
+            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        checkpoint_id,user_id,section_id,
+        chapter_id,lesson_id
+    </sql>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.QuestionMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Question">
+            <id property="questionId" column="question_id" jdbcType="INTEGER"/>
+            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <result property="time" column="time" jdbcType="TIMESTAMP"/>
+            <result property="answer" column="answer" jdbcType="VARCHAR"/>
+            <result property="tdId" column="td_id" jdbcType="INTEGER"/>
+            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        question_id,user_id,time,
+        answer,td_id,lesson_id
+    </sql>
+</mapper>

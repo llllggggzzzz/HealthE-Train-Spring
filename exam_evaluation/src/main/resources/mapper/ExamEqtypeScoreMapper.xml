@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.ExamEqtypeScoreMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamEqtypeScore">
+            <id property="eesId" column="ees_id" jdbcType="INTEGER"/>
+            <result property="examId" column="exam_id" jdbcType="INTEGER"/>
+            <result property="eqTypeId" column="eq_type_id" jdbcType="INTEGER"/>
+            <result property="score" column="score" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ees_id,exam_id,eq_type_id,
+        score
+    </sql>
+</mapper>

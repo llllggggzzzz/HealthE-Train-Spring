@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.PaperLinkQuestionMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.PaperLinkQuestion">
+            <id property="plqId" column="plq_id" jdbcType="INTEGER"/>
+            <result property="paperId" column="paper_id" jdbcType="INTEGER"/>
+            <result property="examQuestionId" column="exam_question_id" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        plq_id,paper_id,exam_question_id
+    </sql>
+</mapper>
