@@ -68,7 +68,7 @@ public class ImageUploadHandler {
         String imageUrl = uploadToGitHub(token, repo, pathPrefix, filePath, commitMessage);
 
         if (imageUrl != null) {
-            log.info("图片链接：{}", imageUrl);
+            Console.log("图片链接：{}", imageUrl);
         }
     }
 }
