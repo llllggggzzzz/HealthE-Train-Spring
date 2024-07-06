@@ -34,3 +34,14 @@ spring:
         initial-interval: 200ms # 间隔重连时间
         multiplier: 1 # 等待时间增长倍数
         max-attempts: 3 # 最大请求次数
+
+healthe:
+  auth:
+    exclude-paths:
+
+    include-paths:
+  jwt:
+    location: classpath:healthe.jks
+    alias: healthe
+    password: healthe
+    tokenTTL: 10

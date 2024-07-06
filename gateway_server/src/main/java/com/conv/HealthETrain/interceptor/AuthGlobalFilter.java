@@ -1,0 +1,66 @@
+package com.conv.HealthETrain.interceptor;
+
+import com.conv.HealthETrain.config.AuthProperties;
+import com.conv.HealthETrain.utils.TokenUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.filter.GatewayFilterChain;
+import org.springframework.cloud.gateway.filter.GlobalFilter;
+import org.springframework.core.Ordered;
+import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+import java.util.List;
+
+/**
+ * @author liusg
+ */
+@Component
+@RequiredArgsConstructor
+public class AuthGlobalFilter implements GlobalFilter, Ordered {
+
+    private final AuthProperties authProperties;
+    private final TokenUtil tokenUtil;
+
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+        // 1. 获取请求
+        ServerHttpRequest request = exchange.getRequest();
+        // 2. 判断是否在放行列表中
+        if (isExclude(request.getPath().toString())) {
+            // 放行
+            return chain.filter(exchange);
+        }
+        // 3. 获取token
+        List<String> headers = request.getHeaders().get("authorization");
+        String token = null;
+        if (headers != null && !headers.isEmpty()) {
+            token = headers.get(0);
+        }
+        // 4. 解析token
+        Long userId = null;
+        try {
+            userId = tokenUtil.parseToken(token);
+        } catch (Exception e) {
+            // TODO 未登录
+//            return Mono.error(new UnauthorizedException("未登录"));
+        }
+        // 5. 传递用户信息
+        String userInfo = userId.toString();
+        ServerWebExchange swe = exchange.mutate()
+                .request(builder -> builder.header("user-info", userInfo))
+                .build();
+        // 6. 放行
+        return chain.filter(swe);
+    }
+
+    @Override
+    public int getOrder() {
+        return 0;
+    }
+
+    public boolean isExclude(String path) {
+        return false;
+    }
+}
