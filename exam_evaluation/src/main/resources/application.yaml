@@ -6,8 +6,8 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://111.231.136.188:3306/exam_evaluation
-    username: root
-    password: root
+    username: code
+    password: 410782
   cloud:
     nacos:
       discovery:
@@ -39,3 +39,15 @@ spring:
         initial-interval: 200ms # 间隔重连时间
         multiplier: 1 # 等待时间增长倍数
         max-attempts: 3 # 最大请求次数
+seata:
+  tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      application: seata-server
+  service:
+    vgroup-mapping:
+      #这里也要注意 key为映射名
+      default: default

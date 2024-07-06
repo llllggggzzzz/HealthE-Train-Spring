@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.EqOption;
 import com.conv.HealthETrain.service.EqOptionService;
 import com.conv.HealthETrain.mapper.EqOptionMapper;
+import io.seata.spring.annotation.GlobalTransactional;
 import org.springframework.stereotype.Service;
 
 /**

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.EqType;
 import com.conv.HealthETrain.service.EqTypeService;
 import com.conv.HealthETrain.mapper.EqTypeMapper;
+import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
