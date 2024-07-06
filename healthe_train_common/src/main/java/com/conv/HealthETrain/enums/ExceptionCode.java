@@ -3,7 +3,7 @@ import lombok.Getter;
 
 @Getter
 public enum ExceptionCode {
-    IMAGE_TOKEN_EMPTY(101, "图床token解析失败");
+    IMAGE_UPLOAD_ERROR(101, "图床配置异常");
 
     private final Integer code;
     private final String message;
