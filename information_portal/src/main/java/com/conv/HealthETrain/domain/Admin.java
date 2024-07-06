@@ -18,7 +18,7 @@ public class Admin implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer adminId;
+    private Long adminId;
 
     /**
      * 

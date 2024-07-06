@@ -1,4 +1,4 @@
-package com.conv.HealthETrain.util;
+package com.conv.HealthETrain.utils;
 
 import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.enums.ExceptionCode;

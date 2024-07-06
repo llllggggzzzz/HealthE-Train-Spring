@@ -18,7 +18,7 @@ public class TeacherDetail implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer tdId;
+    private Long tdId;
 
     /**
      * 

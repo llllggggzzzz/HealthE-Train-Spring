@@ -18,7 +18,7 @@ public class LessonLinkCategory implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer llcId;
+    private Long llcId;
 
     /**
      * 

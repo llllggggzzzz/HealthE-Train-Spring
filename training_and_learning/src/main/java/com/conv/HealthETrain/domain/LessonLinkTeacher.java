@@ -18,7 +18,7 @@ public class LessonLinkTeacher implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer lltId;
+    private Long lltId;
 
     /**
      * 

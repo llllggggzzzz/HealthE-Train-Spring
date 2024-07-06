@@ -18,7 +18,7 @@ public class Chapter implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer chapterId;
+    private Long chapterId;
 
     /**
      * 

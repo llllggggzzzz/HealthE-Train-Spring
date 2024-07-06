@@ -18,7 +18,7 @@ public class Lesson implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer lessonId;
+    private Long lessonId;
 
     /**
      * 

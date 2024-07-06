@@ -18,7 +18,7 @@ public class Checkpoint implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer checkpointId;
+    private Long checkpointId;
 
     /**
      * 

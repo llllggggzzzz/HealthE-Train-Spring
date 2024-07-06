@@ -18,7 +18,7 @@ public class UserLinkCategory implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer ulcId;
+    private Long ulcId;
 
     /**
      * 

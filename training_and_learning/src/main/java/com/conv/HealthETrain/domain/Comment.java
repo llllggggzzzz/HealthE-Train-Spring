@@ -19,7 +19,7 @@ public class Comment implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer commentId;
+    private Long commentId;
 
     /**
      * 

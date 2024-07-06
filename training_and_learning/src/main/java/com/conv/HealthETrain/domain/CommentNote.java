@@ -18,7 +18,7 @@ public class CommentNote implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer cnId;
+    private Long cnId;
 
     /**
      * 

@@ -18,7 +18,7 @@ public class Section implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer sectionId;
+    private Long sectionId;
 
     /**
      * 
