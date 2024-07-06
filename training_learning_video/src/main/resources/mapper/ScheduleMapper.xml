@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ScheduleMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Schedule">
-            <id property="scheduleId" column="schedule_id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="videoId" column="video_id" jdbcType="INTEGER"/>
+            <id property="scheduleId" column="schedule_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="videoId" column="video_id" jdbcType="BIGINT"/>
             <result property="second" column="second" jdbcType="BIGINT"/>
     </resultMap>
 

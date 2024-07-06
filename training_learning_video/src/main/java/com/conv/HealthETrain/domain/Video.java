@@ -17,8 +17,8 @@ public class Video implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer videoId;
+    @TableId
+    private Long videoId;
 
     /**
      * 
@@ -33,7 +33,7 @@ public class Video implements Serializable {
     /**
      * 
      */
-    private Integer sectionId;
+    private Long sectionId;
 
     /**
      * 

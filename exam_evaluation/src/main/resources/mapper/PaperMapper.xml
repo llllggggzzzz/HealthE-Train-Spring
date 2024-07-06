@@ -5,7 +5,7 @@
 <mapper namespace="com.conv.HealthETrain.mapper.PaperMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Paper">
-            <id property="paperId" column="paper_id" jdbcType="INTEGER"/>
+            <id property="paperId" column="paper_id" jdbcType="BIGINT"/>
             <result property="paperTitle" column="paper_title" jdbcType="VARCHAR"/>
             <result property="sumScore" column="sum_score" jdbcType="INTEGER"/>
     </resultMap>

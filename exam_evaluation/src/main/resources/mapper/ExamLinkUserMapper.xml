@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ExamLinkUserMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamLinkUser">
-            <id property="eluId" column="elu_id" jdbcType="INTEGER"/>
-            <result property="examId" column="exam_id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <id property="eluId" column="elu_id" jdbcType="BIGINT"/>
+            <result property="examId" column="exam_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="score" column="score" jdbcType="INTEGER"/>
             <result property="timeCost" column="time_cost" jdbcType="INTEGER"/>
     </resultMap>

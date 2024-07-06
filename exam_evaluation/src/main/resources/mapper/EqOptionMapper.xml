@@ -5,8 +5,8 @@
 <mapper namespace="com.conv.HealthETrain.mapper.EqOptionMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.EqOption">
-            <id property="eqOptionId" column="eq_option_id" jdbcType="INTEGER"/>
-            <result property="eqId" column="eq_id" jdbcType="INTEGER"/>
+            <id property="eqOptionId" column="eq_option_id" jdbcType="BIGINT"/>
+            <result property="eqId" column="eq_id" jdbcType="BIGINT"/>
             <result property="eqA" column="eq_A" jdbcType="VARCHAR"/>
             <result property="eqB" column="eq_B" jdbcType="VARCHAR"/>
             <result property="eqC" column="eq_C" jdbcType="VARCHAR"/>

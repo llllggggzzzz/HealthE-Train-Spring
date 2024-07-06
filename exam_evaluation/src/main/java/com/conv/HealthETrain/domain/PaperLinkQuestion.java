@@ -17,18 +17,18 @@ public class PaperLinkQuestion implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer plqId;
+    @TableId
+    private Long plqId;
 
     /**
      * 
      */
-    private Integer paperId;
+    private Long paperId;
 
     /**
      * 
      */
-    private Integer examQuestionId;
+    private Long examQuestionId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

@@ -17,18 +17,18 @@ public class NoteLinkRepository implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer nlrId;
+    @TableId
+    private Long nlrId;
 
     /**
      * 
      */
-    private Integer repositoryId;
+    private Long repositoryId;
 
     /**
      * 
      */
-    private Integer noteId;
+    private Long noteId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

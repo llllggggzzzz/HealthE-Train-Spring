@@ -17,18 +17,18 @@ public class ExamLinkUser implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer eluId;
+    @TableId
+    private Long eluId;
 
     /**
      * 
      */
-    private Integer examId;
+    private Long examId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 

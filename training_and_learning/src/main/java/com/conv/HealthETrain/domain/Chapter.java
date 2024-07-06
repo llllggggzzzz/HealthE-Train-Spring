@@ -17,13 +17,13 @@ public class Chapter implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer chapterId;
+    @TableId
+    private Long chapterId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     /**
      * 

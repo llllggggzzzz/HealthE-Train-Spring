@@ -17,18 +17,18 @@ public class ExamEqtypeScore implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer eesId;
+    @TableId
+    private Long eesId;
 
     /**
      * 
      */
-    private Integer examId;
+    private Long examId;
 
     /**
      * 
      */
-    private Integer eqTypeId;
+    private Long eqTypeId;
 
     /**
      * 

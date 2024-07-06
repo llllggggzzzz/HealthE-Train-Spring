@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.PrivilegeMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【privilege】的数据库操作Service实现
-* @createDate 2024-07-05 17:57:28
+* @createDate 2024-07-07 11:51:31
 */
 @Service
 public class PrivilegeServiceImpl extends ServiceImpl<PrivilegeMapper, Privilege>

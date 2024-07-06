@@ -17,18 +17,18 @@ public class Quiz implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer quizId;
+    @TableId
+    private Long quizId;
 
     /**
      * 
      */
-    private Integer chapterId;
+    private Long chapterId;
 
     /**
      * 
      */
-    private Integer paperId;
+    private Long paperId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

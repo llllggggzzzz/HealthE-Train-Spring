@@ -18,13 +18,13 @@ public class Question implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer questionId;
+    @TableId
+    private Long questionId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
@@ -39,12 +39,12 @@ public class Question implements Serializable {
     /**
      * 
      */
-    private Integer tdId;
+    private Long tdId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lesstionId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -66,7 +66,7 @@ public class Question implements Serializable {
             && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
             && (this.getAnswer() == null ? other.getAnswer() == null : this.getAnswer().equals(other.getAnswer()))
             && (this.getTdId() == null ? other.getTdId() == null : this.getTdId().equals(other.getTdId()))
-            && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()));
+            && (this.getLesstionId() == null ? other.getLesstionId() == null : this.getLesstionId().equals(other.getLesstionId()));
     }
 
     @Override
@@ -78,7 +78,7 @@ public class Question implements Serializable {
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         result = prime * result + ((getAnswer() == null) ? 0 : getAnswer().hashCode());
         result = prime * result + ((getTdId() == null) ? 0 : getTdId().hashCode());
-        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
+        result = prime * result + ((getLesstionId() == null) ? 0 : getLesstionId().hashCode());
         return result;
     }
 
@@ -93,7 +93,7 @@ public class Question implements Serializable {
         sb.append(", time=").append(time);
         sb.append(", answer=").append(answer);
         sb.append(", tdId=").append(tdId);
-        sb.append(", lessonId=").append(lessonId);
+        sb.append(", lesstionId=").append(lesstionId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

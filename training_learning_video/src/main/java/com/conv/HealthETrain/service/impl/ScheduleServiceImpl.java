@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.ScheduleMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【schedule】的数据库操作Service实现
-* @createDate 2024-07-05 17:59:24
+* @createDate 2024-07-07 11:53:19
 */
 @Service
 public class ScheduleServiceImpl extends ServiceImpl<ScheduleMapper, Schedule>

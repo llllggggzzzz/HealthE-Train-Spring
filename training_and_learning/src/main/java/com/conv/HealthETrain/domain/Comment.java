@@ -18,8 +18,8 @@ public class Comment implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer commentId;
+    @TableId
+    private Long commentId;
 
     /**
      * 
@@ -29,7 +29,7 @@ public class Comment implements Serializable {
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
@@ -39,7 +39,7 @@ public class Comment implements Serializable {
     /**
      * 
      */
-    private Integer sectionId;
+    private Long sectionId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

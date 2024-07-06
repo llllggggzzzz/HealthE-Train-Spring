@@ -17,8 +17,8 @@ public class Repository implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer repositoryId;
+    @TableId
+    private Long repositoryId;
 
     /**
      * 
@@ -28,7 +28,7 @@ public class Repository implements Serializable {
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 

@@ -17,18 +17,18 @@ public class LessonLinkTeacher implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer lltId;
+    @TableId
+    private Long lltId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     /**
      * 
      */
-    private Integer tdId;
+    private Long tdId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

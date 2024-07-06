@@ -17,23 +17,23 @@ public class UserRepositoryPrivilege implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer urpId;
+    @TableId
+    private Long urpId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
      */
-    private Integer repositoryId;
+    private Long repositoryId;
 
     /**
      * 
      */
-    private Integer privilegeId;
+    private Long privilegeId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

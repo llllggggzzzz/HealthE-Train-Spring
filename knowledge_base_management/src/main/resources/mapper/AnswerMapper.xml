@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.AnswerMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Answer">
-            <id property="answerId" column="answer_id" jdbcType="INTEGER"/>
-            <result property="noteId" column="note_id" jdbcType="INTEGER"/>
-            <result property="askId" column="ask_id" jdbcType="INTEGER"/>
+            <id property="answerId" column="answer_id" jdbcType="BIGINT"/>
+            <result property="noteId" column="note_id" jdbcType="BIGINT"/>
+            <result property="askId" column="ask_id" jdbcType="BIGINT"/>
             <result property="likes" column="likes" jdbcType="INTEGER"/>
     </resultMap>
 

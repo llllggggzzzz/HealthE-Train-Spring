@@ -31,7 +31,6 @@ public enum ResponseCode {
     SERVICE_UNAVAILABLE(503, "服务不可用"),
     GATEWAY_TIMEOUT(504, "网关超时");
 
-
     private final Integer code;
     private final String message;
 

@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.StarMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Star">
-            <id property="starId" column="star_id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+            <id property="starId" column="star_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
             <result property="score" column="score" jdbcType="DOUBLE"/>
     </resultMap>
 

@@ -18,7 +18,7 @@ public class Position implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer positionId;
+    private Long positionId;
 
     /**
      * 

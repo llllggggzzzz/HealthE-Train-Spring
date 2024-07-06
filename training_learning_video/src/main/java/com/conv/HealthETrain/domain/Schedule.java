@@ -17,18 +17,18 @@ public class Schedule implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer scheduleId;
+    @TableId
+    private Long scheduleId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
      */
-    private Integer videoId;
+    private Long videoId;
 
     /**
      * 

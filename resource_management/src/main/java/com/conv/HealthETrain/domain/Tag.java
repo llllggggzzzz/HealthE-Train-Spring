@@ -17,8 +17,8 @@ public class Tag implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer tagId;
+    @TableId
+    private Long tagId;
 
     /**
      * 

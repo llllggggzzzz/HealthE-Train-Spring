@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.EqType;
 import com.conv.HealthETrain.service.EqTypeService;
 import com.conv.HealthETrain.mapper.EqTypeMapper;
-import lombok.val;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【eq_type】的数据库操作Service实现
-* @createDate 2024-07-05 17:55:51
+* @createDate 2024-07-07 11:47:43
 */
 @Service
 public class EqTypeServiceImpl extends ServiceImpl<EqTypeMapper, EqType>

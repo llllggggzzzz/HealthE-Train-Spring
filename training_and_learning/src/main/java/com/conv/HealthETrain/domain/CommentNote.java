@@ -17,18 +17,18 @@ public class CommentNote implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer cnId;
+    @TableId
+    private Long cnId;
 
     /**
      * 
      */
-    private Integer noteId;
+    private Long noteId;
 
     /**
      * 
      */
-    private Integer sectionId;
+    private Long sectionId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

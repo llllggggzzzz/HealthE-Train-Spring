@@ -5,10 +5,10 @@
 <mapper namespace="com.conv.HealthETrain.mapper.UserRepositoryPrivilegeMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.UserRepositoryPrivilege">
-            <id property="urpId" column="urp_id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
-            <result property="repositoryId" column="repository_id" jdbcType="INTEGER"/>
-            <result property="privilegeId" column="privilege_id" jdbcType="INTEGER"/>
+            <id property="urpId" column="urp_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="repositoryId" column="repository_id" jdbcType="BIGINT"/>
+            <result property="privilegeId" column="privilege_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

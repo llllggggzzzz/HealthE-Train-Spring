@@ -17,18 +17,18 @@ public class ExamQuestion implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer eqId;
+    @TableId
+    private Long eqId;
 
     /**
      * 
      */
-    private Integer eqTypeId;
+    private Long eqTypeId;
 
     /**
      * 
      */
-    private String eqTitle;
+    private Long noteId;
 
     /**
      * 
@@ -38,7 +38,7 @@ public class ExamQuestion implements Serializable {
     /**
      * 
      */
-    private Integer qbId;
+    private Long qbId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -57,7 +57,7 @@ public class ExamQuestion implements Serializable {
         ExamQuestion other = (ExamQuestion) that;
         return (this.getEqId() == null ? other.getEqId() == null : this.getEqId().equals(other.getEqId()))
             && (this.getEqTypeId() == null ? other.getEqTypeId() == null : this.getEqTypeId().equals(other.getEqTypeId()))
-            && (this.getEqTitle() == null ? other.getEqTitle() == null : this.getEqTitle().equals(other.getEqTitle()))
+            && (this.getNoteId() == null ? other.getNoteId() == null : this.getNoteId().equals(other.getNoteId()))
             && (this.getAnswer() == null ? other.getAnswer() == null : this.getAnswer().equals(other.getAnswer()))
             && (this.getQbId() == null ? other.getQbId() == null : this.getQbId().equals(other.getQbId()));
     }
@@ -68,7 +68,7 @@ public class ExamQuestion implements Serializable {
         int result = 1;
         result = prime * result + ((getEqId() == null) ? 0 : getEqId().hashCode());
         result = prime * result + ((getEqTypeId() == null) ? 0 : getEqTypeId().hashCode());
-        result = prime * result + ((getEqTitle() == null) ? 0 : getEqTitle().hashCode());
+        result = prime * result + ((getNoteId() == null) ? 0 : getNoteId().hashCode());
         result = prime * result + ((getAnswer() == null) ? 0 : getAnswer().hashCode());
         result = prime * result + ((getQbId() == null) ? 0 : getQbId().hashCode());
         return result;
@@ -82,7 +82,7 @@ public class ExamQuestion implements Serializable {
         sb.append("Hash = ").append(hashCode());
         sb.append(", eqId=").append(eqId);
         sb.append(", eqTypeId=").append(eqTypeId);
-        sb.append(", eqTitle=").append(eqTitle);
+        sb.append(", noteId=").append(noteId);
         sb.append(", answer=").append(answer);
         sb.append(", qbId=").append(qbId);
         sb.append(", serialVersionUID=").append(serialVersionUID);

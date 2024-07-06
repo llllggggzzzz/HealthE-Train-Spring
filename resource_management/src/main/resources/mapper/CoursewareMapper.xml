@@ -5,7 +5,7 @@
 <mapper namespace="com.conv.HealthETrain.mapper.CoursewareMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Courseware">
-            <id property="coursewareId" column="courseware_id" jdbcType="INTEGER"/>
+            <id property="coursewareId" column="courseware_id" jdbcType="BIGINT"/>
             <result property="uploadTime" column="upload_time" jdbcType="TIMESTAMP"/>
             <result property="size" column="size" jdbcType="BIGINT"/>
             <result property="path" column="path" jdbcType="VARCHAR"/>

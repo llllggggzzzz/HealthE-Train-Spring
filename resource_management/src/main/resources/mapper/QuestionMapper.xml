@@ -5,16 +5,16 @@
 <mapper namespace="com.conv.HealthETrain.mapper.QuestionMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Question">
-            <id property="questionId" column="question_id" jdbcType="INTEGER"/>
-            <result property="userId" column="user_id" jdbcType="INTEGER"/>
+            <id property="questionId" column="question_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="time" column="time" jdbcType="TIMESTAMP"/>
             <result property="answer" column="answer" jdbcType="VARCHAR"/>
-            <result property="tdId" column="td_id" jdbcType="INTEGER"/>
-            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+            <result property="tdId" column="td_id" jdbcType="BIGINT"/>
+            <result property="lesstionId" column="lesstion_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         question_id,user_id,time,
-        answer,td_id,lesson_id
+        answer,td_id,lesstion_id
     </sql>
 </mapper>

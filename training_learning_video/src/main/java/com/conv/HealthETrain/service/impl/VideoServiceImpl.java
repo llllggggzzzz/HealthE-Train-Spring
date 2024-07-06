@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.VideoMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【video】的数据库操作Service实现
-* @createDate 2024-07-05 17:59:24
+* @createDate 2024-07-07 11:53:19
 */
 @Service
 public class VideoServiceImpl extends ServiceImpl<VideoMapper, Video>

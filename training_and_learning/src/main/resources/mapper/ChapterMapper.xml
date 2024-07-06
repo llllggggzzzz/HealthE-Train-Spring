@@ -5,8 +5,8 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ChapterMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Chapter">
-            <id property="chapterId" column="chapter_id" jdbcType="INTEGER"/>
-            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+            <id property="chapterId" column="chapter_id" jdbcType="BIGINT"/>
+            <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
             <result property="chapterOrder" column="chapter_order" jdbcType="INTEGER"/>
             <result property="chapterTitle" column="chapter_title" jdbcType="VARCHAR"/>
     </resultMap>

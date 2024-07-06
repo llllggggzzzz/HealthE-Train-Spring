@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.CommentNoteMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.CommentNote">
-            <id property="cnId" column="cn_id" jdbcType="INTEGER"/>
-            <result property="noteId" column="note_id" jdbcType="INTEGER"/>
-            <result property="sectionId" column="section_id" jdbcType="INTEGER"/>
+            <id property="cnId" column="cn_id" jdbcType="BIGINT"/>
+            <result property="noteId" column="note_id" jdbcType="BIGINT"/>
+            <result property="sectionId" column="section_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

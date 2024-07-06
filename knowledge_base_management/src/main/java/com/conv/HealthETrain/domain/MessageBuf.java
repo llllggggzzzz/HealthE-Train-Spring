@@ -18,13 +18,13 @@ public class MessageBuf implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer mbId;
+    @TableId
+    private Long mbId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
