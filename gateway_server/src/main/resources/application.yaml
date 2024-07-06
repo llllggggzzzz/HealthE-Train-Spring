@@ -46,15 +46,3 @@ seata:
     vgroup-mapping:
       #这里也要注意 key为映射名
       default: default
-
-healthe:
-  auth:
-    exclude-paths:
-
-    include-paths:
-  jwt:
-    location: classpath:healthe.jks
-    alias: healthe
-    password: healthe
-    tokenTTL: 10
-

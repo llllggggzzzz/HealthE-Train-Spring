@@ -1,12 +1,14 @@
 package com.conv.HealthETrain.interceptor;
 
 import com.conv.HealthETrain.config.AuthProperties;
-import com.conv.HealthETrain.utils.TokenUtil;
+import com.conv.HealthETrain.exception.GlobalException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
+import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
@@ -42,10 +44,12 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         Long userId = null;
         try {
             userId = tokenUtil.parseToken(token);
-        } catch (Exception e) {
-            // TODO 未登录
-//            return Mono.error(new UnauthorizedException("未登录"));
+        } catch (GlobalException e) {
+            ServerHttpResponse response = exchange.getResponse();
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
         }
+
         // 5. 传递用户信息
         String userInfo = userId.toString();
         ServerWebExchange swe = exchange.mutate()
