@@ -1,4 +1,5 @@
 package com.conv.HealthETrain.enums;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
@@ -10,6 +11,7 @@ public enum ExceptionCode {
 
 
 
+    @JsonValue
     private final Integer code;
     private final String message;
 

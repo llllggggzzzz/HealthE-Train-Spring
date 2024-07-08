@@ -1,9 +1,13 @@
 package com.conv.HealthETrain.controller;
 
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.enums.ResponseCode;
+import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
 
 /**
  * @author liusg
@@ -20,8 +24,12 @@ public class UserController {
      * @param loginUser
      */
     @PostMapping("/login/account")
-    public void loginByAccount(@RequestBody User loginUser) {
-        userService.loginByAccount(loginUser);
+    public ApiResponse<HashMap<String, Object>> loginByAccount(@RequestBody User loginUser) {
+        String token = userService.loginByAccount(loginUser);
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", token);
+
+        return ApiResponse.success(data);
     }
 
     /**
@@ -38,13 +46,19 @@ public class UserController {
      * @param loginUser
      */
     @PostMapping("/login/email/code")
-    public void sendEmailCode(@RequestBody User loginUser) {
+    public ApiResponse<Object> sendEmailCode(@RequestBody User loginUser) {
         userService.sendEmailCode(loginUser);
+        return ApiResponse.success();
     }
 
     @PostMapping("/login/email/verify/{code}")
-    public void verifyEmail(@RequestBody User loginUser, @RequestParam String code) {
-        userService.verifyEmail(loginUser, code);
+    public ApiResponse<Boolean> verifyEmail(@RequestBody User loginUser, @PathVariable("code") String code) {
+        boolean result = userService.verifyEmail(loginUser, code);
+        if (result) {
+            return ApiResponse.success();
+        }
+
+        return ApiResponse.error(ResponseCode.BAD_REQUEST);
     }
 
     /**
@@ -52,18 +66,9 @@ public class UserController {
      * @param registerUser
      */
     @PostMapping("/register")
-    public void register(@RequestBody User registerUser) {
+    public ApiResponse<Object> register(@RequestBody User registerUser) {
         userService.register(registerUser);
-    }
 
-
-    /**
-     * @description 根据用户ID 查询用户信息，供其他服务进行openfeign调用
-     * @param id 用户ID
-     * @return 用户信息
-     */
-    @GetMapping("/{id}")
-    public User getUserInfo(@PathVariable("id") Long id) {
-        return userService.getById(id);
+        return ApiResponse.success();
     }
 }

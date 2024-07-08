@@ -2,7 +2,7 @@ server:
   port: 8200
 spring:
   application:
-    name: training_and_learning
+    name: training-and-learning
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://111.231.136.188:3306/training_and_learning

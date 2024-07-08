@@ -3,14 +3,3 @@ server:
 spring:
   application:
     name: common
-
-healthe:
-  auth:
-    exclude-paths:
-      - /login
-    include-paths:
-  jwt:
-    location: classpath:healthe.jks
-    alias: healthe
-    password: healthe
-    tokenTTL: 10

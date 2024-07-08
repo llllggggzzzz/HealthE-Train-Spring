@@ -27,6 +27,6 @@ public class CodeUtil {
 
     public boolean verifyCode(String key, String code) {
         String storeCode = codeStorage.get(key);
-        return storeCode != null && storeCode.equals(code);
+        return storeCode != null && storeCode.equalsIgnoreCase(code);
     }
 }

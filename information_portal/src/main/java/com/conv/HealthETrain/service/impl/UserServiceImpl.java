@@ -34,12 +34,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
     @Override
     public String loginByAccount(User loginUser) {
-        User user = lambdaQuery().eq(User::getUsername, loginUser.getUsername()).one();
+        User user = lambdaQuery().eq(User::getAccount, loginUser.getAccount()).one();
         if (user == null) {
             throw new GlobalException("用户不存在", ExceptionCode.BAD_REQUEST);
         }
 
-        if (!passwordEncoder.matches(user.getPassword(), loginUser.getPassword())) {
+        if (!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
             throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
         }
 
@@ -69,7 +69,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         String code = RandomUtil.randomString(RandomUtil.BASE_CHAR_NUMBER, codeLen);
 
         String to = loginUser.getEmail();
-        String subject = "HealthETrain 登录邮箱验证码";
+        String subject = "【HealthETrain】 登录邮箱验证码";
         String content = "您的验证码是：" + code + "。5分钟内有效，请勿泄露给他人。";
 
         // Send the email

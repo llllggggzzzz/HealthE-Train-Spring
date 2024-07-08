@@ -2,7 +2,7 @@ server:
   port: 8400
 spring:
   application:
-    name: knowledge_base_management
+    name: knowledge-base-management
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://111.231.136.188:3306/knowledge_base_management
