@@ -1,7 +1,9 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.Chapter;
+import com.conv.HealthETrain.domain.POJP.Chapter;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ChapterService extends IService<Chapter> {
 
+    List<Chapter> getChaptersByLessonId(Long id);
 }

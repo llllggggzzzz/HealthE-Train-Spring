@@ -19,7 +19,7 @@ import static com.conv.HealthETrain.enums.ResponseCode.NOT_MODIFIED;
 @RestController
 @AllArgsConstructor
 @Slf4j
-@RequestMapping("/api/v1/repositoryPrivilege")
+@RequestMapping("/repositoryPrivilege")
 public class RepositoryPrivilegeController {
 
     private final UserRepositoryPrivilegeService userRepositoryPrivilegeService;
@@ -81,7 +81,7 @@ public class RepositoryPrivilegeController {
             }
         } else {
             //设置visibility为公开
-            Boolean isVisibilitySuccess = repositoryService.updateRepositoryVisibility(repositoryId, visibility);
+            Boolean isVisibilitySuccess = repositoryService.updateRepositoryVisibility(repositoryId, 2);
             if (isVisibilitySuccess) {
                 log.error("设置知识库权限失败" + repositoryId);
                 return ApiResponse.error(NOT_MODIFIED);

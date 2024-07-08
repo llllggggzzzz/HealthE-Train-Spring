@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.conv.HealthETrain.mapper.SectionMapper">
 
-    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Section">
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.POJP.Section">
             <id property="sectionId" column="section_id" jdbcType="BIGINT"/>
             <result property="videoId" column="video_id" jdbcType="BIGINT"/>
             <result property="sectionTitle" column="section_title" jdbcType="VARCHAR"/>

@@ -11,7 +11,7 @@ import static com.conv.HealthETrain.enums.ResponseCode.NOT_IMPLEMENTED;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/repository")
+@RequestMapping("/repository")
 @Slf4j
 public class RepositoryController {
 

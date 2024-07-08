@@ -9,6 +9,11 @@ import com.conv.HealthETrain.mapper.NoteMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+import static com.conv.HealthETrain.enums.NoteTypeCode.NOTE_OF_REPOSITORY;
+import static com.conv.HealthETrain.enums.VisibilityCode.V_FULLPUBLIC;
+
 /**
 * @author flora
 * @description 针对表【note】的数据库操作Service实现
@@ -52,6 +57,13 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note>
         UpdateWrapper<Note> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("note_id", noteId).set("visibility", visibility);
         return noteMapper.update(updateWrapper) > 0;
+    }
+
+    @Override
+    public List<Note> findFullOpenNoteList() {
+        QueryWrapper<Note> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("visibility", V_FULLPUBLIC.getCode()).eq("type", NOTE_OF_REPOSITORY.getCode());
+        return noteMapper.selectList(queryWrapper);
     }
 }
 

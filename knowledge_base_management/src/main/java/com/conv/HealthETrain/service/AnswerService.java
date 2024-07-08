@@ -2,6 +2,9 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.Answer;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.conv.HealthETrain.domain.Ask;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -9,5 +12,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:51:31
 */
 public interface AnswerService extends IService<Answer> {
+    Boolean addAnswerOfAsk(Answer answer);
+    Answer findAnswerByAnswerId(Long answerId);
+    Boolean updateLikesOfAnswer(Long answerId);
+    Boolean subLikesOfAnswer(Long answerId);
+    List<Answer> findAnswerListByAskId(Long askId);
 
 }

@@ -12,5 +12,13 @@ import java.util.List;
 */
 public interface UserService extends IService<User> {
     List<User> getAllUsers();
+     String loginByAccount(User loginUser);
 
+     String loginByPhone(User loginUser);
+
+     void sendEmailCode(User loginUser);
+
+     boolean verifyEmail(User loginUser, String code);
+
+     boolean register(User registerUser);
 }

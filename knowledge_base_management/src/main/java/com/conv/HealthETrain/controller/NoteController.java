@@ -16,7 +16,7 @@ import static com.conv.HealthETrain.enums.ResponseCode.NOT_IMPLEMENTED;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/note")
+@RequestMapping("/note")
 @Slf4j
 public class NoteController {
 
@@ -24,7 +24,7 @@ public class NoteController {
     private final NoteLinkRepositoryService noteLinkRepositoryService;
 
     /**
-    * @Description: 给对应知识库添加note
+    * @Description: 获取对应知识库的note
     * @Param: repository_id 知识库id
     * @return: List<Note>
     * @Author: flora
@@ -94,7 +94,7 @@ public class NoteController {
         }
     }
     /**
-    * @Description: 修改笔记的可见性（0私有，1公开）
+    * @Description: 修改笔记的可见性（0私有，1局部公开，2全局公开）
     * @Param:
     * @return: Boolean
     * @Author: flora
@@ -104,5 +104,23 @@ public class NoteController {
     public ApiResponse<Boolean> updateVisibilityOfNote(@PathVariable Long noteId,@PathVariable int visibility){
         Boolean isSuccess = noteService.updateNoteVisibility(noteId, visibility);
         return ApiResponse.success(isSuccess);
+    }
+    /**
+    * @Description: 获取全局公开的笔记,用于社区
+    * @Param: 
+    * @return: 
+    * @Author: flora
+    * @Date: 2024/7/8
+    */
+    @GetMapping("/open")
+    public ApiResponse<List<Note>> getFullOpenNoteList(){
+        List<Note> noteList = noteService.findFullOpenNoteList();
+        if(noteList != null){
+            log.info("获取全局公开笔记成功");
+            return ApiResponse.success(noteList);
+        }else{
+            log.error("获取全局公开笔记失败");
+            return ApiResponse.error(NOT_FOUND);
+        }
     }
 }

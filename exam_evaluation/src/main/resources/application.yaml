@@ -2,7 +2,7 @@ server:
   port: 8700
 spring:
   application:
-    name: exam_evaluation
+    name: exam-evaluation
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://111.231.136.188:3306/exam_evaluation
@@ -51,3 +51,7 @@ seata:
     vgroup-mapping:
       #这里也要注意 key为映射名
       default: default
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_id

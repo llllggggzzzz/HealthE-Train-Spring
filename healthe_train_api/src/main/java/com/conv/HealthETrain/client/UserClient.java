@@ -10,6 +10,6 @@ import java.util.List;
 @FeignClient(value = "information_portal")
 public interface UserClient {
 
-    @GetMapping("/api/v1/userList")
+    @GetMapping("/userList")
     List<User> getAllUsers();
 }

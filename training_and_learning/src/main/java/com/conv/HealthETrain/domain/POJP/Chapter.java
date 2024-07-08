@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,16 +8,16 @@ import lombok.Data;
 
 /**
  * 
- * @TableName lesson_link_category
+ * @TableName chapter
  */
-@TableName(value ="lesson_link_category")
+@TableName(value ="chapter")
 @Data
-public class LessonLinkCategory implements Serializable {
+public class Chapter implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long llcId;
+    private Long chapterId;
 
     /**
      * 
@@ -28,7 +27,12 @@ public class LessonLinkCategory implements Serializable {
     /**
      * 
      */
-    private Long categoryId;
+    private Integer chapterOrder;
+
+    /**
+     * 
+     */
+    private String chapterTitle;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -44,19 +48,21 @@ public class LessonLinkCategory implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        LessonLinkCategory other = (LessonLinkCategory) that;
-        return (this.getLlcId() == null ? other.getLlcId() == null : this.getLlcId().equals(other.getLlcId()))
+        Chapter other = (Chapter) that;
+        return (this.getChapterId() == null ? other.getChapterId() == null : this.getChapterId().equals(other.getChapterId()))
             && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()))
-            && (this.getCategoryId() == null ? other.getCategoryId() == null : this.getCategoryId().equals(other.getCategoryId()));
+            && (this.getChapterOrder() == null ? other.getChapterOrder() == null : this.getChapterOrder().equals(other.getChapterOrder()))
+            && (this.getChapterTitle() == null ? other.getChapterTitle() == null : this.getChapterTitle().equals(other.getChapterTitle()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getLlcId() == null) ? 0 : getLlcId().hashCode());
+        result = prime * result + ((getChapterId() == null) ? 0 : getChapterId().hashCode());
         result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
-        result = prime * result + ((getCategoryId() == null) ? 0 : getCategoryId().hashCode());
+        result = prime * result + ((getChapterOrder() == null) ? 0 : getChapterOrder().hashCode());
+        result = prime * result + ((getChapterTitle() == null) ? 0 : getChapterTitle().hashCode());
         return result;
     }
 
@@ -66,9 +72,10 @@ public class LessonLinkCategory implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", llcId=").append(llcId);
+        sb.append(", chapterId=").append(chapterId);
         sb.append(", lessonId=").append(lessonId);
-        sb.append(", categoryId=").append(categoryId);
+        sb.append(", chapterOrder=").append(chapterOrder);
+        sb.append(", chapterTitle=").append(chapterTitle);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

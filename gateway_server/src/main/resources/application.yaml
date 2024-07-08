@@ -2,15 +2,29 @@ server:
   port: 8600
 spring:
   application:
-    name: gateway_server
+    name: gateway-server
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        server-addr: 127.0.0.1:8848
     sentinel:
       transport:
         dashboard: localhost:8849
       http-method-specify: true
+    gateway:
+      routes:
+        - id: information-portal
+          uri: lb://information-portal
+          predicates:
+            - Path=/users/**
+          filters:
+            - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
+        - id: training-and-learning
+          uri: lb://training-and-learning
+          predicates:
+            - Path=/api/v1/study/**
+#          filters:
+#            - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
   rabbitmq:
     host: localhost
     port: 5672
@@ -34,6 +48,8 @@ spring:
         initial-interval: 200ms # 间隔重连时间
         multiplier: 1 # 等待时间增长倍数
         max-attempts: 3 # 最大请求次数
+  main:
+    web-application-type: reactive
 seata:
   tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
   registry:
@@ -46,3 +62,16 @@ seata:
     vgroup-mapping:
       #这里也要注意 key为映射名
       default: default
+
+healthe:
+  auth:
+    exclude-paths:
+      - /users/login/**
+      - /api/v1/study/**
+      - /study/**
+    include-paths:
+  jwt:
+    location: classpath:healthe.jks
+    alias: healthe
+    password: healthe
+    tokenTTL: 10m

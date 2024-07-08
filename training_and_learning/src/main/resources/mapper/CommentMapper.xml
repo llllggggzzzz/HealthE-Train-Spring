@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.conv.HealthETrain.mapper.CommentMapper">
 
-    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Comment">
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.POJP.Comment">
             <id property="commentId" column="comment_id" jdbcType="BIGINT"/>
             <result property="commentContent" column="comment_content" jdbcType="VARCHAR"/>
             <result property="userId" column="user_id" jdbcType="BIGINT"/>

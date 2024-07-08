@@ -1,7 +1,9 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.Section;
+import com.conv.HealthETrain.domain.POJP.Section;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -9,5 +11,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:52:45
 */
 public interface SectionService extends IService<Section> {
-
+    List<Section> getSectionsByChapterId(Long chapterId);
 }

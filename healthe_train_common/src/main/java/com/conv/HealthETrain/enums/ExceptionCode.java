@@ -1,13 +1,17 @@
 package com.conv.HealthETrain.enums;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 @Getter
 public enum ExceptionCode {
+    BAD_REQUEST(400, "错误的请求"),
     IMAGE_UPLOAD_ERROR(402, "图床配置异常"),
     UNAUTHORIZED(401, "未授权"),
     NOT_FOUND(404, "未找到");
 
 
+
+    @JsonValue
     private final Integer code;
     private final String message;
 

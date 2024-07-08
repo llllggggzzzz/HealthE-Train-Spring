@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,26 +8,26 @@ import lombok.Data;
 
 /**
  * 
- * @TableName lesson_link_teacher
+ * @TableName quiz
  */
-@TableName(value ="lesson_link_teacher")
+@TableName(value ="quiz")
 @Data
-public class LessonLinkTeacher implements Serializable {
+public class Quiz implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long lltId;
+    private Long quizId;
 
     /**
      * 
      */
-    private Long lessonId;
+    private Long chapterId;
 
     /**
      * 
      */
-    private Long tdId;
+    private Long paperId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -44,19 +43,19 @@ public class LessonLinkTeacher implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        LessonLinkTeacher other = (LessonLinkTeacher) that;
-        return (this.getLltId() == null ? other.getLltId() == null : this.getLltId().equals(other.getLltId()))
-            && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()))
-            && (this.getTdId() == null ? other.getTdId() == null : this.getTdId().equals(other.getTdId()));
+        Quiz other = (Quiz) that;
+        return (this.getQuizId() == null ? other.getQuizId() == null : this.getQuizId().equals(other.getQuizId()))
+            && (this.getChapterId() == null ? other.getChapterId() == null : this.getChapterId().equals(other.getChapterId()))
+            && (this.getPaperId() == null ? other.getPaperId() == null : this.getPaperId().equals(other.getPaperId()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getLltId() == null) ? 0 : getLltId().hashCode());
-        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
-        result = prime * result + ((getTdId() == null) ? 0 : getTdId().hashCode());
+        result = prime * result + ((getQuizId() == null) ? 0 : getQuizId().hashCode());
+        result = prime * result + ((getChapterId() == null) ? 0 : getChapterId().hashCode());
+        result = prime * result + ((getPaperId() == null) ? 0 : getPaperId().hashCode());
         return result;
     }
 
@@ -66,9 +65,9 @@ public class LessonLinkTeacher implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", lltId=").append(lltId);
-        sb.append(", lessonId=").append(lessonId);
-        sb.append(", tdId=").append(tdId);
+        sb.append(", quizId=").append(quizId);
+        sb.append(", chapterId=").append(chapterId);
+        sb.append(", paperId=").append(paperId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

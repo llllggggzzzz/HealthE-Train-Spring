@@ -6,18 +6,18 @@ import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.conv.HealthETrain.enums.ResponseCode.NOT_FOUND;
 import static com.conv.HealthETrain.enums.ResponseCode.NOT_MODIFIED;
+import static com.conv.HealthETrain.enums.VisibilityCode.*;
 
 @RestController
 @AllArgsConstructor
 @Slf4j
-@RequestMapping("/api/v1/notePrivilege")
+@RequestMapping("/notePrivilege")
 public class NotePrivilegeController {
     private final NoteLinkRepositoryService noteLinkRepositoryService;
     private final UserNotePrivilegeService userNotePrivilegeService;
@@ -69,7 +69,9 @@ public class NotePrivilegeController {
     }
 
     /**
-     * @Description: 修改用户userId自己笔记的全局权限, 先验证visibility后验证privilegeId,可以设置全局私有、可读、读写
+     * @Description: 修改用户userId自己笔记的全局权限,
+     * 先验证visibility后验证privilegeId,可以设置全局私有、可读、读写
+     * visibility：0 私有 1 局部公开 2 全局公开
      * @Param:
      * @return:
      * @Author: flora
@@ -82,7 +84,7 @@ public class NotePrivilegeController {
             @PathVariable Long privilegeId) {
         // 首先确认是当前的所有者（前端处理）
         // 1.设置visibility
-        if (visibility == 0) {
+        if (visibility == V_PRIVATE.getCode()) {
             //如果设置笔记权限为私有
             Boolean isSuccess = noteService.updateNoteVisibility(noteId, visibility);
             //删除权限表里面此笔记关联的用户
@@ -101,7 +103,7 @@ public class NotePrivilegeController {
             }
         } else {
             //设置visibility为公开
-            Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, visibility);
+            Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, V_FULLPUBLIC.getCode());
             if (isVisibilitySuccess) {
                 log.error("设置笔记权限失败" + noteId);
                 return ApiResponse.error(NOT_MODIFIED);
@@ -143,8 +145,8 @@ public class NotePrivilegeController {
             @PathVariable Long noteId,
             @PathVariable Long privilegeId,
             @RequestBody List<User> userList){
-        //设置visibility为公开
-        Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, 1);
+        //设置visibility为局部公开
+        Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, V_PARTPUBLIC.getCode());
         if (isVisibilitySuccess) {
             log.error("设置笔记权限失败" + noteId);
             return ApiResponse.error(NOT_MODIFIED);

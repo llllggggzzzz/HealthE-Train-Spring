@@ -1,7 +1,7 @@
 package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.Lesson;
+import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.conv.HealthETrain.service.LessonService;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import org.springframework.stereotype.Service;
