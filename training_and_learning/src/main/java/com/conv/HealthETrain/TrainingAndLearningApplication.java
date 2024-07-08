@@ -15,8 +15,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @MapperScan("com.conv.HealthETrain.mapper")
 @EnableFeignClients(clients = {InformationPortalClient.class})
 @EnableDiscoveryClient
-public class TraningAndLearningApplication {
+public class TrainingAndLearningApplication {
     public static void main(String[] args) {
-        SpringApplication.run(TraningAndLearningApplication.class, args);
+        SpringApplication.run(TrainingAndLearningApplication.class, args);
     }
 }
