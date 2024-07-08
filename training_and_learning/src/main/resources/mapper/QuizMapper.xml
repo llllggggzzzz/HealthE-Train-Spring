@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.QuizMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Quiz">
-            <id property="quizId" column="quiz_id" jdbcType="INTEGER"/>
-            <result property="chapterId" column="chapter_id" jdbcType="INTEGER"/>
-            <result property="paperId" column="paper_id" jdbcType="INTEGER"/>
+            <id property="quizId" column="quiz_id" jdbcType="BIGINT"/>
+            <result property="chapterId" column="chapter_id" jdbcType="BIGINT"/>
+            <result property="paperId" column="paper_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

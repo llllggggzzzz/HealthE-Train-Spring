@@ -17,8 +17,8 @@ public class Paper implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer paperId;
+    @TableId
+    private Long paperId;
 
     /**
      * 

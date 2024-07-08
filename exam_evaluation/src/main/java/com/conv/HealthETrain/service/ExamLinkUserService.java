@@ -4,9 +4,9 @@ import com.conv.HealthETrain.domain.ExamLinkUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【exam_link_user】的数据库操作Service
-* @createDate 2024-07-05 17:55:51
+* @createDate 2024-07-07 11:47:43
 */
 public interface ExamLinkUserService extends IService<ExamLinkUser> {
 

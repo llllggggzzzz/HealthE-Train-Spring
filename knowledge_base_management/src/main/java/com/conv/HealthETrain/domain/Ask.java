@@ -17,13 +17,13 @@ public class Ask implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer askId;
+    @TableId
+    private Long askId;
 
     /**
      * 
      */
-    private Integer noteId;
+    private Long noteId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

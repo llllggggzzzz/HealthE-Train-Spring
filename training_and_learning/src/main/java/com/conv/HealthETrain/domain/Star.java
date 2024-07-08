@@ -17,18 +17,18 @@ public class Star implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer starId;
+    @TableId
+    private Long starId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     /**
      * 

@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.RepositoryMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【repository】的数据库操作Service实现
-* @createDate 2024-07-05 17:57:28
+* @createDate 2024-07-07 11:51:31
 */
 @Service
 public class RepositoryServiceImpl extends ServiceImpl<RepositoryMapper, Repository>

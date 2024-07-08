@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.LessonLinkTeacherMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【lesson_link_teacher】的数据库操作Service实现
-* @createDate 2024-07-05 17:58:44
+* @createDate 2024-07-07 11:52:45
 */
 @Service
 public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherMapper, LessonLinkTeacher>

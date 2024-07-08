@@ -17,13 +17,13 @@ public class Section implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer sectionId;
+    @TableId
+    private Long sectionId;
 
     /**
      * 
      */
-    private Integer videoId;
+    private Long videoId;
 
     /**
      * 
@@ -33,7 +33,7 @@ public class Section implements Serializable {
     /**
      * 
      */
-    private Integer chapterId;
+    private Long chapterId;
 
     /**
      * 

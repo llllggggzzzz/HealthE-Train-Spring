@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.RecentLessonsMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.RecentLessons">
+            <id property="recentLessonsId" column="recent_lessons_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
+            <result property="time" column="time" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        recent_lessons_id,user_id,lesson_id,
+        time
+    </sql>
+</mapper>

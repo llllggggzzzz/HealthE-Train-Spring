@@ -17,8 +17,8 @@ public class EqType implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer eqTypeId;
+    @TableId
+    private Long eqTypeId;
 
     /**
      * 

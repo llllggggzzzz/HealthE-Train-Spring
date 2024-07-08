@@ -17,13 +17,13 @@ public class EqOption implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer eqOptionId;
+    @TableId
+    private Long eqOptionId;
 
     /**
      * 
      */
-    private Integer eqId;
+    private Long eqId;
 
     /**
      * 

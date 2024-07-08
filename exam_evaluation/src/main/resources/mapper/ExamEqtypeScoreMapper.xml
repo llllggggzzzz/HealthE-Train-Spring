@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ExamEqtypeScoreMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamEqtypeScore">
-            <id property="eesId" column="ees_id" jdbcType="INTEGER"/>
-            <result property="examId" column="exam_id" jdbcType="INTEGER"/>
-            <result property="eqTypeId" column="eq_type_id" jdbcType="INTEGER"/>
+            <id property="eesId" column="ees_id" jdbcType="BIGINT"/>
+            <result property="examId" column="exam_id" jdbcType="BIGINT"/>
+            <result property="eqTypeId" column="eq_type_id" jdbcType="BIGINT"/>
             <result property="score" column="score" jdbcType="INTEGER"/>
     </resultMap>
 

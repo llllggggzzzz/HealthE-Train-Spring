@@ -18,8 +18,8 @@ public class QuestionBank implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer qbId;
+    @TableId
+    private Long qbId;
 
     /**
      * 
@@ -34,7 +34,7 @@ public class QuestionBank implements Serializable {
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

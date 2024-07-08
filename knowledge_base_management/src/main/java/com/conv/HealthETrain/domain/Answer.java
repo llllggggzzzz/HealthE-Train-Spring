@@ -17,18 +17,18 @@ public class Answer implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer answerId;
+    @TableId
+    private Long answerId;
 
     /**
      * 
      */
-    private Integer noteId;
+    private Long noteId;
 
     /**
      * 
      */
-    private Integer askId;
+    private Long askId;
 
     /**
      * 

@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.TagLinkQuestionMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【tag_link_question】的数据库操作Service实现
-* @createDate 2024-07-05 17:57:57
+* @createDate 2024-07-07 11:52:15
 */
 @Service
 public class TagLinkQuestionServiceImpl extends ServiceImpl<TagLinkQuestionMapper, TagLinkQuestion>

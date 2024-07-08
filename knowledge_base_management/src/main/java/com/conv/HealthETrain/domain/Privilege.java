@@ -17,13 +17,13 @@ public class Privilege implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer privilegeId;
+    @TableId
+    private Long privilegeId;
 
     /**
      * 
      */
-    private String privilegeLevel;
+    private Integer privilegeLevel;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

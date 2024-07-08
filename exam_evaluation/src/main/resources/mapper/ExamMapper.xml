@@ -5,10 +5,10 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ExamMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Exam">
-            <id property="examId" column="exam_id" jdbcType="INTEGER"/>
-            <result property="paperId" column="paper_id" jdbcType="INTEGER"/>
-            <result property="creatorId" column="creator_id" jdbcType="INTEGER"/>
-            <result property="lessionId" column="lession_id" jdbcType="INTEGER"/>
+            <id property="examId" column="exam_id" jdbcType="BIGINT"/>
+            <result property="paperId" column="paper_id" jdbcType="BIGINT"/>
+            <result property="creatorId" column="creator_id" jdbcType="BIGINT"/>
+            <result property="lessionId" column="lession_id" jdbcType="BIGINT"/>
             <result property="duration" column="duration" jdbcType="INTEGER"/>
             <result property="level" column="level" jdbcType="INTEGER"/>
             <result property="passScore" column="pass_score" jdbcType="DOUBLE"/>

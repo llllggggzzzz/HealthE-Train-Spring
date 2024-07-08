@@ -7,9 +7,9 @@ import com.conv.HealthETrain.mapper.QuestionBankMapper;
 import org.springframework.stereotype.Service;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【question_bank】的数据库操作Service实现
-* @createDate 2024-07-05 17:57:57
+* @createDate 2024-07-07 11:52:15
 */
 @Service
 public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBank>

@@ -17,23 +17,23 @@ public class Exam implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer examId;
+    @TableId
+    private Long examId;
 
     /**
      * 
      */
-    private Integer paperId;
+    private Long paperId;
 
     /**
      * 
      */
-    private Integer creatorId;
+    private Long creatorId;
 
     /**
      * 
      */
-    private Integer lessionId;
+    private Long lessionId;
 
     /**
      * 

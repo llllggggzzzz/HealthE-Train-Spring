@@ -18,8 +18,8 @@ public class Courseware implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer coursewareId;
+    @TableId
+    private Long coursewareId;
 
     /**
      * 

@@ -5,10 +5,10 @@
 <mapper namespace="com.conv.HealthETrain.mapper.QuestionBankMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.QuestionBank">
-            <id property="qbId" column="qb_id" jdbcType="INTEGER"/>
+            <id property="qbId" column="qb_id" jdbcType="BIGINT"/>
             <result property="qbTitle" column="qb_title" jdbcType="VARCHAR"/>
             <result property="createTime" column="create_time" jdbcType="TIMESTAMP"/>
-            <result property="lessonId" column="lesson_id" jdbcType="INTEGER"/>
+            <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

@@ -5,15 +5,15 @@
 <mapper namespace="com.conv.HealthETrain.mapper.ExamQuestionMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.ExamQuestion">
-            <id property="eqId" column="eq_id" jdbcType="INTEGER"/>
-            <result property="eqTypeId" column="eq_type_id" jdbcType="INTEGER"/>
-            <result property="eqTitle" column="eq_title" jdbcType="VARCHAR"/>
+            <id property="eqId" column="eq_id" jdbcType="BIGINT"/>
+            <result property="eqTypeId" column="eq_type_id" jdbcType="BIGINT"/>
+            <result property="noteId" column="note_id" jdbcType="BIGINT"/>
             <result property="answer" column="answer" jdbcType="VARCHAR"/>
-            <result property="qbId" column="qb_id" jdbcType="INTEGER"/>
+            <result property="qbId" column="qb_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        eq_id,eq_type_id,eq_title,
+        eq_id,eq_type_id,note_id,
         answer,qb_id
     </sql>
 </mapper>

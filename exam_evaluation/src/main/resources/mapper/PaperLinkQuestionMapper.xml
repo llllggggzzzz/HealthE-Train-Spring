@@ -5,9 +5,9 @@
 <mapper namespace="com.conv.HealthETrain.mapper.PaperLinkQuestionMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.PaperLinkQuestion">
-            <id property="plqId" column="plq_id" jdbcType="INTEGER"/>
-            <result property="paperId" column="paper_id" jdbcType="INTEGER"/>
-            <result property="examQuestionId" column="exam_question_id" jdbcType="INTEGER"/>
+            <id property="plqId" column="plq_id" jdbcType="BIGINT"/>
+            <result property="paperId" column="paper_id" jdbcType="BIGINT"/>
+            <result property="examQuestionId" column="exam_question_id" jdbcType="BIGINT"/>
     </resultMap>
 
     <sql id="Base_Column_List">

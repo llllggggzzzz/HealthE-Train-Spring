@@ -18,8 +18,8 @@ public class Note implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer noteId;
+    @TableId
+    private Long noteId;
 
     /**
      * 
@@ -34,7 +34,7 @@ public class Note implements Serializable {
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 

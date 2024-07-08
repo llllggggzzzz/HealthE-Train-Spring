@@ -4,9 +4,9 @@ import com.conv.HealthETrain.domain.CommentNote;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
-* @author john
+* @author flora
 * @description 针对表【comment_note】的数据库操作Service
-* @createDate 2024-07-05 17:58:44
+* @createDate 2024-07-07 11:52:45
 */
 public interface CommentNoteService extends IService<CommentNote> {
 

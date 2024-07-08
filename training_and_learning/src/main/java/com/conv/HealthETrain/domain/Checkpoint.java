@@ -17,28 +17,28 @@ public class Checkpoint implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer checkpointId;
+    @TableId
+    private Long checkpointId;
 
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
      */
-    private Integer sectionId;
+    private Long sectionId;
 
     /**
      * 
      */
-    private Integer chapterId;
+    private Long chapterId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

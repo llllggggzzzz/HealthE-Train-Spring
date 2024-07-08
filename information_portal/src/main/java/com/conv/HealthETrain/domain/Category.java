@@ -18,7 +18,7 @@ public class Category implements Serializable {
      * 
      */
     @TableId(type = IdType.ASSIGN_ID)
-    private Integer categoryId;
+    private Long categoryId;
 
     /**
      * 

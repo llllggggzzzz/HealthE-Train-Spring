@@ -5,7 +5,7 @@
 <mapper namespace="com.conv.HealthETrain.mapper.EqTypeMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.EqType">
-            <id property="eqTypeId" column="eq_type_id" jdbcType="INTEGER"/>
+            <id property="eqTypeId" column="eq_type_id" jdbcType="BIGINT"/>
             <result property="eqTypeName" column="eq_type_name" jdbcType="VARCHAR"/>
     </resultMap>
 

@@ -5,10 +5,10 @@
 <mapper namespace="com.conv.HealthETrain.mapper.VideoMapper">
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Video">
-            <id property="videoId" column="video_id" jdbcType="INTEGER"/>
+            <id property="videoId" column="video_id" jdbcType="BIGINT"/>
             <result property="path" column="path" jdbcType="VARCHAR"/>
             <result property="length" column="length" jdbcType="BIGINT"/>
-            <result property="sectionId" column="section_id" jdbcType="INTEGER"/>
+            <result property="sectionId" column="section_id" jdbcType="BIGINT"/>
             <result property="size" column="size" jdbcType="BIGINT"/>
     </resultMap>
 

@@ -17,18 +17,18 @@ public class LessonLinkCategory implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer llcId;
+    @TableId
+    private Long llcId;
 
     /**
      * 
      */
-    private Integer lessonId;
+    private Long lessonId;
 
     /**
      * 
      */
-    private Integer categoryId;
+    private Long categoryId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

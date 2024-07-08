@@ -17,18 +17,18 @@ public class TagLinkQuestion implements Serializable {
     /**
      * 
      */
-    @TableId(type = IdType.ASSIGN_ID)
-    private Integer tlqId;
+    @TableId
+    private Long tlqId;
 
     /**
      * 
      */
-    private Integer tagId;
+    private Long tagId;
 
     /**
      * 
      */
-    private Integer eqId;
+    private Long eqId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
