@@ -7,7 +7,7 @@ spring:
 healthe:
   auth:
     exclude-paths:
-
+      - /login
     include-paths:
   jwt:
     location: classpath:healthe.jks

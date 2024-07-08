@@ -1,18 +1,22 @@
 package com.conv.HealthETrain.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.rsa.crypto.KeyStoreKeyFactory;
 import org.springframework.stereotype.Component;
 
 import java.security.KeyPair;
+import java.time.Duration;
 
 /**
  * @author liusg
  */
-@Component
+@Configuration
 @EnableConfigurationProperties(JwtProperties.class)
 public class SecurityConfig {
 
@@ -23,6 +27,7 @@ public class SecurityConfig {
 
     @Bean
     public KeyPair keyPair(JwtProperties properties){
+
         // 获取秘钥工厂
         KeyStoreKeyFactory keyStoreKeyFactory =
                 new KeyStoreKeyFactory(
@@ -33,4 +38,6 @@ public class SecurityConfig {
                 properties.getAlias(),
                 properties.getPassword().toCharArray());
     }
+
+
 }
