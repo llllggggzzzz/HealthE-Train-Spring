@@ -18,7 +18,7 @@ spring:
           predicates:
             - Path=/users/**
           filters:
-            - RewritePath=/api/v1/(?<segment>.*), /${segment}
+            - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
   rabbitmq:
     host: localhost
     port: 5672
