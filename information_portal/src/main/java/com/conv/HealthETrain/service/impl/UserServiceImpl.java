@@ -10,6 +10,7 @@ import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
 import com.conv.HealthETrain.utils.CodeUtil;
 import com.conv.HealthETrain.utils.MailUtil;
+import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
