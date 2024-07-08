@@ -10,11 +10,11 @@ import lombok.Data;
 
 /**
  * 
- * @TableName question_bank
+ * @TableName exam_question_bank
  */
-@TableName(value ="question_bank")
+@TableName(value ="exam_question_bank")
 @Data
-public class QuestionBank implements Serializable {
+public class ExamQuestionBank implements Serializable {
     /**
      * 
      */
@@ -50,7 +50,7 @@ public class QuestionBank implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        QuestionBank other = (QuestionBank) that;
+        ExamQuestionBank other = (ExamQuestionBank) that;
         return (this.getQbId() == null ? other.getQbId() == null : this.getQbId().equals(other.getQbId()))
             && (this.getQbTitle() == null ? other.getQbTitle() == null : this.getQbTitle().equals(other.getQbTitle()))
             && (this.getCreateTime() == null ? other.getCreateTime() == null : this.getCreateTime().equals(other.getCreateTime()))

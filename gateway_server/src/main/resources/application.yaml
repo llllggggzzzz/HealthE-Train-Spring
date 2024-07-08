@@ -67,7 +67,6 @@ healthe:
   auth:
     exclude-paths:
       - /users/login/**
-      - /api/v1/study/**
       - /study/**
     include-paths:
   jwt:
