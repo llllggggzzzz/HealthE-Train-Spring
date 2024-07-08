@@ -1,24 +1,29 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
  * 
- * @TableName lesson_link_user
+ * @TableName recent_lessons
  */
-@TableName(value ="lesson_link_user")
+@TableName(value ="recent_lessons")
 @Data
-public class LessonLinkUser implements Serializable {
+public class RecentLessons implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long lluId;
+    private Long recentLessonsId;
+
+    /**
+     * 
+     */
+    private Long userId;
 
     /**
      * 
@@ -28,7 +33,7 @@ public class LessonLinkUser implements Serializable {
     /**
      * 
      */
-    private Long userId;
+    private Date time;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -44,19 +49,21 @@ public class LessonLinkUser implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        LessonLinkUser other = (LessonLinkUser) that;
-        return (this.getLluId() == null ? other.getLluId() == null : this.getLluId().equals(other.getLluId()))
+        RecentLessons other = (RecentLessons) that;
+        return (this.getRecentLessonsId() == null ? other.getRecentLessonsId() == null : this.getRecentLessonsId().equals(other.getRecentLessonsId()))
+            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()))
-            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()));
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getLluId() == null) ? 0 : getLluId().hashCode());
-        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
+        result = prime * result + ((getRecentLessonsId() == null) ? 0 : getRecentLessonsId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
+        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         return result;
     }
 
@@ -66,9 +73,10 @@ public class LessonLinkUser implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", lluId=").append(lluId);
-        sb.append(", lessonId=").append(lessonId);
+        sb.append(", recentLessonsId=").append(recentLessonsId);
         sb.append(", userId=").append(userId);
+        sb.append(", lessonId=").append(lessonId);
+        sb.append(", time=").append(time);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

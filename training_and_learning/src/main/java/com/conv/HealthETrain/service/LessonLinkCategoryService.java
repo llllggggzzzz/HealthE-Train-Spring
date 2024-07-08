@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.LessonLinkCategory;
+import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

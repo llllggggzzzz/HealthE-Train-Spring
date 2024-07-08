@@ -1,13 +1,13 @@
 package com.conv.HealthETrain.mapper;
 
-import com.conv.HealthETrain.domain.Checkpoint;
+import com.conv.HealthETrain.domain.POJP.Checkpoint;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 /**
 * @author flora
 * @description 针对表【checkpoint】的数据库操作Mapper
 * @createDate 2024-07-07 11:52:45
-* @Entity com.conv.HealthETrain.domain.Checkpoint
+* @Entity com.conv.HealthETrain.domain.POJP.Checkpoint
 */
 public interface CheckpointMapper extends BaseMapper<Checkpoint> {
 

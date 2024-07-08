@@ -1,7 +1,9 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.LessonLinkTeacher;
+import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface LessonLinkTeacherService extends IService<LessonLinkTeacher> {
 
+    public List<Long> getTeachersByLessonId(Long lessonIds);
 }

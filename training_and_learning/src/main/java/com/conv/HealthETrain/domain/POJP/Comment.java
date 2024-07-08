@@ -1,24 +1,29 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
+import java.util.Date;
 import lombok.Data;
 
 /**
  * 
- * @TableName checkpoint
+ * @TableName comment
  */
-@TableName(value ="checkpoint")
+@TableName(value ="comment")
 @Data
-public class Checkpoint implements Serializable {
+public class Comment implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long checkpointId;
+    private Long commentId;
+
+    /**
+     * 
+     */
+    private String commentContent;
 
     /**
      * 
@@ -28,17 +33,12 @@ public class Checkpoint implements Serializable {
     /**
      * 
      */
+    private Date time;
+
+    /**
+     * 
+     */
     private Long sectionId;
-
-    /**
-     * 
-     */
-    private Long chapterId;
-
-    /**
-     * 
-     */
-    private Long lessonId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -54,23 +54,23 @@ public class Checkpoint implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        Checkpoint other = (Checkpoint) that;
-        return (this.getCheckpointId() == null ? other.getCheckpointId() == null : this.getCheckpointId().equals(other.getCheckpointId()))
+        Comment other = (Comment) that;
+        return (this.getCommentId() == null ? other.getCommentId() == null : this.getCommentId().equals(other.getCommentId()))
+            && (this.getCommentContent() == null ? other.getCommentContent() == null : this.getCommentContent().equals(other.getCommentContent()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
-            && (this.getSectionId() == null ? other.getSectionId() == null : this.getSectionId().equals(other.getSectionId()))
-            && (this.getChapterId() == null ? other.getChapterId() == null : this.getChapterId().equals(other.getChapterId()))
-            && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()));
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
+            && (this.getSectionId() == null ? other.getSectionId() == null : this.getSectionId().equals(other.getSectionId()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getCheckpointId() == null) ? 0 : getCheckpointId().hashCode());
+        result = prime * result + ((getCommentId() == null) ? 0 : getCommentId().hashCode());
+        result = prime * result + ((getCommentContent() == null) ? 0 : getCommentContent().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         result = prime * result + ((getSectionId() == null) ? 0 : getSectionId().hashCode());
-        result = prime * result + ((getChapterId() == null) ? 0 : getChapterId().hashCode());
-        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
         return result;
     }
 
@@ -80,11 +80,11 @@ public class Checkpoint implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", checkpointId=").append(checkpointId);
+        sb.append(", commentId=").append(commentId);
+        sb.append(", commentContent=").append(commentContent);
         sb.append(", userId=").append(userId);
+        sb.append(", time=").append(time);
         sb.append(", sectionId=").append(sectionId);
-        sb.append(", chapterId=").append(chapterId);
-        sb.append(", lessonId=").append(lessonId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

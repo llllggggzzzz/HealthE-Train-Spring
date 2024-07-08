@@ -4,7 +4,7 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.conv.HealthETrain.mapper.LessonLinkTeacherMapper">
 
-    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.LessonLinkTeacher">
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.POJP.LessonLinkTeacher">
             <id property="lltId" column="llt_id" jdbcType="BIGINT"/>
             <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
             <result property="tdId" column="td_id" jdbcType="BIGINT"/>

@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,16 +8,16 @@ import lombok.Data;
 
 /**
  * 
- * @TableName chapter
+ * @TableName lesson_link_user
  */
-@TableName(value ="chapter")
+@TableName(value ="lesson_link_user")
 @Data
-public class Chapter implements Serializable {
+public class LessonLinkUser implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long chapterId;
+    private Long lluId;
 
     /**
      * 
@@ -28,12 +27,7 @@ public class Chapter implements Serializable {
     /**
      * 
      */
-    private Integer chapterOrder;
-
-    /**
-     * 
-     */
-    private String chapterTitle;
+    private Long userId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -49,21 +43,19 @@ public class Chapter implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        Chapter other = (Chapter) that;
-        return (this.getChapterId() == null ? other.getChapterId() == null : this.getChapterId().equals(other.getChapterId()))
+        LessonLinkUser other = (LessonLinkUser) that;
+        return (this.getLluId() == null ? other.getLluId() == null : this.getLluId().equals(other.getLluId()))
             && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()))
-            && (this.getChapterOrder() == null ? other.getChapterOrder() == null : this.getChapterOrder().equals(other.getChapterOrder()))
-            && (this.getChapterTitle() == null ? other.getChapterTitle() == null : this.getChapterTitle().equals(other.getChapterTitle()));
+            && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getChapterId() == null) ? 0 : getChapterId().hashCode());
+        result = prime * result + ((getLluId() == null) ? 0 : getLluId().hashCode());
         result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
-        result = prime * result + ((getChapterOrder() == null) ? 0 : getChapterOrder().hashCode());
-        result = prime * result + ((getChapterTitle() == null) ? 0 : getChapterTitle().hashCode());
+        result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         return result;
     }
 
@@ -73,10 +65,9 @@ public class Chapter implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", chapterId=").append(chapterId);
+        sb.append(", lluId=").append(lluId);
         sb.append(", lessonId=").append(lessonId);
-        sb.append(", chapterOrder=").append(chapterOrder);
-        sb.append(", chapterTitle=").append(chapterTitle);
+        sb.append(", userId=").append(userId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

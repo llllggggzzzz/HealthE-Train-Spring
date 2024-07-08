@@ -1,7 +1,7 @@
 package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.Star;
+import com.conv.HealthETrain.domain.POJP.Star;
 import com.conv.HealthETrain.service.StarService;
 import com.conv.HealthETrain.mapper.StarMapper;
 import org.springframework.stereotype.Service;

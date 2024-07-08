@@ -1,7 +1,9 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.Comment;
+import com.conv.HealthETrain.domain.POJP.Comment;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -10,4 +12,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CommentService extends IService<Comment> {
 
+    List<Comment> getCommentsBySectionId(Long id);
 }

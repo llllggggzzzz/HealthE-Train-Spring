@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.POJP;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -9,26 +8,26 @@ import lombok.Data;
 
 /**
  * 
- * @TableName quiz
+ * @TableName lesson_link_category
  */
-@TableName(value ="quiz")
+@TableName(value ="lesson_link_category")
 @Data
-public class Quiz implements Serializable {
+public class LessonLinkCategory implements Serializable {
     /**
      * 
      */
     @TableId
-    private Long quizId;
+    private Long llcId;
 
     /**
      * 
      */
-    private Long chapterId;
+    private Long lessonId;
 
     /**
      * 
      */
-    private Long paperId;
+    private Long categoryId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -44,19 +43,19 @@ public class Quiz implements Serializable {
         if (getClass() != that.getClass()) {
             return false;
         }
-        Quiz other = (Quiz) that;
-        return (this.getQuizId() == null ? other.getQuizId() == null : this.getQuizId().equals(other.getQuizId()))
-            && (this.getChapterId() == null ? other.getChapterId() == null : this.getChapterId().equals(other.getChapterId()))
-            && (this.getPaperId() == null ? other.getPaperId() == null : this.getPaperId().equals(other.getPaperId()));
+        LessonLinkCategory other = (LessonLinkCategory) that;
+        return (this.getLlcId() == null ? other.getLlcId() == null : this.getLlcId().equals(other.getLlcId()))
+            && (this.getLessonId() == null ? other.getLessonId() == null : this.getLessonId().equals(other.getLessonId()))
+            && (this.getCategoryId() == null ? other.getCategoryId() == null : this.getCategoryId().equals(other.getCategoryId()));
     }
 
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((getQuizId() == null) ? 0 : getQuizId().hashCode());
-        result = prime * result + ((getChapterId() == null) ? 0 : getChapterId().hashCode());
-        result = prime * result + ((getPaperId() == null) ? 0 : getPaperId().hashCode());
+        result = prime * result + ((getLlcId() == null) ? 0 : getLlcId().hashCode());
+        result = prime * result + ((getLessonId() == null) ? 0 : getLessonId().hashCode());
+        result = prime * result + ((getCategoryId() == null) ? 0 : getCategoryId().hashCode());
         return result;
     }
 
@@ -66,9 +65,9 @@ public class Quiz implements Serializable {
         sb.append(getClass().getSimpleName());
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
-        sb.append(", quizId=").append(quizId);
-        sb.append(", chapterId=").append(chapterId);
-        sb.append(", paperId=").append(paperId);
+        sb.append(", llcId=").append(llcId);
+        sb.append(", lessonId=").append(lessonId);
+        sb.append(", categoryId=").append(categoryId);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();
