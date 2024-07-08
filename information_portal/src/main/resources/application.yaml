@@ -2,10 +2,10 @@ server:
   port: 8500
 spring:
   application:
-    name: information_portal
+    name: information-portal
   mail:
-    host: stmp.163.com
-    port: 465
+    host: smtp.163.com
+    port: 25
     username: b1427099101@163.com
     password: WYNTLOGCHWLDKJDZ
     from: b1427099101@163.com
@@ -57,3 +57,9 @@ seata:
     vgroup-mapping:
       #这里也要注意 key为映射名
       default: default
+healthe:
+  jwt:
+    location: classpath:healthe.jks
+    alias: healthe
+    password: healthe
+    tokenTTL: 10

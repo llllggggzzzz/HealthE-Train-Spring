@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.enums;
 
 
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +32,7 @@ public enum ResponseCode {
     SERVICE_UNAVAILABLE(503, "服务不可用"),
     GATEWAY_TIMEOUT(504, "网关超时");
 
+    @JsonValue
     private final Integer code;
     private final String message;
 

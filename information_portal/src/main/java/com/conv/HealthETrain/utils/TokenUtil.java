@@ -15,8 +15,6 @@ import cn.hutool.jwt.signers.JWTSignerUtil;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
-import okhttp3.internal.http2.ErrorCode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -43,7 +41,7 @@ public class TokenUtil {
 
     public String createToken(Long userId, Duration ttl) {
         // 1.生成jws
-        return JWT .create()
+        return JWT.create()
                 .setPayload("user", userId)
                 .setExpiresAt(new Date(System.currentTimeMillis() + ttl.toMillis()))
                 .setSigner(jwtSigner)
