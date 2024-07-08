@@ -1,6 +1,7 @@
 package com.conv.HealthETrain;
 
 
+import com.conv.HealthETrain.client.InformationPortalClient;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -12,7 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 @SpringBootApplication
 @LoadBalancerClients
 @MapperScan("com.conv.HealthETrain.mapper")
-@EnableFeignClients
+@EnableFeignClients(clients = {InformationPortalClient.class})
 @EnableDiscoveryClient
 public class TraningAndLearningApplication {
     public static void main(String[] args) {

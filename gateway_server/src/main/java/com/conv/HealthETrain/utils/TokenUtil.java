@@ -15,6 +15,8 @@ import cn.hutool.jwt.signers.JWTSignerUtil;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.internal.http2.ErrorCode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.File;
@@ -39,7 +41,7 @@ public class TokenUtil {
         this.jwtSigner = JWTSignerUtil.createSigner("rs256", keyPair);
     }
 
-    public String getToken(Long userId, Duration ttl) {
+    public String createToken(Long userId, Duration ttl) {
         // 1.生成jws
         return JWT.create()
                 .setPayload("user", userId)
@@ -82,7 +84,7 @@ public class TokenUtil {
         try {
         } catch (RuntimeException e) {
             // 数据格式有误
-//            throw new UnauthorizedException("无效的token");
+            throw new GlobalException("无效的token", ExceptionCode.UNAUTHORIZED);
         }
         return Long.valueOf(userPayload.toString());
     }

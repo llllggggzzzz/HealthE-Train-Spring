@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@RequestMapping("/study")
+@RequestMapping("/api/v1/study")
 @AllArgsConstructor
 @Slf4j
 public class LessonController {

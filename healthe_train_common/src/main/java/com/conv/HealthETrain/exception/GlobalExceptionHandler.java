@@ -29,6 +29,8 @@ public class GlobalExceptionHandler {
 //        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
 //    }
 
+    // TODO 登录注册异常处理
+
     @Data
     @AllArgsConstructor
     public static class ErrorResponse {

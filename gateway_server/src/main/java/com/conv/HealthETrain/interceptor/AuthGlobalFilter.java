@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
@@ -25,6 +26,7 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
 
     private final AuthProperties authProperties;
     private final TokenUtil tokenUtil;
+    private final AntPathMatcher antPathMatcher = new AntPathMatcher();
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -66,6 +68,12 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
     }
 
     public boolean isExclude(String path) {
+        for (String pathPattern : authProperties.getExcludePaths()) {
+            if (antPathMatcher.match(pathPattern, path)) {
+                return true;
+            }
+        }
+
         return false;
     }
 }
