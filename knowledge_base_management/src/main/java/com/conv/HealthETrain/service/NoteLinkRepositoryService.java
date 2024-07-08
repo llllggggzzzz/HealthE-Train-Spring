@@ -1,7 +1,10 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.domain.NoteLinkRepository;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -9,5 +12,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:51:31
 */
 public interface NoteLinkRepositoryService extends IService<NoteLinkRepository> {
+    List<NoteLinkRepository> findNoteLinkRepositoryListByRepositoryId(Long repositoryId);
+    Boolean addNoteLinkRepository(NoteLinkRepository noteLinkRepository);
 
+    NoteLinkRepository findNoteLinkRepositoryByNoteId(Long noteId);
 }

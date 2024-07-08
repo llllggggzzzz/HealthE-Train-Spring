@@ -77,5 +77,11 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.conv.HealthETrain</groupId>
+            <artifactId>healthe_train_api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -2,6 +2,7 @@ package com.conv.HealthETrain.interceptor;
 
 import com.conv.HealthETrain.config.AuthProperties;
 import com.conv.HealthETrain.exception.GlobalException;
+import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;

@@ -11,10 +11,12 @@
             <result property="userId" column="user_id" jdbcType="BIGINT"/>
             <result property="time" column="time" jdbcType="TIMESTAMP"/>
             <result property="type" column="type" jdbcType="INTEGER"/>
+            <result property="visibility" column="visibility" jdbcType="INTEGER"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         note_id,note_content,note_title,
-        user_id,time,type
+        user_id,time,type,
+        visibility
     </sql>
 </mapper>
