@@ -67,6 +67,7 @@ public class UserController {
 
         return ApiResponse.error(ResponseCode.BAD_REQUEST);
     }
+
     /**
      * 用户注册接口
      * @param registerUser
@@ -94,5 +95,10 @@ public class UserController {
         userStatistic.setStudentType(studentType);
         userStatistic.setTeacherType(teacherType);
         return ApiResponse.success(ResponseCode.SUCCEED,"成功",userStatistic);
+    }
+
+    @GetMapping("/{id}")
+    public User getUserInfo(@PathVariable("id") Long id) {
+        return userService.getById(id);
     }
 }

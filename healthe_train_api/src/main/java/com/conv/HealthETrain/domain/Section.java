@@ -1,4 +1,4 @@
-package com.conv.HealthETrain.domain.POJP;
+package com.conv.HealthETrain.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
