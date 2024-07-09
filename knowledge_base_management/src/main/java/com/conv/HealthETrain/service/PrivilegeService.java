@@ -2,7 +2,6 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.Privilege;
 import com.baomidou.mybatisplus.extension.service.IService;
-import org.springframework.security.core.parameters.P;
 
 /**
 * @author flora

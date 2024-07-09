@@ -48,6 +48,14 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer>
     }
 
     @Override
+    public Boolean subLikesOfAnswer(Long answerId) {
+        UpdateWrapper<Answer> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("answer_id", answerId)
+                .setSql("likes = likes - 1");
+        return answerMapper.update(updateWrapper) > 0;
+    }
+
+    @Override
     public List<Answer> findAnswerListByAskId(Long askId) {
         QueryWrapper<Answer> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ask_id", askId);

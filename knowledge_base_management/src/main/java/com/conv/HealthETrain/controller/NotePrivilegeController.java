@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.controller;
 
-import com.conv.HealthETrain.client.UserClient;
+import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.conv.HealthETrain.enums.ResponseCode.NOT_FOUND;
-import static com.conv.HealthETrain.enums.ResponseCode.NOT_MODIFIED;
+import static com.conv.HealthETrain.enums.ResponseCode.*;
 import static com.conv.HealthETrain.enums.VisibilityCode.*;
 
 @RestController
@@ -24,7 +23,7 @@ public class NotePrivilegeController {
     private final UserRepositoryPrivilegeService userRepositoryPrivilegeService;
     private final PrivilegeService privilegeService;
     private final NoteService noteService;
-    private final UserClient userClient;
+    private final InformationPortalClient informationPortalClient;
 
     /**
      * @Description: 查询用户的note权限
@@ -72,12 +71,13 @@ public class NotePrivilegeController {
      * @Description: 修改用户userId自己笔记的全局权限,
      * 先验证visibility后验证privilegeId,可以设置全局私有、可读、读写
      * visibility：0 私有 1 局部公开 2 全局公开
+     * privilege 的id,1为可读，2为读写，-1无权限
      * @Param:
      * @return:
      * @Author: flora
      * @Date: 2024/7/8
      */
-    @PutMapping("/editAll/{noteId}/{visibility}/{privilegeId}}")
+    @PutMapping("/editAll/{noteId}/{visibility}/{privilegeId}")
     public ApiResponse<Boolean> updateNotePrivilegeToAll(
             @PathVariable Long noteId,
             @PathVariable int visibility,
@@ -94,84 +94,72 @@ public class NotePrivilegeController {
                     log.info("设置笔记" + noteId + "为私有成功");
                     return ApiResponse.success(true);
                 } else {
-                    log.info("删除权限列表用户失败或者没有用户");
-                    return ApiResponse.error(NOT_FOUND);
+                    log.info("没有用户");
+                    return ApiResponse.success(NO_CONTENT);
                 }
             } else {
-                log.error("设置笔记权限失败" + noteId);
+                log.error("设置笔记权限1失败" + noteId);
                 return ApiResponse.error(NOT_MODIFIED);
             }
         } else {
             //设置visibility为公开
             Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, V_FULLPUBLIC.getCode());
-            if (isVisibilitySuccess) {
-                log.error("设置笔记权限失败" + noteId);
+            if (!isVisibilitySuccess) {
+                log.error("设置笔记权限2失败" + noteId);
                 return ApiResponse.error(NOT_MODIFIED);
             } else {
                 // 2.添加全部用户到link表里面
                 //修改当前存在在权限表的用户权限
                 Boolean isAvailable = userNotePrivilegeService.updatePrivilegeByNoteId(noteId, privilegeId);
-                if (isAvailable) {
-                    //添加其他用户进入
-                    //从信息门户模块获取全部用户
-                    List<User> userList = userClient.getAllUsers();
-                    List<Long> userIdList = userList.stream().map(User::getUserId).toList();
-                    //修改剩余的权限
-                    Boolean isEdited = userNotePrivilegeService.addUsersToNotePrivilege(noteId, privilegeId, userIdList);
-                    if(isEdited){
-                        log.info("修改文档权限为全局" + privilegeId + "成功");
-                        return ApiResponse.success(true);
-                    }else{
-                        log.info("修改文档权限为全局" + privilegeId + "失败");
-                        //todo 这里如果影响的行就是空呢？
-                        return ApiResponse.error(NOT_MODIFIED);
-                    }
+                //添加其他用户进入
+                //从信息门户模块获取全部用户
+                List<User> userList = informationPortalClient.getAllUsers();
+                List<Long> userIdList = userList.stream().map(User::getUserId).toList();
+                //修改剩余的权限
+                Boolean isEdited = userNotePrivilegeService.addUsersToNotePrivilege(noteId, privilegeId, userIdList);
+                if (isEdited) {
+                    log.info("修改文档权限为全局" + privilegeId + "成功");
+                    return ApiResponse.success(true);
                 } else {
-                    log.info("设置note" + noteId + "全局权限为" + privilegeId + "失败");
+                    log.info("修改文档权限为全局" + privilegeId + "失败");
+                    //todo 这里如果影响的行就是空呢？
                     return ApiResponse.error(NOT_MODIFIED);
                 }
             }
         }
     }
+
     /**
-    * @Description: 修改权限给部分用户，包含分享可读、读写
-    * @Param:
-    * @return:
-    * @Author: flora
-    * @Date: 2024/7/8
-    */
+     * @Description: 修改权限给部分用户，包含分享可读、读写
+     * @Param:
+     * @return:
+     * @Author: flora
+     * @Date: 2024/7/8
+     */
     @PutMapping("/editUserList/{noteId}/{privilegeId}")
     public ApiResponse<Boolean> editUserListPrivilege(
             @PathVariable Long noteId,
             @PathVariable Long privilegeId,
-            @RequestBody List<User> userList){
+            @RequestBody List<User> partUserList) {
+        //todo 后期修改为传userId @RequestBody List<User> userList
         //设置visibility为局部公开
         Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, V_PARTPUBLIC.getCode());
-        if (isVisibilitySuccess) {
+        if (!isVisibilitySuccess) {
             log.error("设置笔记权限失败" + noteId);
             return ApiResponse.error(NOT_MODIFIED);
         } else {
-            // 2.添加全部用户到link表里面
-            //修改当前存在在权限表的用户权限
-            List<UserNotePrivilege> userNotePrivileges = userNotePrivilegeService.findUserNotePrivilegeByNoteId(noteId);
-            List<Long> existUserIdList = userNotePrivileges.stream().map(UserNotePrivilege::getUserId).toList();
-            //修改存在在existUserIdList的权限，剩余的删除
+            // 2.添加部分用户到link表里面
+            List<Long> userIdList = partUserList.stream().map(User::getUserId).toList();
+            //修改存在在userIdList的权限，剩余的删除
             Boolean isAvailable = userNotePrivilegeService.
-                    updateAndDeletePrivilegeByNoteIdAndUserIdList(noteId, privilegeId, existUserIdList);
-            if (isAvailable) {
-                //添加其他用户进入
-                List<Long> userIdList = userList.stream().map(User::getUserId).toList();
-                //修改剩余的权限
-                Boolean isEdited = userNotePrivilegeService.addUsersToNotePrivilege(noteId, privilegeId, userIdList);
-                if(isEdited){
-                    log.info("修改文档权限为部分用户" + privilegeId + "成功");
-                    return ApiResponse.success(true);
-                }else{
-                    log.info("修改文档权限为部分用户" + privilegeId + "失败");
-                    return ApiResponse.error(NOT_MODIFIED);
-                }
+                    updateAndDeletePrivilegeByNoteIdAndUserIdList(noteId, privilegeId, userIdList);
+            // 添加剩余用户进入
+            Boolean isEdited = userNotePrivilegeService.addUsersToNotePrivilege(noteId, privilegeId, userIdList);
+            if (isEdited) {
+                log.info("修改文档权限为部分用户" + privilegeId + "成功");
+                return ApiResponse.success(true);
             } else {
-                log.info("修改文档权限为部分用户" + privilegeId + "失败");
+                log.info("修改文档权限为剩余用户" + privilegeId + "失败或者没有剩余用户");
                 return ApiResponse.error(NOT_MODIFIED);
             }
         }

@@ -18,8 +18,8 @@ public class UserListController {
     private final UserService userService;
 
     @GetMapping("")
-    public ApiResponse<List<User>> getAllUsers(){
+    public List<User> getAllUsers(){
         List<User> userList = userService.getAllUsers();
-        return ApiResponse.success(userList);
+        return userList;
     }
 }

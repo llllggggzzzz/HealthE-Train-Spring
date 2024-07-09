@@ -31,8 +31,8 @@ public class AnswerController {
     */
     @PostMapping("/{askId}")
     public ApiResponse<Boolean> postAnswerOfAsk(@RequestBody Note note, @PathVariable Long askId){
-        Boolean isAddNoteSuccess = noteService.addNoteItem(note);
-        if(isAddNoteSuccess){
+        Long addNoteId = noteService.addNoteItem(note);
+        if(addNoteId != null){
             Answer answer = new Answer();
             answer.setNoteId(note.getNoteId());
             answer.setAskId(askId);

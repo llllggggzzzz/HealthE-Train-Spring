@@ -34,7 +34,7 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note>
     * @Date: 2024/7/8
     */
     @Override
-    public Boolean addNoteItem(Note note) {
+    public Long addNoteItem(Note note) {
         Note newNote = new Note();
         newNote.setNoteTitle(note.getNoteTitle());
         newNote.setNoteContent(note.getNoteContent());
@@ -42,7 +42,8 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note>
         newNote.setVisibility(note.getVisibility());
         newNote.setTime(note.getTime());
         newNote.setUserId(note.getUserId());
-        return noteMapper.insert(newNote) > 0;
+        noteMapper.insert(newNote);
+        return newNote.getNoteId();
     }
 
     @Override

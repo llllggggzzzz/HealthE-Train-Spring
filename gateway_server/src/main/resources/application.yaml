@@ -16,15 +16,19 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/users/**
+            - Path=/users/**, /api/v1/userList/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
           uri: lb://training-and-learning
           predicates:
             - Path=/api/v1/study/**
-#          filters:
-#            - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
+        - id: knowledge-base-management
+          uri: lb://knowledge-base-management
+          predicates:
+            - Path=/api/v1/repository/**, /api/v1/note/**, /api/v1/notePrivilege/**, /api/v1/repositoryPrivilege/**, /api/v1/answer/**, /api/v1/ask/**
+
+
   rabbitmq:
     host: localhost
     port: 5672
@@ -67,8 +71,14 @@ healthe:
   auth:
     exclude-paths:
       - /users/login/**
-      - /api/v1/study/**
       - /study/**
+      - /repository/**
+      - /repositoryPrivilege/**
+      - /note/**
+      - /notePrivilege/**
+      - /answer/**
+      - /ask/**
+      - /userList/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

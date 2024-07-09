@@ -11,7 +11,7 @@ import java.util.List;
 * @createDate 2024-07-08 13:26:13
 */
 public interface NoteService extends IService<Note> {
-   Boolean addNoteItem(Note note);
+   Long addNoteItem(Note note);
    Note findNoteByNoteId(Long noteId);
    Boolean updateNoteVisibility(Long noteId, int visibility);
    List<Note> findFullOpenNoteList();

@@ -1,4 +1,5 @@
 package com.conv.HealthETrain.controller;
+import com.conv.HealthETrain.domain.DTO.NoteDTO;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.domain.NoteLinkRepository;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -30,7 +31,7 @@ public class NoteController {
     * @Author: flora
     * @Date: 2024/7/8
     */
-    @GetMapping("/{repository_id}")
+    @GetMapping("/repository/{repository_id}")
     public ApiResponse<List<Note>> getNoteListByRepositoryId(@PathVariable Long repository_id) {
         // 获取对应连接表的项
         List<NoteLinkRepository> noteLinkRepositoryList = noteLinkRepositoryService.findNoteLinkRepositoryListByRepositoryId(repository_id);
@@ -57,21 +58,22 @@ public class NoteController {
     * @Date: 2024/7/8
     */
     @PostMapping("")
-    public ApiResponse<Boolean> addNote(@RequestBody Note note, NoteLinkRepository noteLinkRepository){
+    public ApiResponse<Boolean> addNote(@RequestBody NoteDTO noteDTO){
         // 添加note的一个item
-        Boolean isAddNoteItemSuccess = noteService.addNoteItem(note);
-        if(isAddNoteItemSuccess){
+        Long addNoteId = noteService.addNoteItem(noteDTO.getNote());
+        if(addNoteId != null){
             // 添加note和repository的关联
-            Boolean isAddLinkSuccess = noteLinkRepositoryService.addNoteLinkRepository(noteLinkRepository);
+            noteDTO.getNoteLinkRepository().setNoteId(addNoteId);
+            Boolean isAddLinkSuccess = noteLinkRepositoryService.addNoteLinkRepository(noteDTO.getNoteLinkRepository());
             if(isAddLinkSuccess){
-                log.info("添加note "+ note.getNoteId() +" 和repository"+ noteLinkRepository.getRepositoryId()+"的关联成功");
+                log.info("添加note "+ addNoteId +" 和repository"+ noteDTO.getNoteLinkRepository().getRepositoryId()+"的关联成功");
                 return ApiResponse.success(true);
             }else{
-                log.info("添加note "+ note.getNoteId() +" 和repository"+ noteLinkRepository.getRepositoryId()+"的关联不成功");
+                log.info("添加note "+ addNoteId +" 和repository"+ noteDTO.getNoteLinkRepository().getRepositoryId()+"的关联不成功");
                 return ApiResponse.error(NOT_IMPLEMENTED);
             }
         }else{
-            log.info("添加noteItem不成功，ID为" + note.getNoteId());
+            log.info("添加noteItem不成功");
             return ApiResponse.error(NOT_IMPLEMENTED);
         }
     }
@@ -82,7 +84,7 @@ public class NoteController {
     * @Author: flora
     * @Date: 2024/7/8
     */
-    @GetMapping("/{noteId}")
+    @GetMapping("/noteItem/{noteId}")
     public ApiResponse<Note> getNoteByNoteId(@PathVariable Long noteId){
         Note note = noteService.findNoteByNoteId(noteId);
         if(note != null){

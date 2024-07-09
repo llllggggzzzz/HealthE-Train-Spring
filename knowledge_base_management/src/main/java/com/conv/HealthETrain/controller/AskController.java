@@ -31,8 +31,8 @@ public class AskController {
     */
     @PostMapping("")
     public ApiResponse<Boolean> postNewAsk(@RequestBody Note note){
-        Boolean isAddNoteSuccess = noteService.addNoteItem(note);
-        if(isAddNoteSuccess){
+        Long addNoteId = noteService.addNoteItem(note);
+        if(addNoteId != null){
             Ask newAsk = new Ask();
             newAsk.setNoteId(note.getNoteId());
             Boolean isAddAskSuccess = askService.addOneAsk(newAsk);
