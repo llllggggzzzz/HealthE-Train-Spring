@@ -23,18 +23,14 @@ supportsPartialMessages ：是否支持分片消息。（
  */
 @Slf4j
 @Component
+@AllArgsConstructor
 public class VideoSocketHandler extends TextWebSocketHandler {
     //所有连接的集合
     private static final Map<String, WebSocketSession> SESSIONS = new ConcurrentHashMap<>();
 
-    private static final int videoChunkSize = 1024;
+    private static final int videoChunkSize = 1024 * 1024 * 15;
 
-    private RabbitMQSender rabbitMQSender;
-
-    @Autowired
-    public void setRabbitMQSender(RabbitMQSender rabbitMQSender) {
-        this.rabbitMQSender = rabbitMQSender;
-    }
+    private final RabbitMQSender rabbitMQSender;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -44,15 +40,14 @@ public class VideoSocketHandler extends TextWebSocketHandler {
         log.info("成功建立连接-UUID: {}", key);
         // 开始发送消息
         log.info("开始发送数据");
-        ByteUtil.readBytes(path, videoChunkSize, rabbitMQSender);
+        ByteUtil.readBytes(path, videoChunkSize, rabbitMQSender, key);
     }
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         String msg = message.getPayload().toString();
-        System.out.println(msg);
-        String userName = session.getAttributes().get("userName").toString();
-        sendMessage(userName,"服务器收到消息收到"+userName+"发送的消息，消息内容为："+msg);
+        String key = session.getAttributes().get("key").toString();
+        sendMessage(key,"服务器收到消息收到"+key+"发送的消息，消息内容为："+msg);
     }
 
     @Override
@@ -70,8 +65,8 @@ public class VideoSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        String userName = session.getAttributes().get("userName").toString();
-        System.out.println(userName + "的连接已关闭,status:" + closeStatus);
+        String uuid = session.getAttributes().get("key").toString();
+        log.info("{}的连接已关闭,status:{}", uuid, closeStatus);
     }
 
     @Override
@@ -104,11 +99,11 @@ public class VideoSocketHandler extends TextWebSocketHandler {
 
     /**
      * @description 发送字节流给客户端
-     * @param userId 用户id表示
+     * @param uuid 表示唯一用户
      * @param data
      */
-    public static void sendBinaryMessage(String userId, byte[] data) {
-        WebSocketSession webSocketSession = SESSIONS.get(userId);
+    public static void sendBinaryMessage(String uuid, byte[] data) {
+        WebSocketSession webSocketSession = SESSIONS.get(uuid);
         if (webSocketSession == null || !webSocketSession.isOpen()) return;
         try {
             webSocketSession.sendMessage(new BinaryMessage(data));

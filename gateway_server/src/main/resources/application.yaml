@@ -16,15 +16,17 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/users/**
+            - Path=/api/v1/users/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
           uri: lb://training-and-learning
           predicates:
-            - Path=/api/v1/study/**
-#          filters:
-#            - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
+            - Path=/api/v1/comment/**, /api/v1/study/**
+        - id: training-learning-video
+          uri: lb://training-learning-video
+          predicates:
+            - Path=/api/v1/video/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -48,6 +50,10 @@ spring:
         initial-interval: 200ms # 间隔重连时间
         multiplier: 1 # 等待时间增长倍数
         max-attempts: 3 # 最大请求次数
+  security:
+    user:
+      name: user
+      password: 123
 seata:
   tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
   registry:
@@ -65,11 +71,13 @@ healthe:
   auth:
     exclude-paths:
       - /users/login/**
-      - /api/v1/study/**
       - /study/**
+      - /comment/**
+      - /video/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
     alias: healthe
     password: healthe
     tokenTTL: 10m
+

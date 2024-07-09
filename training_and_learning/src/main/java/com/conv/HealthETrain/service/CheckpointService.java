@@ -10,4 +10,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface CheckpointService extends IService<Checkpoint> {
 
+    Checkpoint getCheckpointBySectionId(Long sectionId, Long userId);
 }

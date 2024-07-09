@@ -8,6 +8,12 @@ spring:
     url: jdbc:mysql://111.231.136.188:3306/training_and_learning
     username: code
     password: 410782
+  security:
+    user:
+      name: user
+      password: 123
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   cloud:
     nacos:
       discovery:

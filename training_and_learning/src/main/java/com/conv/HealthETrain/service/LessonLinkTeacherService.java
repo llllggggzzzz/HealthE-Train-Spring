@@ -12,5 +12,5 @@ import java.util.List;
 */
 public interface LessonLinkTeacherService extends IService<LessonLinkTeacher> {
 
-    public List<Long> getTeachersByLessonId(Long lessonIds);
+     List<Long> getTeachersByLessonId(Long lessonIds);
 }

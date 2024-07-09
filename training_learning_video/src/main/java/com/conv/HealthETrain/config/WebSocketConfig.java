@@ -3,6 +3,8 @@ package com.conv.HealthETrain.config;
 
 import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.controller.VideoSocketHandler;
+import com.conv.HealthETrain.mq.RabbitMQSender;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.server.ServerHttpRequest;
@@ -12,18 +14,16 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-
-import java.net.URI;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 @Configuration
 @EnableWebSocket
 @Slf4j
+@AllArgsConstructor
 public class WebSocketConfig implements WebSocketConfigurer {
+
+    private final RabbitMQSender rabbitMQSender;
 
     private static Map<String, String> parseQueryString(String query) {
         Map<String, String> queryParams = new HashMap<>();
@@ -44,7 +44,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new VideoSocketHandler(), "/video")
+        registry.addHandler(new VideoSocketHandler(rabbitMQSender), "/video")
                 //设置处理类和连接路径
                 .setAllowedOrigins("*") //设置作用域
                 .addInterceptors(new MyWebSocketInterceptor());//设置拦截器
@@ -60,9 +60,11 @@ public class WebSocketConfig implements WebSocketConfigurer {
         public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
             String query = request.getURI().getQuery();
             String key = StrUtil.emptyIfNull(parseQueryString(query).get("key"));
+            String path = StrUtil.emptyIfNull(parseQueryString(query).get("path"));
             String hostAddress = request.getRemoteAddress().getAddress().getHostAddress();
             log.info("检测到客户端连接: {}, Key:{}", hostAddress, key);
             attributes.put("key", key);
+            attributes.put("path", path);
             return true;
         }
 
