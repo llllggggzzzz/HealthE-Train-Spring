@@ -71,4 +71,9 @@ public class UserController {
 
         return ApiResponse.success();
     }
+
+    @GetMapping("/test")
+    public ApiResponse<Object> test() {
+        return ApiResponse.success();
+    }
 }
