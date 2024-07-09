@@ -86,7 +86,7 @@ public class UserController {
 
     // 统计网站用户人数以及类型
     @GetMapping("/statistic")
-    public ApiResponse<UserStatistic> statistic(){
+    public ApiResponse<UserStatistic> getUserStatistic(){
         UserStatistic userStatistic = new UserStatistic();
         Map<String,Integer> studentType = userLinkCategoryService.countStudentsByCategory();
         Map<String,Integer> teacherType = teacherDetailService.countTeachersByQualification();
