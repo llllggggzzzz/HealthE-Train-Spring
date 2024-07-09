@@ -31,6 +31,7 @@
         <module>gateway_server</module>
         <module>healthe_train_api</module>
         <module>healthe_train_common</module>
+        <module>background</module>
     </modules>
     <scm>
         <connection/>

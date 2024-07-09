@@ -1,0 +1,52 @@
+server:
+  port: 8750
+spring:
+  application:
+    name: background
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        dashboard: localhost:8849
+      http-method-specify: true
+  rabbitmq:
+    host: localhost
+    port: 5672
+    virtual-host: /
+    username: rabbitmq
+    password: rabbitmq
+    listener:
+      direct:
+        prefetch: 1
+        acknowledge-mode: auto
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          multiplier: 1
+          max-attempts: 3
+          stateless: false
+    connection-timeout: 1s
+    template:
+      retry:
+        enabled: true
+        initial-interval: 200ms # 间隔重连时间
+        multiplier: 1 # 等待时间增长倍数
+        max-attempts: 3 # 最大请求次数
+seata:
+  tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
+  registry:
+    type: nacos
+    nacos:
+      server-addr: 127.0.0.1:8848
+      group: SEATA_GROUP
+      application: seata-server
+  service:
+    vgroup-mapping:
+      #这里也要注意 key为映射名
+      default: default
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: assign_id
