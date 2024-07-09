@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.lang.Console;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
@@ -29,7 +30,7 @@ public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherM
         LambdaQueryWrapper<LessonLinkTeacher> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(LessonLinkTeacher::getLessonId, lessonId).select(LessonLinkTeacher::getTdId);
         List<LessonLinkTeacher> lessonLinkTeachers = lessonLinkTeacherMapper.selectList(lambdaQueryWrapper);
-        return CollUtil.map(lessonLinkTeachers, LessonLinkTeacher::getLessonId, true);
+        return CollUtil.getFieldValues(lessonLinkTeachers, "tdId", Long.class);
     }
 }
 
