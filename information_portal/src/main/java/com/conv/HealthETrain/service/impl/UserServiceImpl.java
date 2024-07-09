@@ -34,6 +34,14 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         List<User> userList = userMapper.selectList(null);
         return userList;
     }
+
+    @Override
+    public User getUser(Long userId) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return userMapper.selectOne(queryWrapper);
+    }
+
     private final CodeUtil codeUtil;
     private final MailUtil mailUtil;
     private final UserMapper userMapper;

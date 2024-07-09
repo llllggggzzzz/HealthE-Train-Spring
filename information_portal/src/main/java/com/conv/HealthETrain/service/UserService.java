@@ -11,7 +11,8 @@ import java.util.List;
 * @createDate 2024-07-05 17:56:52
 */
 public interface UserService extends IService<User> {
-    List<User> getAllUsers();
+     List<User> getAllUsers();
+     User getUser(Long userId);
      String loginByAccount(User loginUser);
 
      String loginByPhone(User loginUser);

@@ -1,19 +1,8 @@
 server:
-  port: 8200
+  port: 8750
 spring:
   application:
-    name: training-and-learning
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://111.231.136.188:3306/training_and_learning
-    username: code
-    password: 410782
-  security:
-    user:
-      name: user
-      password: 123
-  autoconfigure:
-    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
+    name: background
   cloud:
     nacos:
       discovery:

@@ -1,6 +1,8 @@
 server:
   port: 8500
 spring:
+  autoconfigure:
+    exclude: org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration
   application:
     name: information-portal
   mail:
@@ -15,6 +17,7 @@ spring:
     username: code
     password: 410782
   cloud:
+
     nacos:
       discovery:
         server-addr: localhost:8848

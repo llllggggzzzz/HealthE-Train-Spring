@@ -19,4 +19,7 @@ public interface InformationPortalClient {
 
     @GetMapping("/userList")
     List<User> getAllUsers();
+
+    @GetMapping("/userList/{id}")
+    User getUser(@PathVariable Long id);
 }

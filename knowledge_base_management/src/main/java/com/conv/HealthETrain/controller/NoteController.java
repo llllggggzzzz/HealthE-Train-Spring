@@ -1,5 +1,7 @@
 package com.conv.HealthETrain.controller;
+import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.NoteDTO;
+import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.domain.NoteLinkRepository;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -23,6 +25,7 @@ public class NoteController {
 
     private final NoteService noteService;
     private final NoteLinkRepositoryService noteLinkRepositoryService;
+    private final InformationPortalClient informationPortalClient;
 
     /**
     * @Description: 获取对应知识库的note
@@ -32,18 +35,21 @@ public class NoteController {
     * @Date: 2024/7/8
     */
     @GetMapping("/repository/{repository_id}")
-    public ApiResponse<List<Note>> getNoteListByRepositoryId(@PathVariable Long repository_id) {
+    public ApiResponse<List<NoteInfoDTO>> getNoteListByRepositoryId(@PathVariable Long repository_id) {
         // 获取对应连接表的项
         List<NoteLinkRepository> noteLinkRepositoryList = noteLinkRepositoryService.findNoteLinkRepositoryListByRepositoryId(repository_id);
-        List<Note> noteList = new ArrayList<>();
+        List<NoteInfoDTO> noteInfoDTOList = new ArrayList<>();
         if(noteLinkRepositoryList != null){
             for (NoteLinkRepository noteLinkRepository: noteLinkRepositoryList){
                 Long noteId = noteLinkRepository.getNoteId();
                 Note note = noteService.findNoteByNoteId(noteId);
-                noteList.add(note);
+                Long userId = note.getUserId();
+                String userName = informationPortalClient.getUser(userId).getUsername();
+                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName);
+                noteInfoDTOList.add(noteInfoDTO);
             }
-            log.info("获取知识库笔记成功，noteList为 "+ noteList);
-            return ApiResponse.success(noteList);
+            log.info("获取知识库笔记成功，noteInfoDTOList为 "+ noteInfoDTOList);
+            return ApiResponse.success(noteInfoDTOList);
         }else{
             log.info("该知识库无笔记");
             return ApiResponse.success();
@@ -115,11 +121,18 @@ public class NoteController {
     * @Date: 2024/7/8
     */
     @GetMapping("/open")
-    public ApiResponse<List<Note>> getFullOpenNoteList(){
+    public ApiResponse<List<NoteInfoDTO>> getFullOpenNoteList(){
         List<Note> noteList = noteService.findFullOpenNoteList();
+        List<NoteInfoDTO> noteInfoDTOList = new ArrayList<>();
         if(noteList != null){
+            for(Note note: noteList){
+                Long userId = note.getUserId();
+                String userName = informationPortalClient.getUser(userId).getUsername();
+                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName);
+                noteInfoDTOList.add(noteInfoDTO);
+            }
             log.info("获取全局公开笔记成功");
-            return ApiResponse.success(noteList);
+            return ApiResponse.success(noteInfoDTOList);
         }else{
             log.error("获取全局公开笔记失败");
             return ApiResponse.error(NOT_FOUND);

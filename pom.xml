@@ -31,6 +31,7 @@
         <module>gateway_server</module>
         <module>healthe_train_api</module>
         <module>healthe_train_common</module>
+        <module>background</module>
     </modules>
     <scm>
         <connection/>
@@ -103,6 +104,12 @@
                 <groupId>net.logstash.logback</groupId>
                 <artifactId>logstash-logback-encoder</artifactId>
                 <version>6.6</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-websocket</artifactId>
+                <version>3.3.1</version>
             </dependency>
 
             <dependency>

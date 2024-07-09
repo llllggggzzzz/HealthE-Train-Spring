@@ -5,23 +5,21 @@ import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ChapterDTO;
 import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
 import com.conv.HealthETrain.domain.POJP.Chapter;
+import com.conv.HealthETrain.domain.POJP.Checkpoint;
 import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.conv.HealthETrain.domain.POJP.Section;
 import com.conv.HealthETrain.domain.TeacherDetail;
+import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/study")
@@ -43,6 +41,8 @@ public class LessonController {
 
     private final SectionService sectionService;
 
+    private final CheckpointService checkpointService;
+
 
     /**
      * @description 根据课程列表查询DTO并返回，提取为私有方法共多个方法使用
@@ -58,14 +58,13 @@ public class LessonController {
             Lesson lesson = lessonService.getById(lessonId);
             if (lesson == null) {
                 // 查询不到课程信息，直接跳过其他查询
-                log.error("查询到用户选课,课程ID: {}，但未查询到课程信息", lessonId);
+                log.error("未查询到课程信息 - 课程ID: {}", lessonId);
                 continue;
             }
             // 2. 查lesson_link_teacher, 得到教师id
             List<Long> teachersByLessonId = lessonLinkTeacherService.getTeachersByLessonId(lessonId);
             // 3. 根据教师id 得到教师姓名, 返回教师姓名 进行openfeign调用
-            List<String> teacherNames = ListUtil.empty();
-
+            List<String> teacherNames = CollUtil.newArrayList();
             for (Long teacherId : teachersByLessonId) {
                 TeacherDetail teacherDetail = informationPortalClient.getTeacherDetailById(teacherId);
                 if (teacherDetail != null) {
@@ -100,6 +99,22 @@ public class LessonController {
         return ApiResponse.success(lessonInfoDTOS);
     }
 
+
+    /**
+     * @description 查询课程信息,在课程界面初始化时使用
+     * @param id 课程ID
+     * @return 返回课程信息
+     */
+    @GetMapping("/lesson/{id}/info")
+    public ApiResponse<List<LessonInfoDTO>> getLessonInfo(@PathVariable("id") Long id) {
+        ArrayList<Long> list = CollUtil.newArrayList();
+        list.add(id);
+        List<LessonInfoDTO> lessonInfoDTOS = getLessonInfoDTOS(list);
+        // 5. 返回
+        log.info("查询到课程: {}", lessonInfoDTOS.get(0).toString());
+        return ApiResponse.success(lessonInfoDTOS);
+    }
+
     /**
      * @description 查询最近访问
      * @param id 用户id
@@ -121,7 +136,8 @@ public class LessonController {
      * @return List<ChapterDTO> 返回对应DTO
      */
     @GetMapping("/lesson/{id}")
-    public ApiResponse<List<ChapterDTO>> getLessonDetail(@PathVariable("id") Long id) {
+    public ApiResponse<List<ChapterDTO>> getLessonDetail(@PathVariable("id") Long id,
+                                                         @RequestParam(value = "user", required = false) Long userId) {
         List<Chapter> chapters = chapterService.getChaptersByLessonId(id);
         // 根据章节信息查询课程
         if (chapters.isEmpty()) {
@@ -130,14 +146,33 @@ public class LessonController {
         }
 
         List<ChapterDTO> chapterDTOS = CollUtil.newArrayList();
-
+        log.info("查询到章节: {}", chapters);
         // 根据章信息查询section信息
         for (Chapter chapter: chapters) {
             ChapterDTO chapterDTO = new ChapterDTO();
             chapterDTO.setChapter(chapter);
             List<Section> sections = sectionService.getSectionsByChapterId(chapter.getChapterId());
+            List<SectionCheckVO> sectionCheckVOStream = sections.stream().map(section -> {
+                SectionCheckVO vo = new SectionCheckVO();
+                vo.setSection(section);
+                return vo;
+            }).toList();
+            chapterDTO.setSectionCheckVOS(sectionCheckVOStream);
             if(!sections.isEmpty()) {
-                chapterDTO.setSections(sections);
+                // 用户未登陆,不查询课程进度
+                if (userId == null) {
+                    // 不做处理
+                } else {
+                    // 将拥有检查点的信息加入checkpoint
+                    for (SectionCheckVO sectionCheckVO: sectionCheckVOStream) {
+                        // 查询checkpoint
+                        Checkpoint checkpoint = checkpointService.getCheckpointBySectionId(sectionCheckVO.getSection().getSectionId(), userId);
+                        if(checkpoint != null) {
+                            sectionCheckVO.setCheckpoint(checkpoint);
+                        }
+                    }
+                }
+
             } else {
                 log.warn("章节: {} 未设置Section", chapter.getChapterId());
             }
