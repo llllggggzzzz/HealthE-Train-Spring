@@ -14,6 +14,5 @@ import java.util.List;
 public interface NoteLinkRepositoryService extends IService<NoteLinkRepository> {
     List<NoteLinkRepository> findNoteLinkRepositoryListByRepositoryId(Long repositoryId);
     Boolean addNoteLinkRepository(NoteLinkRepository noteLinkRepository);
-
     NoteLinkRepository findNoteLinkRepositoryByNoteId(Long noteId);
 }

@@ -118,6 +118,13 @@ public class UserNotePrivilegeServiceImpl extends ServiceImpl<UserNotePrivilegeM
 
         return updateSuccess && deleteCount > 0;
     }
+
+    @Override
+    public List<UserNotePrivilege> findUserNotePrivilegeByUserId(Long userId) {
+        QueryWrapper<UserNotePrivilege> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return userNotePrivilegeMapper.selectList(queryWrapper);
+    }
 }
 
 

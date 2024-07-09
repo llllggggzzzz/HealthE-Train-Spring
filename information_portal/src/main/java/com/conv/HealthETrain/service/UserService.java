@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,4 +23,5 @@ public interface UserService extends IService<User> {
      boolean verifyEmail(User loginUser, String code);
 
      boolean register(User registerUser);
+     List<User> getSearchUserList(String username);
 }

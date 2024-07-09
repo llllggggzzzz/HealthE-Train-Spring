@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
@@ -116,6 +117,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         int result = userMapper.insert(registerUser);
 
         return result > 0;
+    }
+
+    @Override
+    public List<User> getSearchUserList(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("username", username);
+        return userMapper.selectList(queryWrapper);
     }
 }
 

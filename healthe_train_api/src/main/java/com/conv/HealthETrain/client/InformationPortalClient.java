@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.client;
 
 
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -22,4 +23,5 @@ public interface InformationPortalClient {
 
     @GetMapping("/userList/{id}")
     User getUser(@PathVariable Long id);
+
 }

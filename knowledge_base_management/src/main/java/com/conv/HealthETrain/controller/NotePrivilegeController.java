@@ -2,12 +2,15 @@ package com.conv.HealthETrain.controller;
 
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.*;
+import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.conv.HealthETrain.enums.ResponseCode.*;
@@ -140,7 +143,7 @@ public class NotePrivilegeController {
     public ApiResponse<Boolean> editUserListPrivilege(
             @PathVariable Long noteId,
             @PathVariable Long privilegeId,
-            @RequestBody List<User> partUserList) {
+            @RequestBody List<UserDTO> partUserList) {
         //todo 后期修改为传userId @RequestBody List<User> userList
         //设置visibility为局部公开
         Boolean isVisibilitySuccess = noteService.updateNoteVisibility(noteId, V_PARTPUBLIC.getCode());
@@ -149,7 +152,7 @@ public class NotePrivilegeController {
             return ApiResponse.error(NOT_MODIFIED);
         } else {
             // 2.添加部分用户到link表里面
-            List<Long> userIdList = partUserList.stream().map(User::getUserId).toList();
+            List<Long> userIdList = partUserList.stream().map(UserDTO::getUserId).toList();
             //修改存在在userIdList的权限，剩余的删除
             Boolean isAvailable = userNotePrivilegeService.
                     updateAndDeletePrivilegeByNoteIdAndUserIdList(noteId, privilegeId, userIdList);
@@ -162,6 +165,37 @@ public class NotePrivilegeController {
                 log.info("修改文档权限为剩余用户" + privilegeId + "失败或者没有剩余用户");
                 return ApiResponse.error(NOT_MODIFIED);
             }
+        }
+    }
+    /**
+    * @Description: 获取共享空间的笔记
+     * 共享空间需要首先获取自己note里面visibility为1 的笔记
+     * 其次还要获取user_note_privilege里面userId为自己的noteID
+    * @Param:
+    * @return: 
+    * @Author: flora
+    * @Date: 2024/7/10
+    */
+    @GetMapping("/shareRoom/{userId}")
+    public ApiResponse<List<NoteInfoDTO>> getShareRoomNoteList(@PathVariable Long userId){
+        List<Note> myPartSharedNoteList = noteService.getMySharedNoteList(userId);
+        List<UserNotePrivilege> extraList = userNotePrivilegeService.findUserNotePrivilegeByUserId(userId);
+        List<Long> noteIdList = extraList.stream().map(UserNotePrivilege::getNoteId).toList();
+        List<Note> extraNoteList = noteService.findNoteListByNoteIdList(noteIdList);
+        myPartSharedNoteList.addAll(extraNoteList);
+        List<NoteInfoDTO> noteInfoDTOList = new ArrayList<>();
+        for(Note note: myPartSharedNoteList){
+            String username = informationPortalClient.getUser(note.getUserId()).getUsername();
+            String cover = informationPortalClient.getUser(note.getUserId()).getCover();
+            NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, username, cover);
+            noteInfoDTOList.add(noteInfoDTO);
+        }
+        if(noteInfoDTOList != null){
+            log.info("获取" + userId + "的共享空间成功！");
+            return ApiResponse.success(noteInfoDTOList);
+        }else{
+            log.info("获取失败");
+            return ApiResponse.error(NOT_FOUND);
         }
     }
 }

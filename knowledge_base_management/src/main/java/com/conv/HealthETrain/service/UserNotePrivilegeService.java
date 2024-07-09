@@ -18,6 +18,7 @@ public interface UserNotePrivilegeService extends IService<UserNotePrivilege> {
     Boolean addUsersToNotePrivilege(Long noteId, Long privilegeId, List<Long> userIdList);
     List<UserNotePrivilege> findUserNotePrivilegeByNoteId(Long noteId);
     Boolean updateAndDeletePrivilegeByNoteIdAndUserIdList(Long noteId, Long privilegeId, List<Long> userIdList);
+    List<UserNotePrivilege> findUserNotePrivilegeByUserId(Long userId);
 
 
 }

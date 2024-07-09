@@ -15,5 +15,8 @@ public interface NoteService extends IService<Note> {
    Note findNoteByNoteId(Long noteId);
    Boolean updateNoteVisibility(Long noteId, int visibility);
    List<Note> findFullOpenNoteList();
+   Boolean updateNote(Long noteId, Note note);
+   List<Note> getMySharedNoteList(Long userId);
+   List<Note> findNoteListByNoteIdList(List<Long> noteIdList);
 
 }

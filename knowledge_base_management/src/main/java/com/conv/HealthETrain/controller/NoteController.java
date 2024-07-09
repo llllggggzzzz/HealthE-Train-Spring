@@ -2,20 +2,26 @@ package com.conv.HealthETrain.controller;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.NoteDTO;
 import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
+import com.conv.HealthETrain.domain.DTO.RecentNoteDTO;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.domain.NoteLinkRepository;
+import com.conv.HealthETrain.domain.RecentFile;
+import com.conv.HealthETrain.domain.Repository;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.NoteLinkRepositoryService;
 import com.conv.HealthETrain.service.NoteService;
+import com.conv.HealthETrain.service.RecentFileService;
+import com.conv.HealthETrain.utils.ConfigUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.conv.HealthETrain.enums.ResponseCode.NOT_FOUND;
-import static com.conv.HealthETrain.enums.ResponseCode.NOT_IMPLEMENTED;
+import static com.conv.HealthETrain.enums.ResponseCode.*;
+import static com.conv.HealthETrain.utils.ImageUploadHandler.uploadBase64ToGitHub;
 
 @RestController
 @AllArgsConstructor
@@ -26,6 +32,7 @@ public class NoteController {
     private final NoteService noteService;
     private final NoteLinkRepositoryService noteLinkRepositoryService;
     private final InformationPortalClient informationPortalClient;
+    private final RecentFileService recentFileService;
 
     /**
     * @Description: 获取对应知识库的note
@@ -45,7 +52,8 @@ public class NoteController {
                 Note note = noteService.findNoteByNoteId(noteId);
                 Long userId = note.getUserId();
                 String userName = informationPortalClient.getUser(userId).getUsername();
-                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName);
+                String cover = informationPortalClient.getUser(userId).getCover();
+                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName, cover);
                 noteInfoDTOList.add(noteInfoDTO);
             }
             log.info("获取知识库笔记成功，noteInfoDTOList为 "+ noteInfoDTOList);
@@ -83,6 +91,25 @@ public class NoteController {
             return ApiResponse.error(NOT_IMPLEMENTED);
         }
     }
+    /**
+    * @Description: 更新note的内容
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/9
+    */
+    @PutMapping("/{noteId}")
+    public ApiResponse<Boolean> updateNote(@PathVariable Long noteId, @RequestBody Note note){
+        Boolean isSuccess = noteService.updateNote(noteId, note);
+        if(isSuccess){
+            log.info("更新笔记"+ noteId +"成功");
+            return ApiResponse.success(true);
+        }else{
+            log.info("更新笔记"+ noteId +"失败");
+            return ApiResponse.error(NOT_MODIFIED);
+        }
+    }
+
     /**
     * @Description: 获取对应noteId的Note
     * @Param:
@@ -128,7 +155,8 @@ public class NoteController {
             for(Note note: noteList){
                 Long userId = note.getUserId();
                 String userName = informationPortalClient.getUser(userId).getUsername();
-                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName);
+                String cover = informationPortalClient.getUser(userId).getCover();
+                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, userName, cover);
                 noteInfoDTOList.add(noteInfoDTO);
             }
             log.info("获取全局公开笔记成功");
@@ -137,5 +165,57 @@ public class NoteController {
             log.error("获取全局公开笔记失败");
             return ApiResponse.error(NOT_FOUND);
         }
+    }
+
+    /**
+    * @Description: 获取最近访问的笔记
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/10
+    */
+
+    @GetMapping("/recent/{userId}")
+    public ApiResponse<List<RecentNoteDTO>> getRecentFile(@PathVariable Long userId){
+        List<RecentFile> recentFileList = recentFileService.getRecentFile(userId);
+        List<Long> recentNoteIdList = recentFileList.stream().map(RecentFile::getNoteId).toList();
+        List<RecentNoteDTO> recentNoteDTOList = new ArrayList<>();
+        for(Long noteId : recentNoteIdList){
+            Note note = noteService.findNoteByNoteId(noteId);
+            NoteLinkRepository noteLinkRepository = noteLinkRepositoryService.findNoteLinkRepositoryByNoteId(noteId);
+            String username = informationPortalClient.getUser(note.getUserId()).getUsername();
+            String cover = informationPortalClient.getUser(note.getUserId()).getCover();
+            RecentNoteDTO recentNoteDTO = new RecentNoteDTO(note, noteLinkRepository, username, cover);
+            recentNoteDTOList.add(recentNoteDTO);
+        }
+        log.info("获取用户" + userId + "的最近访问成功");
+        return ApiResponse.success(recentNoteDTOList);
+
+    }
+    /**
+    * @Description: 将笔记里面图片上传到github图床
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/9
+    */
+    @PostMapping("/uploadImage")
+    public ApiResponse<String> uploadImage(@RequestBody String base64EncoderFile){
+        // 设置参数
+        String token = ConfigUtil.getImgSaveToken();
+        String repo = ConfigUtil.getImgSaveRepo();
+        String pathPrefix = ConfigUtil.getImgSaveFolder();
+        String fileEncode = base64EncoderFile;
+        String commitMessage = "上传图片到图床";
+
+        String imageUrl = uploadBase64ToGitHub(token, repo, pathPrefix, fileEncode, commitMessage);
+        if(imageUrl != null){
+            log.info("上传图片" + imageUrl + "成功");
+            return ApiResponse.success(imageUrl);
+        }else{
+            log.info("上传图片失败");
+            return ApiResponse.error(NOT_IMPLEMENTED);
+        }
+
     }
 }

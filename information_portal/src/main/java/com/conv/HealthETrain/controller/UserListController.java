@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.controller;
 
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.UserService;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 @RestController
 @RequestMapping("/userList")
@@ -29,4 +32,18 @@ public class UserListController {
         return userService.getUser(userId);
     }
 
+    @GetMapping("/search/{username}")
+    public ApiResponse<List<UserDTO>> getSearchUser(@PathVariable String username){
+        List<User> userList = userService.getSearchUserList(username);
+        List<UserDTO> userDTOList = userList
+                .stream()
+                .map(user -> new UserDTO(
+                        user.getUserId(),
+                        user.getAccount(),
+                        user.getUsername(),
+                        user.getCover()
+                        ))
+                .toList();
+        return ApiResponse.success(userDTOList);
+    }
 }
