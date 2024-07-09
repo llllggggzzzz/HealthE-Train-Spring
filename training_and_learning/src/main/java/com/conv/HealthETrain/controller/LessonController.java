@@ -5,9 +5,9 @@ import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ChapterDTO;
 import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
 import com.conv.HealthETrain.domain.POJP.Chapter;
-import com.conv.HealthETrain.domain.POJP.Checkpoint;
+import com.conv.HealthETrain.domain.Checkpoint;
 import com.conv.HealthETrain.domain.POJP.Lesson;
-import com.conv.HealthETrain.domain.POJP.Section;
+import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("/study")
@@ -180,6 +179,18 @@ public class LessonController {
         }
 
         return ApiResponse.success(chapterDTOS);
+    }
+
+
+    @GetMapping("/section/{id}")
+    public Section getSectionInfo(@PathVariable("id") Long id) {
+        return sectionService.getById(id);
+    }
+
+    @GetMapping("/checkpoint/{sectionId}/user/{userId}")
+    public Checkpoint getCheckPoint(@PathVariable("sectionId") Long sectionId,
+                                    @PathVariable("userId") Long userId) {
+        return checkpointService.getCheckpointBySectionId(sectionId, userId);
     }
 
 }

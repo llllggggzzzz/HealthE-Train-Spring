@@ -1,7 +1,6 @@
 package com.conv.HealthETrain.domain.DTO;
 
 import com.conv.HealthETrain.domain.POJP.Chapter;
-import com.conv.HealthETrain.domain.POJP.Section;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
