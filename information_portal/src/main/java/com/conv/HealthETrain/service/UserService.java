@@ -2,6 +2,10 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author john
@@ -18,4 +22,5 @@ public interface UserService extends IService<User> {
      boolean verifyEmail(User loginUser, String code);
 
      boolean register(User registerUser);
+
 }

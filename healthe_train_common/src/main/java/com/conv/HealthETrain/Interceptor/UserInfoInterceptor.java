@@ -16,7 +16,6 @@ public class UserInfoInterceptor implements HandlerInterceptor {
         if (StrUtil.isNotBlank(header)) {
              UserContext.setUser(Long.parseLong(header));
         }
-
         return true;
     }
 
