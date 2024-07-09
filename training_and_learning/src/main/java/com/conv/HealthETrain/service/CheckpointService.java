@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.POJP.Checkpoint;
+import com.conv.HealthETrain.domain.Checkpoint;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

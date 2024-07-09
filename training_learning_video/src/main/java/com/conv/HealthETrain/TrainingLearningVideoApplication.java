@@ -1,4 +1,5 @@
 package com.conv.HealthETrain;
+import com.conv.HealthETrain.client.LessonClient;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.SpringApplication;
@@ -12,7 +13,7 @@ import org.springframework.context.annotation.Bean;
 @SpringBootApplication
 @LoadBalancerClients
 @MapperScan("com.conv.HealthETrain.mapper")
-@EnableFeignClients
+@EnableFeignClients(clients = {LessonClient.class})
 @EnableDiscoveryClient
 public class TrainingLearningVideoApplication {
     public static void main(String[] args) {

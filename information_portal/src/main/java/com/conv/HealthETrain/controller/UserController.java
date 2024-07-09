@@ -76,4 +76,9 @@ public class UserController {
     public ApiResponse<Object> test() {
         return ApiResponse.success();
     }
+
+    @GetMapping("/{id}")
+    public User getUserInfo(@PathVariable("id") Long id) {
+        return userService.getById(id);
+    }
 }

@@ -2,7 +2,7 @@ package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.POJP.Checkpoint;
+import com.conv.HealthETrain.domain.Checkpoint;
 import com.conv.HealthETrain.service.CheckpointService;
 import com.conv.HealthETrain.mapper.CheckpointMapper;
 import lombok.AllArgsConstructor;
