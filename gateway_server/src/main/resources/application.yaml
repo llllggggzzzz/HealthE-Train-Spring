@@ -74,6 +74,7 @@ healthe:
       - /study/**
       - /comment/**
       - /video/**
+      - /admins/login/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

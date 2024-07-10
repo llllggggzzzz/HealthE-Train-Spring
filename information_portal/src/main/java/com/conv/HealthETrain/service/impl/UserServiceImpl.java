@@ -4,8 +4,10 @@ import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.domain.UserLinkCategory;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
+import com.conv.HealthETrain.mapper.UserLinkCategoryMapper;
 import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
 import com.conv.HealthETrain.utils.CodeUtil;
@@ -14,6 +16,10 @@ import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
 * @author john
@@ -100,6 +106,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
 
         return result > 0;
     }
+
 }
 
 

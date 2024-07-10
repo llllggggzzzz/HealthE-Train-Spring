@@ -4,6 +4,7 @@ import cn.hutool.core.collection.ListUtil;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ChapterDTO;
 import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
+import com.conv.HealthETrain.domain.DTO.LessonStatistic;
 import com.conv.HealthETrain.domain.POJP.Chapter;
 import com.conv.HealthETrain.domain.Checkpoint;
 import com.conv.HealthETrain.domain.POJP.Lesson;
@@ -11,6 +12,7 @@ import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
+import com.conv.HealthETrain.mapper.LessonLinkCategoryMapper;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
@@ -41,6 +43,8 @@ public class LessonController {
     private final SectionService sectionService;
 
     private final CheckpointService checkpointService;
+
+    private final LessonLinkCategoryService lessonLinkCategoryService;
 
 
     /**
@@ -193,4 +197,15 @@ public class LessonController {
         return checkpointService.getCheckpointBySectionId(sectionId, userId);
     }
 
+
+    // 统计选修和必修的课程总数以及细分为七类课程的情况。
+    @GetMapping("/lesson/statistic")
+    public ApiResponse<LessonStatistic> getLessonStatistic(){
+        LessonStatistic lessonStatistic = new LessonStatistic();
+        lessonStatistic.setCompulsory(lessonLinkCategoryService.countStudentsByLessonType(1));
+        lessonStatistic.setElective(lessonLinkCategoryService.countStudentsByLessonType(0));
+        lessonStatistic.setCompulsoryType(lessonLinkCategoryService.countCategoriesByLessonType(1));
+        lessonStatistic.setElectiveType(lessonLinkCategoryService.countCategoriesByLessonType(0));
+        return  ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonStatistic);
+    }
 }
