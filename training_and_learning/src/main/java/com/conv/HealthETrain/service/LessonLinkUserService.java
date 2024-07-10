@@ -12,4 +12,7 @@ import java.util.List;
 */
 public interface LessonLinkUserService extends IService<LessonLinkUser> {
     public List<Long> getChooesdLessons(Long user_id);
+
+    // 实现查询某位学生所修必修课的总section数量
+    public int getSectionCountsByUserId(Long userId);
 }

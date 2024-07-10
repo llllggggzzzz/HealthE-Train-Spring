@@ -2,6 +2,7 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
@@ -22,5 +23,11 @@ public interface UserService extends IService<User> {
      boolean verifyEmail(User loginUser, String code);
 
      boolean register(User registerUser);
+
+     // 查询用户基本情况以及教师类别和权限类别
+     List<UserDetailDTO> getAllUsersWithDetails();
+
+     // 查询所有用户
+     List<User> findStudentUserList();
 
 }
