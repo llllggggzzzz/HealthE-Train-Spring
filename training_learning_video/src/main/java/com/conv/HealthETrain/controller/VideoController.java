@@ -13,11 +13,9 @@ import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.VideoService;
 import com.conv.HealthETrain.utils.UniqueIdGenerator;
 import lombok.AllArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -30,6 +28,8 @@ public class VideoController {
     private final VideoService videoService;
 
     private final LessonClient lessonClient;
+
+    private final VideoSocketHandler videoSocketHandler;
 
     @GetMapping("/{id}/user/{userId}")
     public ApiResponse<VideoLoadDTO> startLoadVideo(@PathVariable("id") Long id, @PathVariable("userId") Long userId) throws IOException, ExecutionException, InterruptedException {
@@ -48,6 +48,36 @@ public class VideoController {
         VideoLoadDTO videoLoadDTO = new VideoLoadDTO(video, uuid, section, checkPoint);
         log.info("生成UUID: {}", uuid);
         return ApiResponse.success(videoLoadDTO);
+    }
+
+    /**
+     * @description 读取固定长度,返回给前端
+     * @param uuid websocket标识
+     * @param startByte 起始字节位置
+     * @return 返回结束字节
+     */
+    @SneakyThrows
+    @GetMapping("/chunk/{uuid}")
+    public ApiResponse<Long> getVideoChunk(@PathVariable("uuid") String uuid,
+                                            @RequestParam("startByte") Long startByte,
+                                           @RequestParam("readBytes") Integer readBytes) {
+        Long endByte = videoSocketHandler.sendChunk(uuid, startByte, readBytes);
+        if (endByte == -1) {
+            return ApiResponse.error(ResponseCode.NOT_FOUND);
+        }
+        return ApiResponse.success(endByte);
+    }
+
+    @SneakyThrows
+    @GetMapping("/jump/{uuid}")
+    public ApiResponse<Long> jumpToIndex(@PathVariable("uuid") String uuid,
+                                         @RequestParam("jumpIndex") Long jumpIndexByte,
+                                         @RequestParam("bufferSize") Integer bufferSize) {
+        Long endByte = videoSocketHandler.jumpToIndex(uuid, jumpIndexByte, bufferSize);
+        if (endByte == -1) {
+            return ApiResponse.error(ResponseCode.NOT_FOUND);
+        }
+        return ApiResponse.success(endByte);
     }
 
 

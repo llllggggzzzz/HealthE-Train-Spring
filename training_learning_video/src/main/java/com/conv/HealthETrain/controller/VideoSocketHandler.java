@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.controller;
 
+import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.mq.RabbitMQSender;
 import com.conv.HealthETrain.utils.ByteUtil;
 import com.conv.HealthETrain.utils.UniqueIdGenerator;
@@ -10,8 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
 
 /*
 afterConnectionEstablished ：连接成功后调用。
@@ -27,8 +31,9 @@ supportsPartialMessages ：是否支持分片消息。（
 public class VideoSocketHandler extends TextWebSocketHandler {
     //所有连接的集合
     private static final Map<String, WebSocketSession> SESSIONS = new ConcurrentHashMap<>();
+    private static final Map<String, String> pathMap = new ConcurrentHashMap<>();
 
-    private static final int videoChunkSize = 1024 * 1024 * 15;
+    private static final int videoChunkSize = 1024 * 512; // 每次固定发送500 KB
 
     private final RabbitMQSender rabbitMQSender;
 
@@ -36,11 +41,31 @@ public class VideoSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String key = session.getAttributes().get("key").toString();
         String path = session.getAttributes().get("path").toString();
+        pathMap.put(key, path);
         SESSIONS.put(key, session);
         log.info("成功建立连接-UUID: {}", key);
-        // 开始发送消息
-        log.info("开始发送数据");
-        ByteUtil.readBytes(path, videoChunkSize, rabbitMQSender, key);
+//        log.info("开始发送数据");
+//        ByteUtil.readBytes(path, videoChunkSize, rabbitMQSender, key);
+    }
+
+    public Long sendChunk(String uuid , Long startByte, Integer readBytes) throws IOException, ExecutionException, InterruptedException {
+        log.info("发送块-UUID: {}, startByte: {}, readBytes: {}", uuid, startByte, readBytes);
+        String path = pathMap.get(uuid);
+        if (StrUtil.isBlankOrUndefined(path)) {
+            return -1L;
+        }
+        ByteUtil.readChunkBytes(path, readBytes, rabbitMQSender, uuid, startByte);
+        return startByte + readBytes;
+    }
+
+    public Long jumpToIndex(String uuid , Long byteIndex, Integer bufferSize) throws IOException, ExecutionException, InterruptedException {
+        log.info("跳转至位置-UUID: {}, targetIndex: {}, bufferSize: {}", uuid, byteIndex, bufferSize);
+        String path = pathMap.get(uuid);
+        if (StrUtil.isBlankOrUndefined(path)) {
+            return -1L;
+        }
+        ByteUtil.jumpToIndex(path, bufferSize, rabbitMQSender, uuid, byteIndex);
+        return byteIndex;
     }
 
     @Override
