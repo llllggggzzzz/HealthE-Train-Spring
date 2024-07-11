@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.ChapterStatistic;
 import com.conv.HealthETrain.domain.POJP.Chapter;
 import com.baomidou.mybatisplus.extension.service.IService;
 

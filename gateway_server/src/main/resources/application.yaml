@@ -31,7 +31,7 @@ spring:
           uri: lb://knowledge-base-management
           predicates:
             - Path=/api/v1/repository/**, /api/v1/note/**, /api/v1/notePrivilege/**, /api/v1/repositoryPrivilege/**, /api/v1/answer/**, 
-                 /api/v1/ask/**, /api/v1/noteLinkRepository/**, /api/v1/recentFile/**
+                 /api/v1/ask/**, /api/v1/noteLinkRepository/**, /api/v1/recentFile/**, /api/v1/ocr/**
 
 
 
@@ -92,6 +92,8 @@ healthe:
       - /video/**
       - /noteLinkRepository/**
       - /recentFile/**
+      - /admins/login/**
+      - /ocr/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

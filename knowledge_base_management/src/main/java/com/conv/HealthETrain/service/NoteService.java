@@ -18,5 +18,6 @@ public interface NoteService extends IService<Note> {
    Boolean updateNote(Long noteId, Note note);
    List<Note> getMySharedNoteList(Long userId);
    List<Note> findNoteListByNoteIdList(List<Long> noteIdList);
+   List<Note> findNoteListByNoteTitle(String title);
 
 }

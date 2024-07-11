@@ -15,5 +15,6 @@ public interface AskService extends IService<Ask> {
     Boolean addOneAsk(Ask ask);
     List<Ask> getAllAsk();
     Ask getAskById(Long askId);
+    Ask getAskByNoteId(Long noteId);
 
 }

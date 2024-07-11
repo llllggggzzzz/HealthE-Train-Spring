@@ -1,7 +1,10 @@
 package com.conv.HealthETrain.controller;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.Answer;
+import com.conv.HealthETrain.domain.DTO.AnswerDTO;
+import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.AnswerService;
@@ -10,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.conv.HealthETrain.enums.ResponseCode.*;
@@ -21,6 +25,7 @@ import static com.conv.HealthETrain.enums.ResponseCode.*;
 public class AnswerController {
     private final AnswerService answerService;
     private final NoteService noteService;
+    private final InformationPortalClient informationPortalClient;
 
     /**
     * @Description: 添加对应提问的回答
@@ -34,7 +39,7 @@ public class AnswerController {
         Long addNoteId = noteService.addNoteItem(note);
         if(addNoteId != null){
             Answer answer = new Answer();
-            answer.setNoteId(note.getNoteId());
+            answer.setNoteId(addNoteId);
             answer.setAskId(askId);
             //初始化为0
             answer.setLikes(0);
@@ -97,14 +102,52 @@ public class AnswerController {
     * @Date: 2024/7/8
     */
     @GetMapping("/{askId}")
-    public ApiResponse<List<Answer>> getAnswerByAskId(@PathVariable Long askId){
+    public ApiResponse<List<AnswerDTO>> getAnswerByAskId(@PathVariable Long askId){
         List<Answer> answerList = answerService.findAnswerListByAskId(askId);
-        if(answerList != null){
+        List<Long> noteIdList = answerList.stream().map(Answer::getNoteId).toList();
+        List<Note> noteList = noteService.findNoteListByNoteIdList(noteIdList);
+        List<AnswerDTO> answerDTOList = new ArrayList<>();
+        for (Answer answer : answerList) {
+            // 查找与当前 answer 关联的 note
+            Note note = noteList.stream()
+                    .filter(n -> n.getNoteId().equals(answer.getNoteId()))
+                    .findFirst()
+                    .orElse(null);
+
+            if (note != null) {
+                String username = informationPortalClient.getUser(note.getUserId()).getUsername();
+                String cover = informationPortalClient.getUser(note.getUserId()).getCover();
+                NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, username, cover);
+
+                // 合并成 AnswerDTO
+                AnswerDTO answerDTO = new AnswerDTO(answer, noteInfoDTO);
+                answerDTOList.add(answerDTO);
+            }
+        }
+        if(answerDTOList != null){
             log.info("获取回答列表成功");
-            return ApiResponse.success(answerList);
+            return ApiResponse.success(answerDTOList);
         }else{
             log.info("回答列表无内容");
             return ApiResponse.success(NO_CONTENT);
+        }
+    }
+    /**
+    * @Description: 获取回答全部的点赞数
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/11
+    */
+    @GetMapping("/likeNum/{answerId}")
+    public ApiResponse<Integer> getLikeNumOfAnswer(@PathVariable Long answerId){
+        Answer answer = answerService.findAnswerByAnswerId(answerId);
+        if(answer != null){
+            log.info("获取到" + answerId + "的点赞数");
+            return ApiResponse.success(answer.getLikes());
+        }else{
+            log.info("未获取到点赞数");
+            return ApiResponse.error(NOT_FOUND);
         }
     }
 }

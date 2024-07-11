@@ -19,12 +19,10 @@ public class User implements Serializable {
      */
     @TableId(type = IdType.ASSIGN_ID)
     private Long userId;
-
     /**
      * 
      */
     private String account;
-
     /**
      * 
      */

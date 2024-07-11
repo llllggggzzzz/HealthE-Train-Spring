@@ -6,8 +6,12 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
 import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.domain.UserLinkCategory;
+import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
+import com.conv.HealthETrain.mapper.UserLinkCategoryMapper;
+import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +19,14 @@ import com.conv.HealthETrain.utils.CodeUtil;
 import com.conv.HealthETrain.utils.MailUtil;
 import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import java.util.List;
 
@@ -50,6 +60,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private final TokenUtil tokenUtil;
     private final JwtProperties jwtProperties;
     private final int codeLen = 6;
+
+    private final UserLinkCategoryMapper userLinkCategoryMapper;
+    private final UserLinkCategoryService userLinkCategoryService;
 
     @Override
     public String loginByAccount(User loginUser) {
@@ -125,6 +138,43 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         queryWrapper.like("username", username);
         return userMapper.selectList(queryWrapper);
     }
+
+    // 查询用户基本情况以及教师类别和权限类别
+    @Override
+    public List<UserDetailDTO> getAllUsersWithDetails() {
+        List<UserDetailDTO> userDetailDTOList = new ArrayList<>();
+        List<User> userList = userMapper.selectList(null);
+        for (User user : userList) {
+            UserDetailDTO userDetailDTO = new UserDetailDTO();
+            BeanUtils.copyProperties(user, userDetailDTO);
+
+            // 默认设置为非教师和无权限出卷人
+            userDetailDTO.setIsTeacher("0");
+            userDetailDTO.setAuthority("0");
+
+            // 根据 userId 在 UserLinkCategory 表中查找对应的信息
+            List<UserLinkCategory> linkList = userLinkCategoryMapper.selectLinkCategoriesByUserId(user.getUserId());
+            for (UserLinkCategory link : linkList) {
+                if (link.getCategoryId() == 9) {
+                    userDetailDTO.setIsTeacher("1");
+                } else if (link.getCategoryId() == 8) {
+                    userDetailDTO.setAuthority("1");
+                }
+                else {
+                    userDetailDTO.setCategoryId(link.getCategoryId());
+                }
+            }
+            userDetailDTOList.add(userDetailDTO);
+        }
+        return userDetailDTOList;
+    }
+
+    // 查询所有学生列表
+    @Override
+    public List<User> findStudentUserList() {
+        return userMapper.findStudentUserList();
+    }
+
 }
 
 

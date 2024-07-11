@@ -23,7 +23,7 @@ public class UserLinkCategory implements Serializable {
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 

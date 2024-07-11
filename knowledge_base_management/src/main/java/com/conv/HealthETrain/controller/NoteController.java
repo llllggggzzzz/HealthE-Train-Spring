@@ -14,8 +14,9 @@ import com.conv.HealthETrain.service.RecentFileService;
 import com.conv.HealthETrain.utils.ConfigUtil;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.web.bind.annotation.*;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ public class NoteController {
     private final NoteLinkRepositoryService noteLinkRepositoryService;
     private final InformationPortalClient informationPortalClient;
     private final RecentFileService recentFileService;
+//    private final NgrokAgentApiClient ngrokAgentApiClient;
 
     /**
     * @Description: 获取对应知识库的note
@@ -218,4 +220,48 @@ public class NoteController {
         }
 
     }
+    /**
+    * @Description: 模糊搜索社区提问的问题
+    * @Param:
+    * @return: 返回List<NoteInfoDTO>
+    * @Author: flora
+    * @Date: 2024/7/11
+    */
+    @GetMapping("/searchQuestion/{query}")
+    public ApiResponse<List<NoteInfoDTO>> getSearchQuestionMatch(@PathVariable String query){
+        List<Note> noteList = noteService.findNoteListByNoteTitle(query);
+        List<NoteInfoDTO> noteInfoDTOList = new ArrayList<>();
+        for(Note note: noteList){
+            String username = informationPortalClient.getUser(note.getUserId()).getUsername();
+            String cover = informationPortalClient.getUser(note.getUserId()).getCover();
+            NoteInfoDTO noteInfoDTO = new NoteInfoDTO(note, username, cover);
+            noteInfoDTOList.add(noteInfoDTO);
+        }
+        if(noteInfoDTOList != null){
+            log.info("获取模糊搜索问题成功！");
+            return ApiResponse.success(noteInfoDTOList);
+        }else{
+            log.info("无此类型问题");
+            return ApiResponse.success();
+        }
+    }
+    /**
+    * @Description: 共享笔记链接
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/12
+    */
+//    @GetMapping("/generate-link")
+//    public ApiResponse<String> generateLink() {
+//        String httpsTunnelUrl = ngrokAgentApiClient.getHttpsTunnelUrl();
+//        String noteUrl = httpsTunnelUrl + "/knowledgeBase";
+//        if(noteUrl != null){
+//            log.info("创建链接成功！");
+//            return ApiResponse.success(noteUrl);
+//        }else{
+//            log.error("创建链接失败");
+//            return ApiResponse.error(NOT_IMPLEMENTED);
+//        }
+//    }
 }

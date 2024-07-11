@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-05 17:56:52
 */
 public interface AdminService extends IService<Admin> {
-
+    String loginByAccountForAdmin(Admin loginAdmin);
 }

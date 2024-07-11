@@ -104,6 +104,13 @@ public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note>
         queryWrapper.in("note_id", noteIdList);
         return noteMapper.selectList(queryWrapper);
     }
+
+    @Override
+    public List<Note> findNoteListByNoteTitle(String title) {
+        QueryWrapper<Note> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("type", 2).like("note_title", title);
+        return noteMapper.selectList(queryWrapper);
+    }
 }
 
 

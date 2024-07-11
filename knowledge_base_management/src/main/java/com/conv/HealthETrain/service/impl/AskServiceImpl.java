@@ -40,6 +40,13 @@ public class AskServiceImpl extends ServiceImpl<AskMapper, Ask>
         queryWrapper.eq("ask_id", askId);
         return askMapper.selectOne(queryWrapper);
     }
+
+    @Override
+    public Ask getAskByNoteId(Long noteId) {
+        QueryWrapper<Ask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("note_id", noteId);
+        return askMapper.selectOne(queryWrapper);
+    }
 }
 
 
