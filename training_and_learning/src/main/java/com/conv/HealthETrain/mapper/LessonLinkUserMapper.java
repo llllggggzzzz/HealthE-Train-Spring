@@ -3,6 +3,7 @@ package com.conv.HealthETrain.mapper;
 import com.conv.HealthETrain.domain.POJP.LessonLinkUser;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.conv.HealthETrain.domain.VO.LessonDetailVO;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
@@ -17,6 +18,10 @@ import java.util.List;
 public interface LessonLinkUserMapper extends BaseMapper<LessonLinkUser> {
     @Select("SELECT lesson_id FROM lesson_link_user WHERE user_id = #{userId}")
     List<Long> getLessonIdsByUserId(@Param("userId") Long userId);
+
+    // 根据课程Id查学生ID列表
+    @Select("SELECT user_id FROM lesson_link_user WHERE lesson_id = #{lessonId}")
+    List<Long> selectUserIdsByLessonId(Long lessonId);
 }
 
 

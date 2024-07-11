@@ -13,7 +13,7 @@ import lombok.Data;
  * @author liusg
  * @TableName exam_question_bank
  */
-@TableName(value ="exam_question_bank")
+@TableName(value ="question_bank")
 @Data
 public class QuestionBank implements Serializable {
     /**

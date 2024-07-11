@@ -16,7 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/api/v1/users/**
+            - Path=/api/v1/users/**,/api/v1/admin/**,/api/v1/userLinkCategory/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -75,6 +75,7 @@ healthe:
       - /comment/**
       - /video/**
       - /admins/login/**
+      - /questionBank/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

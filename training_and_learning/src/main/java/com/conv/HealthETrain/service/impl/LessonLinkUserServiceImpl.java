@@ -70,6 +70,25 @@ public class LessonLinkUserServiceImpl extends ServiceImpl<LessonLinkUserMapper,
         }
         return totalSections;
     }
+
+    // 获取课程内用户Id列表
+    @Override
+    public List<Long> getStudentsIdByLessonId(Long userId) {
+        return lessonLinkUserMapper.selectUserIdsByLessonId(userId);
+    }
+
+    // 删除课内多名学生
+    @Override
+    public boolean deleteLessonStudents(Long lessonId, List<Long> userIdList) {
+        if (lessonId == null || userIdList == null || userIdList.isEmpty()) {
+            return false;
+        }
+        int rowsAffected = lessonLinkUserMapper.delete(new QueryWrapper<LessonLinkUser>()
+                .eq("lesson_id", lessonId)
+                .in("user_id", userIdList));
+
+        return rowsAffected > 0;
+    }
 }
 
 

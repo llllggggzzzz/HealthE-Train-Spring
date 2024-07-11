@@ -2,6 +2,7 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.DTO.LessonCategoryInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonSimpleInfoDTO;
+import com.conv.HealthETrain.domain.DTO.LessonStudentSituationDTO;
 import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.baomidou.mybatisplus.extension.service.IService;
 

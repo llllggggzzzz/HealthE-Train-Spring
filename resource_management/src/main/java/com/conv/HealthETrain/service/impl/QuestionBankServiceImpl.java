@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.QuestionBank;
 import com.conv.HealthETrain.service.QuestionBankService;
 import com.conv.HealthETrain.mapper.QuestionBankMapper;
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -12,9 +15,15 @@ import org.springframework.stereotype.Service;
 * @createDate 2024-07-07 11:52:15
 */
 @Service
+@AllArgsConstructor
 public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, QuestionBank>
     implements QuestionBankService{
 
+    private final QuestionBankMapper questionBankMapper;
+    @Override
+    public List<QuestionBank> getAllQuestionBanks() {
+        return questionBankMapper.selectList(null);
+    }
 }
 
 

@@ -9,6 +9,7 @@ import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -281,5 +283,68 @@ public class LessonController {
             allProcessDTOS.add(allProcessDTO);
         }
         return ApiResponse.success(ResponseCode.SUCCEED,"成功",allProcessDTOS);
+    }
+
+    // 查询某一课程内（不分选修必修）所有学生的每一章节详细进度
+    @GetMapping("/lesson/{id}/processes")
+    public ApiResponse<LessonStudentSituationDTO> getLessonStudentSituations(@PathVariable("id") Long lessonId) {
+        List<Long> userIdList = lessonLinkUserService.getStudentsIdByLessonId(lessonId);
+        if (userIdList == null) {
+            return ApiResponse.error(ResponseCode.NOT_FOUND, "没有学生选这个课");
+        }
+        LessonStudentSituationDTO lessonStudentSituationDTO = new LessonStudentSituationDTO();
+        // 章节列表
+        List<Chapter> chapterList = chapterService.getChaptersByLessonId(lessonId);
+        // 学生状态列表
+        List<StudentProcessDTO> studentProcessDTOList = new ArrayList<>();
+        lessonStudentSituationDTO.setChaptersList(chapterList);
+        // 开始遍历搜索
+        for (Long userId : userIdList) {
+            User user = informationPortalClient.getUserInfo(userId);
+            StudentProcessDTO studentProcessDTO = new StudentProcessDTO();
+            studentProcessDTO.setUserId(userId);
+            studentProcessDTO.setCover(user.getCover());
+            studentProcessDTO.setUsername(user.getUsername());
+            studentProcessDTO.setAccount(user.getAccount());
+            // 课程状态
+            List<ChapterStatusVO> chapterStatusList = new ArrayList<>();
+            for (Chapter chapter : chapterList) {
+                ChapterStatusVO chapterStatus = new ChapterStatusVO();
+                chapterStatus.setChapterId(chapter.getChapterId());
+                // 获取该章节下的所有小节
+                List<Section> sections = sectionService.getSectionsByChapterId(chapter.getChapterId());
+                // 找到该章节的最后一个小节
+                Section lastSection = sections.stream()
+                        .max(Comparator.comparing(Section::getSectionOrder))
+                        .orElse(null);
+                if (lastSection != null) {
+                    // 检查用户在checkpoint中是否有此章节的学习记录
+                    Checkpoint checkpoint = checkpointService.getCheckpointByUserAndLesson(userId, lessonId, chapter.getChapterId());
+                    if (checkpoint != null) {
+                        if (checkpoint.getSectionId().equals(lastSection.getSectionId())) {
+                            chapterStatus.setStatus(1); // 学习完毕
+                        } else {
+                            chapterStatus.setStatus(0); // 学习中
+                        }
+                    } else {
+                        chapterStatus.setStatus(-1); // 未学习
+                    }
+                }
+                chapterStatusList.add(chapterStatus);
+            }
+            // 设置状态并添加
+            studentProcessDTO.setChapterStatus(chapterStatusList);
+            studentProcessDTOList.add(studentProcessDTO);
+        }
+        lessonStudentSituationDTO.setStudentProcessDTOList(studentProcessDTOList);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStudentSituationDTO);
+    }
+    // 删除指定课程的同学（批量删除）
+    @DeleteMapping ("/lesson/{id}/students")
+    public ApiResponse<Object> deleteLessonStudents(@PathVariable("id") Long lessonId,
+                                                    @RequestBody List<Long> userIdList){
+        lessonLinkUserService.deleteLessonStudents(lessonId,userIdList);
+        checkpointService.deleteLessonStudentsCheckpoints(lessonId,userIdList);
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功");
     }
 }
