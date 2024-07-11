@@ -1,18 +1,18 @@
 package com.conv.HealthETrain.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ChapterDTO;
 import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonStatistic;
-import com.conv.HealthETrain.domain.POJP.Chapter;
+import com.conv.HealthETrain.domain.Chapter;
 import com.conv.HealthETrain.domain.Checkpoint;
 import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
-import com.conv.HealthETrain.mapper.LessonLinkCategoryMapper;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
@@ -191,11 +191,42 @@ public class LessonController {
         return sectionService.getById(id);
     }
 
+    @GetMapping("/sections")
+    public List<Section> getAllSection() {
+        return sectionService.list();
+    }
+
+    @GetMapping("/chapter/{id}")
+    public Chapter getChapterInfo(@PathVariable("id") Long id) {
+        return chapterService.getById(id);
+    }
+
+    @GetMapping("/chapters")
+    public List<Chapter> getAllChapter() {
+        return chapterService.list();
+    }
+
+    @GetMapping("/chapter/{chapterId}/section/first")
+    public Section getFirstSectionByChapterId(@PathVariable("chapterId") Long chapterId) {
+        LambdaQueryWrapper<Section> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Section::getChapterId, chapterId)
+                .eq(Section::getSectionOrder, 0);
+        return sectionService.getOne(lambdaQueryWrapper);
+    }
+
     @GetMapping("/checkpoint/{sectionId}/user/{userId}")
     public Checkpoint getCheckPoint(@PathVariable("sectionId") Long sectionId,
                                     @PathVariable("userId") Long userId) {
         return checkpointService.getCheckpointBySectionId(sectionId, userId);
     }
+
+
+    @PostMapping("/checkpoint")
+    public Checkpoint setCheckpoint(@RequestBody Checkpoint checkpoint) {
+        boolean saved = checkpointService.save(checkpoint);
+        return saved ? checkpoint : null;
+    }
+
 
 
     // 统计选修和必修的课程总数以及细分为七类课程的情况。
@@ -208,4 +239,5 @@ public class LessonController {
         lessonStatistic.setElectiveType(lessonLinkCategoryService.countCategoriesByLessonType(0));
         return  ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonStatistic);
     }
+
 }

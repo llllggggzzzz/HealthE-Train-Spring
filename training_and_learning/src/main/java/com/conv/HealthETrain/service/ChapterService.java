@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.POJP.Chapter;
+import com.conv.HealthETrain.domain.Chapter;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
