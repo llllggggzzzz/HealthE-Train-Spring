@@ -1,14 +1,11 @@
 package com.conv.HealthETrain.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
+import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
-import com.conv.HealthETrain.domain.POJP.Chapter;
-import com.conv.HealthETrain.domain.Checkpoint;
 import com.conv.HealthETrain.domain.POJP.Lesson;
-import com.conv.HealthETrain.domain.Section;
-import com.conv.HealthETrain.domain.TeacherDetail;
-import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
@@ -185,9 +182,33 @@ public class LessonController {
         return ApiResponse.success(chapterDTOS);
     }
 
+
     @GetMapping("/section/{id}")
     public Section getSectionInfo(@PathVariable("id") Long id) {
         return sectionService.getById(id);
+    }
+
+    @GetMapping("/sections")
+    public List<Section> getAllSection() {
+        return sectionService.list();
+    }
+
+    @GetMapping("/chapter/{id}")
+    public Chapter getChapterInfo(@PathVariable("id") Long id) {
+        return chapterService.getById(id);
+    }
+
+    @GetMapping("/chapters")
+    public List<Chapter> getAllChapter() {
+        return chapterService.list();
+    }
+
+    @GetMapping("/chapter/{chapterId}/section/first")
+    public Section getFirstSectionByChapterId(@PathVariable("chapterId") Long chapterId) {
+        LambdaQueryWrapper<Section> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Section::getChapterId, chapterId)
+                .eq(Section::getSectionOrder, 0);
+        return sectionService.getOne(lambdaQueryWrapper);
     }
 
     @GetMapping("/checkpoint/{sectionId}/user/{userId}")
@@ -204,6 +225,14 @@ public class LessonController {
         lessonCategoryInfoDTOS = lessonService.getLessonCategoryInfo();
         return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonCategoryInfoDTOS);
     }
+
+    @PostMapping("/checkpoint")
+    public Checkpoint setCheckpoint(@RequestBody Checkpoint checkpoint) {
+        boolean saved = checkpointService.save(checkpoint);
+        return saved ? checkpoint : null;
+    }
+
+
 
     // 统计选修和必修的课程总数以及细分为七类课程的情况。
     @GetMapping("/lesson/statistic")

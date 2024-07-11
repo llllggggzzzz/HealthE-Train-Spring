@@ -43,6 +43,40 @@ public abstract class ConfigUtil {
         }
     }
 
+
+    /**
+     * Gets img save token.
+     *
+     * @return jellyfinKey
+     */
+    public static String getJellyfinApiKey() {
+        String value = properties.getProperty("jellyfin_api_key");
+        if(StrUtil.isBlankOrUndefined(value)) {
+            // 为空或者不存在
+            log.error("无法读取Jellyfin api_key");
+            throw new GlobalException("无法读取Jellyfin api_key", ExceptionCode.JELLYFIN_INIT_ERROR);
+        } else {
+            return value;
+        }
+    }
+
+
+    /**
+     * Gets img save token.
+     *
+     * @return jellyfinKey
+     */
+    public static String getJellyfinCreateJson() {
+        String value = properties.getProperty("jellyfin_create_json");
+        if(StrUtil.isBlankOrUndefined(value)) {
+            // 为空或者不存在
+            log.error("无法读取Jellyfin 创建配置");
+            throw new GlobalException("无法读取Jellyfin 创建配置", ExceptionCode.JELLYFIN_INIT_ERROR);
+        } else {
+            return value;
+        }
+    }
+
     /**
      * Gets img save repo.
      *

@@ -2,15 +2,12 @@ package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.DTO.ChapterStatistic;
-import com.conv.HealthETrain.domain.POJP.Chapter;
-import com.conv.HealthETrain.mapper.CheckpointMapper;
+import com.conv.HealthETrain.domain.Chapter;
 import com.conv.HealthETrain.service.ChapterService;
 import com.conv.HealthETrain.mapper.ChapterMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,8 +21,6 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter>
     implements ChapterService{
 
     private ChapterMapper chapterMapper;
-
-    private CheckpointMapper checkpointMapper;
 
     @Override
     public List<Chapter> getChaptersByLessonId(Long id) {
