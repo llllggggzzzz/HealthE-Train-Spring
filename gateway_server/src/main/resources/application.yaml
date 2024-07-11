@@ -87,6 +87,7 @@ healthe:
       - /users/statistic/**
       - /examQuestion/**
       - /userLinkCategory/**
+      - /users/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
