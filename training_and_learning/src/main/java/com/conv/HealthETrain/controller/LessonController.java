@@ -3,14 +3,10 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
-import com.conv.HealthETrain.domain.DTO.ChapterDTO;
-import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
-import com.conv.HealthETrain.domain.DTO.LessonStatistic;
-import com.conv.HealthETrain.domain.Chapter;
-import com.conv.HealthETrain.domain.Checkpoint;
+import com.conv.HealthETrain.domain.*;
+import com.conv.HealthETrain.domain.DTO.*;
 import com.conv.HealthETrain.domain.POJP.Lesson;
-import com.conv.HealthETrain.domain.Section;
-import com.conv.HealthETrain.domain.TeacherDetail;
+import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -20,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @RestController
@@ -220,6 +217,14 @@ public class LessonController {
         return checkpointService.getCheckpointBySectionId(sectionId, userId);
     }
 
+    // 查询所有课程的基本信息和课程类别
+    @GetMapping("/lesson/statistic/details")
+    public ApiResponse<List<LessonCategoryInfoDTO>> getLessonCategoryInfo()
+    {
+        List<LessonCategoryInfoDTO> lessonCategoryInfoDTOS = new ArrayList<>();
+        lessonCategoryInfoDTOS = lessonService.getLessonCategoryInfo();
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonCategoryInfoDTOS);
+    }
 
     @PostMapping("/checkpoint")
     public Checkpoint setCheckpoint(@RequestBody Checkpoint checkpoint) {
@@ -240,4 +245,135 @@ public class LessonController {
         return  ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonStatistic);
     }
 
+    // 查询所有课程的基本信息[只有封面和名称]，不复用前面的是为了减少联表查询
+    @GetMapping("/lesson/simpleInfo")
+    public ApiResponse<List<LessonSimpleInfoDTO>> getAllLessonSimpleInfo(){
+        List<LessonSimpleInfoDTO> lessonSimpleInfoDTOS = new ArrayList<>();
+        lessonSimpleInfoDTOS = lessonService.getAllSimpleInfo();
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonSimpleInfoDTOS);
+    }
+
+    // 根据课程的id查询chapter信息的List列表以及每个chapter在学的人数
+    @GetMapping("/lesson/{id}/chapterStatistic")
+    public ApiResponse<List<ChapterStatistic>> getChaptersByLessonId(@PathVariable("id") Long lessonId){
+        List<Chapter> chapters = chapterService.getChaptersByLessonId(lessonId);
+        List<ChapterStatistic> chapterStatistics = new ArrayList<>();
+
+        for (Chapter chapter : chapters) {
+            // 获取通过该章节的独立用户数量
+            int userCount = checkpointService.getCountUserByChapterId(chapter.getChapterId());
+            ChapterStatistic statistic = new ChapterStatistic();
+            statistic.setChapter(chapter);
+            statistic.setCount(userCount);
+            chapterStatistics.add(statistic);
+        }
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",chapterStatistics);
+    }
+
+    // 修改特定课程的必修选修类型
+    @PutMapping("/lesson/{id}/{lessonType}")
+    public ApiResponse<String> updateLessonTypeByLessonId(@PathVariable("id") Long lessonId,
+                                                          @PathVariable("lessonType") Integer lessonType)
+    {
+        boolean flag = lessonService.updateLessonType(lessonId,lessonType);
+        if(flag)
+            return ApiResponse.success(ResponseCode.SUCCEED,"成功");
+        else
+            return ApiResponse.error(ResponseCode.NOT_FOUND,"未找到");
+    }
+
+    // 查询用户的必修课学习总进度
+    @GetMapping("/users/lesson/CompulsoryProcess")
+    public ApiResponse<List<AllProcessDTO>> getAllUserCompulsoryLessonProcess()
+    {
+        List<AllProcessDTO> allProcessDTOS = new ArrayList<>();
+        // 先获取学生信息
+        List<User> userList = informationPortalClient.getAllStudentsInfo();
+        System.out.println(userList);
+        for (User user : userList)
+        {
+            AllProcessDTO allProcessDTO = new AllProcessDTO();
+            allProcessDTO.setUsername(user.getUsername());
+            allProcessDTO.setCover(user.getCover());
+            allProcessDTO.setAccount(user.getAccount());
+            allProcessDTO.setUserId(user.getUserId());
+            int learnedSections = checkpointService.countLearnedSectionsByUserId(user.getUserId());
+            int totalSections = lessonLinkUserService.getSectionCountsByUserId(user.getUserId());
+            System.out.println(learnedSections+","+totalSections);
+            if(totalSections==0)
+            {
+                allProcessDTO.setProcessLine(0);
+                allProcessDTO.setProcessLine(0);
+                allProcessDTOS.add(allProcessDTO);
+                continue;
+            }
+            allProcessDTO.setProcessRound(100*learnedSections/totalSections);
+            allProcessDTO.setProcessLine(100*learnedSections/totalSections);
+            allProcessDTOS.add(allProcessDTO);
+        }
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",allProcessDTOS);
+    }
+
+    // 查询某一课程内（不分选修必修）所有学生的每一章节详细进度
+    @GetMapping("/lesson/{id}/processes")
+    public ApiResponse<LessonStudentSituationDTO> getLessonStudentSituations(@PathVariable("id") Long lessonId) {
+        List<Long> userIdList = lessonLinkUserService.getStudentsIdByLessonId(lessonId);
+        if (userIdList == null) {
+            return ApiResponse.error(ResponseCode.NOT_FOUND, "没有学生选这个课");
+        }
+        LessonStudentSituationDTO lessonStudentSituationDTO = new LessonStudentSituationDTO();
+        // 章节列表
+        List<Chapter> chapterList = chapterService.getChaptersByLessonId(lessonId);
+        // 学生状态列表
+        List<StudentProcessDTO> studentProcessDTOList = new ArrayList<>();
+        lessonStudentSituationDTO.setChaptersList(chapterList);
+        // 开始遍历搜索
+        for (Long userId : userIdList) {
+            User user = informationPortalClient.getUserInfo(userId);
+            StudentProcessDTO studentProcessDTO = new StudentProcessDTO();
+            studentProcessDTO.setUserId(userId);
+            studentProcessDTO.setCover(user.getCover());
+            studentProcessDTO.setUsername(user.getUsername());
+            studentProcessDTO.setAccount(user.getAccount());
+            // 课程状态
+            List<ChapterStatusVO> chapterStatusList = new ArrayList<>();
+            for (Chapter chapter : chapterList) {
+                ChapterStatusVO chapterStatus = new ChapterStatusVO();
+                chapterStatus.setChapterId(chapter.getChapterId());
+                // 获取该章节下的所有小节
+                List<Section> sections = sectionService.getSectionsByChapterId(chapter.getChapterId());
+                // 找到该章节的最后一个小节
+                Section lastSection = sections.stream()
+                        .max(Comparator.comparing(Section::getSectionOrder))
+                        .orElse(null);
+                if (lastSection != null) {
+                    // 检查用户在checkpoint中是否有此章节的学习记录
+                    Checkpoint checkpoint = checkpointService.getCheckpointByUserAndLesson(userId, lessonId, chapter.getChapterId());
+                    if (checkpoint != null) {
+                        if (checkpoint.getSectionId().equals(lastSection.getSectionId())) {
+                            chapterStatus.setStatus(1); // 学习完毕
+                        } else {
+                            chapterStatus.setStatus(0); // 学习中
+                        }
+                    } else {
+                        chapterStatus.setStatus(-1); // 未学习
+                    }
+                }
+                chapterStatusList.add(chapterStatus);
+            }
+            // 设置状态并添加
+            studentProcessDTO.setChapterStatus(chapterStatusList);
+            studentProcessDTOList.add(studentProcessDTO);
+        }
+        lessonStudentSituationDTO.setStudentProcessDTOList(studentProcessDTOList);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStudentSituationDTO);
+    }
+    // 删除指定课程的同学（批量删除）
+    @DeleteMapping ("/lesson/{id}/students")
+    public ApiResponse<Object> deleteLessonStudents(@PathVariable("id") Long lessonId,
+                                                    @RequestBody List<Long> userIdList){
+        lessonLinkUserService.deleteLessonStudents(lessonId,userIdList);
+        checkpointService.deleteLessonStudentsCheckpoints(lessonId,userIdList);
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功");
+    }
 }

@@ -16,7 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/api/v1/users/**
+            - Path=/api/v1/users/**,/api/v1/admin/**,/api/v1/userLinkCategory/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -27,6 +27,14 @@ spring:
           uri: lb://training-learning-video
           predicates:
             - Path=/api/v1/video/**
+        - id: resource-management
+          uri: lb://resource-management
+          predicates:
+            - Path=/api/v1/questionBank/**
+        - id: exam-evaluation
+          uri: lb://exam-evaluation
+          predicates:
+            - Path=/api/v1/examQuestion/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -75,6 +83,10 @@ healthe:
       - /comment/**
       - /video/**
       - /admins/login/**
+      - /questionBank/**
+      - /users/statistic/**
+      - /examQuestion/**
+      - /userLinkCategory/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

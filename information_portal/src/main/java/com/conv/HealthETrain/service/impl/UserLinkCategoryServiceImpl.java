@@ -5,7 +5,6 @@ import com.conv.HealthETrain.domain.UserLinkCategory;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.mapper.UserLinkCategoryMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -46,6 +45,11 @@ public class UserLinkCategoryServiceImpl extends ServiceImpl<UserLinkCategoryMap
     @Override
     public int countStudents() {
         return userLinkCategoryMapper.countStudents();
+    }
+
+    @Override
+    public void deleteUserLinkCategory(long userId,int categoryId) {
+        userLinkCategoryMapper.deleteCategoryForUser(userId,categoryId);
     }
 }
 

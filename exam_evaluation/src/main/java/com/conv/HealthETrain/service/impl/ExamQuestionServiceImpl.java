@@ -2,12 +2,16 @@ package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.ExamQuestion;
+import com.conv.HealthETrain.domain.Note;
+import com.conv.HealthETrain.mapper.NoteMapper;
 import com.conv.HealthETrain.service.ExamQuestionService;
 import com.conv.HealthETrain.mapper.ExamQuestionMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +27,7 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
     implements ExamQuestionService{
 
     private final ExamQuestionMapper examQuestionMapper;
+    private final NoteMapper noteMapper;
 
     // 根据题型来统计五类题型的数量
     @Override
@@ -41,6 +46,39 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
             questionCountMap.put(eqTypeId, count);
         }
         return questionCountMap;
+    }
+
+    @Override
+    public List<ExamQuestionStatisticDTO> getExamQuestionsStatisticByQbId(Long qbId) {
+        // 查询所有对应的 ExamQuestion
+        List<ExamQuestion> examQuestions = examQuestionMapper.selectList(new QueryWrapper<ExamQuestion>().eq("qb_id", qbId));
+        // 封装结果到 ExamQuestionStatisticDTO
+        List<ExamQuestionStatisticDTO> examQuestionStatisticDTOS = new ArrayList<>();
+        for (ExamQuestion examQuestion : examQuestions) {
+            ExamQuestionStatisticDTO dto = new ExamQuestionStatisticDTO();
+            dto.setEqId(examQuestion.getEqId());
+            dto.setEqTypeId(examQuestion.getEqTypeId());
+            // 根据 noteId 查询 Note
+            Note note = noteMapper.selectOne(new QueryWrapper<Note>().eq("note_id", examQuestion.getNoteId()));
+            if (note != null) {
+                dto.setNoteContent(note.getNoteContent());
+            }
+            examQuestionStatisticDTOS.add(dto);
+        }
+        return examQuestionStatisticDTOS;
+    }
+
+    // 批量删除
+    @Override
+    public void batchDeleteExamQuestions(Long qbId, List<Long> eqIds) {
+        // 删除 examQuestion 表中对应的试题记录
+        examQuestionMapper.delete(new QueryWrapper<ExamQuestion>()
+                .eq("qb_id", qbId)
+                .in("eq_id", eqIds));
+
+        // 删除 note 表中对应的笔记记录
+        noteMapper.delete(new QueryWrapper<Note>()
+                .in("eq_id", eqIds));
     }
 }
 
