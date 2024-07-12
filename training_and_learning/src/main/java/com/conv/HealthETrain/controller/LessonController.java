@@ -11,13 +11,18 @@ import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/study")
@@ -42,6 +47,10 @@ public class LessonController {
     private final CheckpointService checkpointService;
 
     private final LessonLinkCategoryService lessonLinkCategoryService;
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    private static final ObjectMapper mapper = new ObjectMapper();
 
 
     /**
@@ -219,11 +228,17 @@ public class LessonController {
 
     // 查询所有课程的基本信息和课程类别
     @GetMapping("/lesson/statistic/details")
-    public ApiResponse<List<LessonCategoryInfoDTO>> getLessonCategoryInfo()
-    {
-        List<LessonCategoryInfoDTO> lessonCategoryInfoDTOS = new ArrayList<>();
-        lessonCategoryInfoDTOS = lessonService.getLessonCategoryInfo();
-        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonCategoryInfoDTOS);
+    public ApiResponse<List<LessonCategoryInfoDTO>> getLessonCategoryInfo() throws JsonProcessingException {
+        String cacheKey = "LessonCategoryInfo";
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            List<LessonCategoryInfoDTO> lessonCategoryInfoDTOs = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonCategoryInfoDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonCategoryInfoDTOs);
+        }
+        List<LessonCategoryInfoDTO> lessonCategoryInfoDTOs = lessonService.getLessonCategoryInfo();
+        String jsonData = mapper.writeValueAsString(lessonCategoryInfoDTOs);
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 1, TimeUnit.HOURS);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonCategoryInfoDTOs);
     }
 
     @PostMapping("/checkpoint")
@@ -233,32 +248,56 @@ public class LessonController {
     }
 
 
-
     // 统计选修和必修的课程总数以及细分为七类课程的情况。
     @GetMapping("/lesson/statistic")
-    public ApiResponse<LessonStatistic> getLessonStatistic(){
+    public ApiResponse<LessonStatistic> getLessonStatistic() throws JsonProcessingException {
+        String cacheKey = "lessonStatistic";
+
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            LessonStatistic lessonStatistic = mapper.readValue(cachedData, LessonStatistic.class);
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStatistic);
+        }
+
         LessonStatistic lessonStatistic = new LessonStatistic();
         lessonStatistic.setCompulsory(lessonLinkCategoryService.countStudentsByLessonType(1));
         lessonStatistic.setElective(lessonLinkCategoryService.countStudentsByLessonType(0));
         lessonStatistic.setCompulsoryType(lessonLinkCategoryService.countCategoriesByLessonType(1));
         lessonStatistic.setElectiveType(lessonLinkCategoryService.countCategoriesByLessonType(0));
-        return  ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonStatistic);
+
+        String jsonData = mapper.writeValueAsString(lessonStatistic);
+
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
+
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStatistic);
     }
 
     // 查询所有课程的基本信息[只有封面和名称]，不复用前面的是为了减少联表查询
     @GetMapping("/lesson/simpleInfo")
-    public ApiResponse<List<LessonSimpleInfoDTO>> getAllLessonSimpleInfo(){
-        List<LessonSimpleInfoDTO> lessonSimpleInfoDTOS = new ArrayList<>();
-        lessonSimpleInfoDTOS = lessonService.getAllSimpleInfo();
-        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonSimpleInfoDTOS);
+    public ApiResponse<List<LessonSimpleInfoDTO>> getAllLessonSimpleInfo() throws JsonProcessingException {
+        String cacheKey = "lessonSimpleInfo";
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            List<LessonSimpleInfoDTO> lessonSimpleInfoDTOS = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonSimpleInfoDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonSimpleInfoDTOS);
+        }
+        List<LessonSimpleInfoDTO> lessonSimpleInfoDTOS = lessonService.getAllSimpleInfo();
+        String jsonData = mapper.writeValueAsString(lessonSimpleInfoDTOS);
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonSimpleInfoDTOS);
     }
 
     // 根据课程的id查询chapter信息的List列表以及每个chapter在学的人数
     @GetMapping("/lesson/{id}/chapterStatistic")
-    public ApiResponse<List<ChapterStatistic>> getChaptersByLessonId(@PathVariable("id") Long lessonId){
+    public ApiResponse<List<ChapterStatistic>> getChaptersByLessonId(@PathVariable("id") Long lessonId) throws JsonProcessingException {
+        String cacheKey = "ChapterStatistic:" + lessonId +":No";
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            List<ChapterStatistic> chapterStatistics = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, ChapterStatistic.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", chapterStatistics);
+        }
         List<Chapter> chapters = chapterService.getChaptersByLessonId(lessonId);
         List<ChapterStatistic> chapterStatistics = new ArrayList<>();
-
         for (Chapter chapter : chapters) {
             // 获取通过该章节的独立用户数量
             int userCount = checkpointService.getCountUserByChapterId(chapter.getChapterId());
@@ -267,7 +306,9 @@ public class LessonController {
             statistic.setCount(userCount);
             chapterStatistics.add(statistic);
         }
-        return ApiResponse.success(ResponseCode.SUCCEED,"成功",chapterStatistics);
+        String jsonData = mapper.writeValueAsString(chapterStatistics);
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", chapterStatistics);
     }
 
     // 修改特定课程的必修选修类型
@@ -284,14 +325,17 @@ public class LessonController {
 
     // 查询用户的必修课学习总进度
     @GetMapping("/users/lesson/CompulsoryProcess")
-    public ApiResponse<List<AllProcessDTO>> getAllUserCompulsoryLessonProcess()
-    {
+    public ApiResponse<List<AllProcessDTO>> getAllUserCompulsoryLessonProcess() throws JsonProcessingException {
+        String cacheKey = "userCompulsoryLessonProcess";
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            List<AllProcessDTO> allProcessDTOS = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, AllProcessDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", allProcessDTOS);
+        }
         List<AllProcessDTO> allProcessDTOS = new ArrayList<>();
-        // 先获取学生信息
         List<User> userList = informationPortalClient.getAllStudentsInfo();
         System.out.println(userList);
-        for (User user : userList)
-        {
+        for (User user : userList) {
             AllProcessDTO allProcessDTO = new AllProcessDTO();
             allProcessDTO.setUsername(user.getUsername());
             allProcessDTO.setCover(user.getCover());
@@ -299,35 +343,45 @@ public class LessonController {
             allProcessDTO.setUserId(user.getUserId());
             int learnedSections = checkpointService.countLearnedSectionsByUserId(user.getUserId());
             int totalSections = lessonLinkUserService.getSectionCountsByUserId(user.getUserId());
-            System.out.println(learnedSections+","+totalSections);
-            if(totalSections==0)
-            {
+
+            if (totalSections == 0) {
                 allProcessDTO.setProcessLine(0);
-                allProcessDTO.setProcessLine(0);
-                allProcessDTOS.add(allProcessDTO);
-                continue;
+                allProcessDTO.setProcessRound(0);
+            } else {
+                allProcessDTO.setProcessRound(100 * learnedSections / totalSections);
+                allProcessDTO.setProcessLine(100 * learnedSections / totalSections);
             }
-            allProcessDTO.setProcessRound(100*learnedSections/totalSections);
-            allProcessDTO.setProcessLine(100*learnedSections/totalSections);
+
             allProcessDTOS.add(allProcessDTO);
         }
-        return ApiResponse.success(ResponseCode.SUCCEED,"成功",allProcessDTOS);
+        String jsonData = mapper.writeValueAsString(allProcessDTOS);
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", allProcessDTOS);
     }
 
     // 查询某一课程内（不分选修必修）所有学生的每一章节详细进度
     @GetMapping("/lesson/{id}/processes")
-    public ApiResponse<LessonStudentSituationDTO> getLessonStudentSituations(@PathVariable("id") Long lessonId) {
+    public ApiResponse<LessonStudentSituationDTO> getLessonStudentSituations(@PathVariable("id") Long lessonId) throws JsonProcessingException {
+
+        String cacheKey = "LessonStudentSituation:" +lessonId +":No" ;
+
+        String cachedData = stringRedisTemplate.opsForValue().get(cacheKey);
+        if (cachedData != null) {
+            LessonStudentSituationDTO cachedDto = mapper.readValue(cachedData, LessonStudentSituationDTO.class);
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", cachedDto);
+        }
         List<Long> userIdList = lessonLinkUserService.getStudentsIdByLessonId(lessonId);
         if (userIdList == null) {
             return ApiResponse.error(ResponseCode.NOT_FOUND, "没有学生选这个课");
         }
         LessonStudentSituationDTO lessonStudentSituationDTO = new LessonStudentSituationDTO();
+
         // 章节列表
         List<Chapter> chapterList = chapterService.getChaptersByLessonId(lessonId);
+        lessonStudentSituationDTO.setChaptersList(chapterList);
         // 学生状态列表
         List<StudentProcessDTO> studentProcessDTOList = new ArrayList<>();
-        lessonStudentSituationDTO.setChaptersList(chapterList);
-        // 开始遍历搜索
+        // 便利搜索
         for (Long userId : userIdList) {
             User user = informationPortalClient.getUserInfo(userId);
             StudentProcessDTO studentProcessDTO = new StudentProcessDTO();
@@ -351,21 +405,22 @@ public class LessonController {
                     Checkpoint checkpoint = checkpointService.getCheckpointByUserAndLesson(userId, lessonId, chapter.getChapterId());
                     if (checkpoint != null) {
                         if (checkpoint.getSectionId().equals(lastSection.getSectionId())) {
-                            chapterStatus.setStatus(1); // 学习完毕
+                            chapterStatus.setStatus(1); // Completed
                         } else {
-                            chapterStatus.setStatus(0); // 学习中
+                            chapterStatus.setStatus(0); // In progress
                         }
                     } else {
-                        chapterStatus.setStatus(-1); // 未学习
+                        chapterStatus.setStatus(-1); // Not started
                     }
                 }
                 chapterStatusList.add(chapterStatus);
             }
-            // 设置状态并添加
             studentProcessDTO.setChapterStatus(chapterStatusList);
             studentProcessDTOList.add(studentProcessDTO);
         }
         lessonStudentSituationDTO.setStudentProcessDTOList(studentProcessDTOList);
+        String jsonData = mapper.writeValueAsString(lessonStudentSituationDTO);
+        stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
         return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStudentSituationDTO);
     }
     // 删除指定课程的同学（批量删除）
