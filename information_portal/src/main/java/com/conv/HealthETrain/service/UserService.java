@@ -30,4 +30,7 @@ public interface UserService extends IService<User> {
      // 查询所有用户
      List<User> findStudentUserList();
 
+     // 封装加密方法，把加密后的密码返回
+     String encryption(String password);
+
 }

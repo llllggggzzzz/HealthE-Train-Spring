@@ -62,6 +62,17 @@ spring:
     user:
       name: user
       password: 123
+  data:
+    redis:
+      host: localhost
+      port: 9001
+      password: redis
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 100ms
 seata:
   tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
   registry:
@@ -88,6 +99,7 @@ healthe:
       - /users/statistic/**
       - /examQuestion/**
       - /userLinkCategory/**
+      - /users/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

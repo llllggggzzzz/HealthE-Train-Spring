@@ -13,6 +13,8 @@ import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     private final UserService userService;
     private final TeacherDetailService teacherDetailService;
@@ -126,7 +130,7 @@ public class UserController {
                 // 插入到 User 表中
                 User user = new User();
                 // 统一注册默认密码为123456
-                user.setPassword("123456");
+                user.setPassword(userService.encryption("123456"));
                 user.setUsername(userDetailDTO.getUsername());
                 // 头像无数据，不存储
                 user.setAccount(userDetailDTO.getAccount());
@@ -151,7 +155,7 @@ public class UserController {
                     userLinkCategoryService.save(ulc);
                 }
                 // 如果不是教师并且此类型不是代表出卷人，就表示是专业类型
-                if (!"1".equals(userDetailDTO.getIsTeacher()) && userDetailDTO.getCategoryId() < 8) {
+                if (!"1".equals(userDetailDTO.getIsTeacher()) && userDetailDTO.getCategoryId() < 8 &&userDetailDTO.getCategoryId() >0) {
                     UserLinkCategory ulc = new UserLinkCategory();
                     ulc.setCategoryId(userDetailDTO.getCategoryId());
                     ulc.setUserId(userId);
