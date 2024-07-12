@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

@@ -1,11 +1,13 @@
 package com.conv.HealthETrain.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
 import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.POJP.Star;
 import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
@@ -42,6 +44,8 @@ public class LessonController {
     private final CheckpointService checkpointService;
 
     private final LessonLinkCategoryService lessonLinkCategoryService;
+
+    private final StarService starService;
 
 
     /**
@@ -280,6 +284,27 @@ public class LessonController {
             return ApiResponse.success(ResponseCode.SUCCEED,"成功");
         else
             return ApiResponse.error(ResponseCode.NOT_FOUND,"未找到");
+    }
+
+    /**
+     * @description 对课程进行打分
+     * @param lessonId 课程ID
+     * @param jsonObject 解析的请求体
+     * @return 返回是否存储成功
+     */
+    @PostMapping("/lesson/star/{lessonId}")
+    public ApiResponse<Boolean> starLesson(@PathVariable("lessonId") Long lessonId,
+                                           @RequestBody JSONObject jsonObject) {
+        Long userId = jsonObject.getLong("user_id");
+        Double score = jsonObject.getDouble("score");
+        // 保存评分并返回
+        Star star = new Star();
+        star.setLessonId(lessonId);
+        star.setUserId(userId);
+        star.setScore(score);
+        boolean saved = starService.save(star);
+        return saved ? ApiResponse.success(true) : ApiResponse.error(ResponseCode.GONE);
+
     }
 
     // 查询用户的必修课学习总进度

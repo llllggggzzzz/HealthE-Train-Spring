@@ -104,4 +104,15 @@ public abstract class ConfigUtil {
         }
     }
 
+    public static String getLiveKey() {
+        String value = properties.getProperty("live_key");
+        if(StrUtil.isBlankOrUndefined(value)) {
+            log.error("未寻找到live 密钥");
+            // 为空或者不存在
+            throw new GlobalException("未寻找到live 密钥", ExceptionCode.LIVE_ERROR);
+        } else {
+            return value;
+        }
+    }
+
 }
