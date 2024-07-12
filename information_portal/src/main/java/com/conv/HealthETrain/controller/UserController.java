@@ -13,6 +13,8 @@ import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -28,6 +30,8 @@ import java.util.Map;
 @RequestMapping("/users")
 @Slf4j
 public class UserController {
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
 
     private final UserService userService;
     private final TeacherDetailService teacherDetailService;

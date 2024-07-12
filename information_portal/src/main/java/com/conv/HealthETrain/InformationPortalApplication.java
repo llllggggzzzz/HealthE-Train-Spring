@@ -1,6 +1,5 @@
 package com.conv.HealthETrain;
 
-import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.config.DefaultFeignConfig;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -21,6 +20,4 @@ public class InformationPortalApplication {
     public static void main(String[] args) {
         SpringApplication.run(InformationPortalApplication.class, args);
     }
-
-
 }
