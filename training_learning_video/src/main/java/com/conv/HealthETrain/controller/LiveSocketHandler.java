@@ -60,9 +60,9 @@ public class LiveSocketHandler extends TextWebSocketHandler {
                 GROUPS.put(streamId, webSocketSessions);
             }
         }
-        log.info("SESSIONS: {}", SESSIONS);
-        log.info("GROUPS: {}", GROUPS);
-        log.info("TIMES: {}", TIMES);
+//        log.info("SESSIONS: {}", SESSIONS);
+//        log.info("GROUPS: {}", GROUPS);
+//        log.info("TIMES: {}", TIMES);
         log.info("成功建立连接-userId: {}, streamId: {}", userId, streamId);
     }
 

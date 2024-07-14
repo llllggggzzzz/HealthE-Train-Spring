@@ -20,4 +20,5 @@ public class ApplyLiveDTO {
     private String liveTitle;
     private String livaCover;
     private String liveIntroduction;
+    private String categoryName="";
 }
