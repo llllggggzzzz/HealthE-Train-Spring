@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.LessonDetailMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.POJP.LessonDetail">
+        <id property="ldId" column="llc_id" jdbcType="BIGINT"/>
+        <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
+        <result property="lessonOverview" column="lesson_overview" jdbcType="CLOB"/>
+        <result property="lessonObject" column="lesson_object" jdbcType="CLOB"/>
+        <result property="preliminaryKnowledge" column="preliminary_knowledge" jdbcType="CLOB"/>
+        <result property="lessonMaterial" column="lesson_material" jdbcType="CLOB"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        ld_id, lesson_id, lesson_overview, lesson_object, preliminary_knowledge, lesson_material
+    </sql>
+</mapper>

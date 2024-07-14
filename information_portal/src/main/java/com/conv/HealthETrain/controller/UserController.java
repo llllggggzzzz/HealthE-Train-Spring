@@ -3,14 +3,12 @@ package com.conv.HealthETrain.controller;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
+import com.conv.HealthETrain.domain.dto.TeacherDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserStatistic;
 import com.conv.HealthETrain.enums.ResponseCode;
-import com.conv.HealthETrain.mapper.UserMapper;
 import com.conv.HealthETrain.response.ApiResponse;
-import com.conv.HealthETrain.service.TeacherDetailService;
-import com.conv.HealthETrain.service.UserLinkCategoryService;
-import com.conv.HealthETrain.service.UserService;
+import com.conv.HealthETrain.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
@@ -32,6 +30,9 @@ public class UserController {
     private final UserService userService;
     private final TeacherDetailService teacherDetailService;
     private final UserLinkCategoryService userLinkCategoryService;
+    private final PositionService positionService;
+    private final CategoryService categoryService;
+    private final QualificationService qualificationService;
     /**
      * 用户登录接口
      * @param loginUser
@@ -41,17 +42,9 @@ public class UserController {
         String token = userService.loginByAccount(loginUser);
         HashMap<String, Object> data = new HashMap<>();
         data.put("token", token);
+        data.put("user", userService.getUserByAccount(loginUser.getAccount()));
 
         return ApiResponse.success(data);
-    }
-
-    /**
-     * 用户登录接口
-     * @param loginUser
-     */
-    @PostMapping("/login/phone")
-    public void loginByPhone(@RequestBody User loginUser) {
-        userService.loginByPhone(loginUser);
     }
 
     /**
@@ -60,18 +53,33 @@ public class UserController {
      */
     @PostMapping("/login/email/code")
     public ApiResponse<Object> sendEmailCode(@RequestBody User loginUser) {
-        userService.sendEmailCode(loginUser);
+        boolean result = userService.sendEmailCode(loginUser);
+
+        if (!result) {
+            return ApiResponse.error(ResponseCode.BAD_REQUEST, "邮箱不存在");
+        }
+
         return ApiResponse.success();
     }
 
+    /**
+     * 验证邮箱验证码
+     * @param loginUser
+     * @param code
+     * @return
+     */
     @PostMapping("/login/email/verify/{code}")
-    public ApiResponse<Boolean> verifyEmail(@RequestBody User loginUser, @PathVariable("code") String code) {
-        boolean result = userService.verifyEmail(loginUser, code);
-        if (result) {
-            return ApiResponse.success();
+    public ApiResponse<Object> verifyEmail(@RequestBody User loginUser, @PathVariable("code") String code) {
+        String token = userService.verifyEmail(loginUser, code);
+        if ("".equals(token)) {
+            return ApiResponse.error(ResponseCode.BAD_REQUEST, "验证码错误");
         }
 
-        return ApiResponse.error(ResponseCode.BAD_REQUEST);
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("user", userService.getUserByEmail(loginUser.getEmail()));
+
+        return ApiResponse.success(data);
     }
 
     /**
@@ -81,12 +89,28 @@ public class UserController {
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody User registerUser) {
         userService.register(registerUser);
+
         return ApiResponse.success();
     }
 
-    @GetMapping("/test")
-    public ApiResponse<Object> test() {
-        return ApiResponse.success();
+    /**
+     * 检验账号是否存在
+     * @param account
+     * @return
+     */
+    @PostMapping("/check/account")
+    public ApiResponse<Object> checkAccount(@RequestBody String account) {
+        // 去除掉前后"
+        account = account.substring(1, account.length() - 1);
+
+        System.out.println(account);
+        User user = userService.getUserByAccount(account);
+
+        System.out.println(user);
+        if (user == null) {
+            return ApiResponse.success();
+        }
+        return ApiResponse.error(ResponseCode.BAD_REQUEST, "该账号已被注册");
     }
 
     // 统计网站用户人数以及类型
@@ -168,5 +192,59 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserInfo(@PathVariable("id") Long id) {
         return userService.getById(id);
+    }
+
+    /**
+     * 检验邮箱是否存在
+     * @param email
+     * @return
+     */
+    @PostMapping("/check/email")
+    public ApiResponse<Object> checkEmail(@RequestBody String email) {
+        // 去除掉前后"
+        email = email.substring(1, email.length() - 1);
+
+        User user = userService.getUserByEmail(email);
+        if (user == null) {
+            return ApiResponse.success();
+        }
+        return ApiResponse.error(ResponseCode.BAD_REQUEST, "该邮箱已被注册");
+    }
+
+    /**
+     * 判断用户是否是教师
+     * @param userId
+     * @return
+     */
+    @GetMapping("/teacher/exists/{id}")
+    public ApiResponse<Object> isTeacher(@PathVariable("id") String userId) {
+        TeacherDetail teacherDetail = teacherDetailService.getByUserId(Long.parseLong(userId));
+
+        if (teacherDetail == null) {
+            return ApiResponse.success(ResponseCode.BAD_REQUEST, "该用户不是教师");
+        }
+
+        return ApiResponse.success("该用户是教师");
+    }
+
+    /**
+     * 获取教师详细信息
+     * @param userId
+     * @return
+     */
+    @GetMapping("/teacher/{id}")
+    public ApiResponse<Object> getTeacherDetail(@PathVariable("id") String userId) {
+        TeacherDetail teacherDetail = teacherDetailService.getByUserId(Long.parseLong(userId));
+        TeacherDetailDTO teacherDetailDTO = new TeacherDetailDTO();
+
+        // 从 TeacherDetail 中获取数据，放入 TeacherDetailDTO 中
+        teacherDetailDTO.setTeacherId(teacherDetail.getTdId());
+        teacherDetailDTO.setUserId(teacherDetail.getUserId());
+        teacherDetailDTO.setRealName(teacherDetail.getRealName());
+        teacherDetailDTO.setPosition(positionService.getPositionById(teacherDetail.getPositionId()));
+        teacherDetailDTO.setCategory(categoryService.getCategoryById(teacherDetail.getCategoryId()));
+        teacherDetailDTO.setQualification(qualificationService.getQualificationById(teacherDetail.getQualificationId()));
+
+        return ApiResponse.success(teacherDetailDTO);
     }
 }

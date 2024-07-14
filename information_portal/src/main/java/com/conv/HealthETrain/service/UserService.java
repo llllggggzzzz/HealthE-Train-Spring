@@ -16,13 +16,15 @@ import java.util.Map;
 public interface UserService extends IService<User> {
      String loginByAccount(User loginUser);
 
-     String loginByPhone(User loginUser);
+     boolean sendEmailCode(User loginUser);
 
-     void sendEmailCode(User loginUser);
-
-     boolean verifyEmail(User loginUser, String code);
+     String verifyEmail(User loginUser, String code);
 
      boolean register(User registerUser);
+
+     User getUserByAccount(String account);
+
+     User getUserByEmail(String email);
 
      // 查询用户基本情况以及教师类别和权限类别
      List<UserDetailDTO> getAllUsersWithDetails();

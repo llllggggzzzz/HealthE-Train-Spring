@@ -75,7 +75,10 @@ healthe:
   auth:
     exclude-paths:
       - /users/login/**
+      - /users/check/**
+      - /users/register
       - /study/**
+      - /users/teacher/**
       - /comment/**
       - /video/**
       - /admins/login/**
@@ -86,5 +89,4 @@ healthe:
     location: classpath:healthe.jks
     alias: healthe
     password: healthe
-    tokenTTL: 10m
-
+    tokenTTL: 30m

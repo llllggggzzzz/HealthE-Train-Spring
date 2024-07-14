@@ -23,12 +23,12 @@ public class TeacherDetail implements Serializable {
     /**
      * 
      */
-    private Integer userId;
+    private Long userId;
 
     /**
      * 
      */
-    private Integer categoryId;
+    private Long categoryId;
 
     /**
      * 
@@ -38,12 +38,12 @@ public class TeacherDetail implements Serializable {
     /**
      * 
      */
-    private Integer positionId;
+    private Long positionId;
 
     /**
      * 
      */
-    private Integer qualificationId;
+    private Long qualificationId;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
