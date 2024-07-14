@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.DecimalFormat;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -430,5 +432,37 @@ public class LessonController {
         lessonLinkUserService.deleteLessonStudents(lessonId,userIdList);
         checkpointService.deleteLessonStudentsCheckpoints(lessonId,userIdList);
         return ApiResponse.success(ResponseCode.SUCCEED,"成功");
+    }
+
+    // 根据字符串查询课程信息
+    @GetMapping("/browses")
+    public List<LessonBrowseDTO> searchLessons(@RequestParam String searchText) {
+        String redisKey = "browse:" + searchText;
+        String cachedData = stringRedisTemplate.opsForValue().get(redisKey);
+
+        if (cachedData != null) {
+            try {
+                // 从缓存中获取数据，并反序列化为List<LessonBrowseDTO>
+                List<LessonBrowseDTO> cachedLessons = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonBrowseDTO.class));
+                return cachedLessons;
+            } catch (JsonProcessingException e) {
+                // 处理JSON反序列化异常
+                System.out.println("JSON反序列化异常");
+                return null;
+            }
+        } else {
+            // 从数据库查询数据
+            List<LessonBrowseDTO> lessons = lessonService.searchLessons(searchText);
+            try {
+                // 将数据序列化为JSON字符串并存入缓存，设置过期时间为10分钟
+                String jsonLessons = mapper.writeValueAsString(lessons);
+                stringRedisTemplate.opsForValue().set(redisKey, jsonLessons, Duration.ofMinutes(10));
+            } catch (JsonProcessingException e) {
+                // 处理JSON序列化异常
+               System.out.println("JSON序列化异常");
+               return null;
+            }
+            return lessons;
+        }
     }
 }
