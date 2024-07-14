@@ -52,6 +52,7 @@ public class LiveController {
             log.info("推流成功: {}", new JSONObject(streamPublishInfo).toStringPretty());
             // 将流信息保存到服务器session中
             redisTemplate.opsForValue().set("live-stream:"+stream, JSONUtil.toJsonStr(streamPublishInfo));
+
             return ResponseEntity.ok().body(0);
         }
     }
@@ -69,6 +70,8 @@ public class LiveController {
         log.info("Exit: {}, streamId: {}", message, streamId);
         LiveSocketHandler.sendMessage(streamId, message);
         // 将streamId从令牌桶中删除
+        uuidBucket.remove(streamId);
+        // 移除直播缓存信息
         redisTemplate.delete("live:"+streamId);
         return ResponseEntity.ok().body(0);
     }
