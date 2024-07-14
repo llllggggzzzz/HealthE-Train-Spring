@@ -50,7 +50,6 @@ public class UserController {
         String token = userService.loginByAccount(loginUser);
         HashMap<String, Object> data = new HashMap<>();
         data.put("token", token);
-
         return ApiResponse.success(data);
     }
 
@@ -111,7 +110,6 @@ public class UserController {
         if (cachedUserStatistic != null) {
             // 假设返回的是 JSON 格式的字符串，需要转换为对象
             UserStatistic userStatistic = mapper.readValue(cachedUserStatistic,UserStatistic.class);
-            System.out.println(userStatistic);
             return ApiResponse.success(ResponseCode.SUCCEED, "成功", userStatistic);
         }
         // 如果缓存中没有数据，则从数据库获取并放入 Redis 缓存

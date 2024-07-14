@@ -75,7 +75,7 @@ healthe:
     location: classpath:healthe.jks
     alias: healthe
     password: healthe
-    tokenTTL: 10
+    tokenTTL: 30m
 mybatis-plus:
   global-config:
     db-config:

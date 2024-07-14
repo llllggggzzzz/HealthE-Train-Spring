@@ -16,7 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/api/v1/users/**,/api/v1/admin/**,/api/v1/userLinkCategory/**
+            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -94,6 +94,7 @@ healthe:
       - /comment/**
       - /video/**
       - /admins/login/**
+      - /admins/register/**
       - /questionBank/**
       - /users/statistic/**
       - /examQuestion/**
@@ -104,5 +105,5 @@ healthe:
     location: classpath:healthe.jks
     alias: healthe
     password: healthe
-    tokenTTL: 10m
+    tokenTTL: 10
 
