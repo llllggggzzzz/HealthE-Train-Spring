@@ -25,4 +25,17 @@ public class AdminController {
         data.put("token", token);
         return ApiResponse.success(data);
     }
+
+    @PostMapping("/register")
+    public ApiResponse<String> registerByAdmin(@RequestBody Admin registerAdmin){
+        if (registerAdmin.getAccount() == null || registerAdmin.getPassword() == null) {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY,"请填写好信息");
+        }
+        boolean registered = adminService.registerAdmin(registerAdmin);
+        if (registered) {
+            return ApiResponse.success(ResponseCode.SUCCEED,"成功");
+        } else {
+            return ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR,"注册失败");
+        }
+    }
 }

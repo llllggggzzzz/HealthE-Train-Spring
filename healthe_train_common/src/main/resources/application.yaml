@@ -3,3 +3,14 @@ server:
 spring:
   application:
     name: common
+  data:
+    redis:
+      host: localhost
+      port: 9001
+      password: redis
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 100ms

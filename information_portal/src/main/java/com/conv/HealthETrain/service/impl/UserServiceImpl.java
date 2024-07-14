@@ -153,6 +153,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return userMapper.findStudentUserList();
     }
 
+    @Override
+    public String encryption(String password) {
+        return passwordEncoder.encode(password);
+    }
+
 }
 
 

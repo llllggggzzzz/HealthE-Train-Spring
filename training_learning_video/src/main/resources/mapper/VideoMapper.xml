@@ -10,10 +10,11 @@
             <result property="length" column="length" jdbcType="BIGINT"/>
             <result property="sectionId" column="section_id" jdbcType="BIGINT"/>
             <result property="size" column="size" jdbcType="BIGINT"/>
+            <result property="saveLibrary" column="save_library" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         video_id,path,length,
-        section_id,size
+        section_id,size,save_library
     </sql>
 </mapper>

@@ -175,6 +175,18 @@
                 <version>1.9.41</version>
             </dependency>
 
+<!--            <dependency>-->
+<!--                <groupId>net.logstash.logback</groupId>-->
+<!--                <artifactId>logstash-logback-encoder</artifactId>-->
+<!--                <version>7.1.1</version>-->
+<!--            </dependency>-->
+
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>3.3.1</version>
+            </dependency>
+
         </dependencies>
 
 
