@@ -2,6 +2,7 @@ package com.conv.HealthETrain.controller;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONParser;
 import cn.hutool.json.JSONUtil;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ApplyLiveDTO;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.servlet.HandlerMapping;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +30,6 @@ public class LiveController {
     private static final List<String> uuidBucket = new ArrayList<>();
 
     private final StringRedisTemplate redisTemplate;
-    private final HandlerMapping resourceHandlerMapping;
 
     private final InformationPortalClient informationPortalClient;
 
@@ -56,28 +57,26 @@ public class LiveController {
     }
 
     @PostMapping("/exit")
-    public ResponseEntity<Integer> liveEixtHandler(@RequestBody StreamPublishInfo streamPublishInfo) {
-        log.info("接受结束推流消息: {}", streamPublishInfo.toString());
-        // 在UUID桶中检查是否存在UUID, 如果存在则取出使用,通过推流, 否则拒绝
-//        String stream = streamPublishInfo.getStream();
-//        int index = uuidBucket.indexOf(stream);
-//        if(index == -1) {
-//            // 未鉴权的请求
-//            log.warn("服务器发生未鉴权请求: {}", new JSONObject(streamPublishInfo).toStringPretty());
-//            return ResponseEntity.status(401).body(401);
-//        } else {
-//            log.info("推流成功: {}", new JSONObject(streamPublishInfo).toStringPretty());
-//            // 将流信息保存到服务器session中
-//            redisTemplate.opsForValue().set("live-stream:"+stream, JSONUtil.toJsonStr(streamPublishInfo));
-//            return ResponseEntity.ok().body(0);
-//        }
+    public ResponseEntity<Integer> liveEixtHandler(@RequestBody JSONObject jsonObject) throws IOException {
+        log.info("接受结束推流消息: {}", jsonObject.toStringPretty());
+        // 通知用户, 直播已经结束
+        String streamId = jsonObject.getStr("stream");
+        if(StrUtil.isBlankOrUndefined(streamId)) {
+            return ResponseEntity.ok().body(0);
+        }
+        String exitMessage = "{header:{from:-1,streamId:-1,userName:-1,},body:{message:exit,date:1,},type:1,}";
+        String message = JSONUtil.parseObj(exitMessage).toString();
+        log.info("Exit: {}, streamId: {}", message, streamId);
+        LiveSocketHandler.sendMessage(streamId, message);
+        // 将streamId从令牌桶中删除
+        redisTemplate.delete("live:"+streamId);
         return ResponseEntity.ok().body(0);
     }
 
 
     /**
      * @description 推流申请逻辑,返回推流地址给用户
-     * @param userId 申请UUID批准
+     * @param applyLiveDTO 直播申请信息
      * @return 返回加密后的UUID
      */
     @PostMapping("/uuid/user")

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -31,39 +32,50 @@ public class LiveSocketHandler extends TextWebSocketHandler {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         String userId = session.getAttributes().get("userId").toString();
         String streamId = session.getAttributes().get("streamId").toString();
+        if("-1".equals(userId)) {
+            return;
+        }
+        // 先检查连接是否存在,如果存在则不进行建立,只添加times
+        List<Map<String, WebSocketSession>> maps = SESSIONS.get(userId);
+        if(maps != null ) {
+            for (Map<String, WebSocketSession> map : maps) {
+                if(map.containsKey(streamId)) {
+                    // 已经包含, 不重复添加到GROUP和SESSIONS
+                    updateTimes(userId, streamId);
+                    log.info("添加计数+1: userId-{}, streamId-{}, times-{}", userId, streamId, getThridValue(userId, streamId));
+
+                    return;
+                }
+            }
+        }
+        // 连接不存在, 添加新的映射到SESSION
         Map<String, WebSocketSession> innerMap = new HashMap<>();
-        // 建立连接表征
         innerMap.put(streamId, session);
         if(SESSIONS.containsKey(userId)) {
-            List<Map<String, WebSocketSession>> sessonMapList = SESSIONS.get(userId);
-            if(sessonMapList != null) {
-                sessonMapList.add(innerMap);
-                SESSIONS.put(userId, sessonMapList);
-            }
+            List<Map<String, WebSocketSession>> sessionMaps = SESSIONS.get(userId);
+            sessionMaps.add(innerMap);
         } else {
-            List<Map<String, WebSocketSession>> newSessionList = new ArrayList<>();
-            newSessionList.add(innerMap);
-            SESSIONS.put(userId, newSessionList);
+            // 不包含此key, 建立新的List
+            ArrayList<Map<String, WebSocketSession>> list = new ArrayList<>();
+            list.add(innerMap);
+            SESSIONS.put(userId, list);
         }
 
+        // 添加新的GROUP映射
+        if(GROUPS.containsKey(streamId)) {
+            List<WebSocketSession> webSocketSessions = GROUPS.get(streamId);
+            webSocketSessions.add(session);
+        } else {
+            ArrayList<WebSocketSession> list = new ArrayList<>();
+            list.add(session);
+            GROUPS.put(streamId, list);
+        }
+
+        // TIMES + 1
         updateTimes(userId, streamId);
 
-        // 加入分组
-        if(!GROUPS.containsKey(streamId)) {
-            List<WebSocketSession> sessionList = new ArrayList<>();
-            sessionList.add(session);
-            GROUPS.put(streamId, sessionList);
-        } else {
-            List<WebSocketSession> webSocketSessions = GROUPS.get(streamId);
-            if(webSocketSessions != null && !webSocketSessions.contains(session)) {
-                webSocketSessions.add(session);
-                GROUPS.put(streamId, webSocketSessions);
-            }
-        }
-//        log.info("SESSIONS: {}", SESSIONS);
-//        log.info("GROUPS: {}", GROUPS);
-//        log.info("TIMES: {}", TIMES);
-        log.info("成功建立连接-userId: {}, streamId: {}", userId, streamId);
+        log.info("加入新的连接: userId-{} streamId-{}", userId, streamId);
+        log.info("分组出现新的成员: group-{} user-{}", streamId, userId);
     }
 
 
@@ -112,6 +124,20 @@ public class LiveSocketHandler extends TextWebSocketHandler {
         }
     }
 
+    public static void sendMessage(String streamId, String message) throws IOException {
+        if(GROUPS.containsKey(streamId)) {
+            List<WebSocketSession> webSocketSessions = GROUPS.get(streamId);
+            if(webSocketSessions != null) {
+                log.info("remove groups number: {}", webSocketSessions.size());
+                for (WebSocketSession webSocketSession : webSocketSessions) {
+                    if(webSocketSession != null && webSocketSession.isOpen()) {
+                        webSocketSession.sendMessage(new TextMessage(message));
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
         super.handleBinaryMessage(session, message);
@@ -135,14 +161,19 @@ public class LiveSocketHandler extends TextWebSocketHandler {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         String userId = session.getAttributes().get("userId").toString();
         String streamId = session.getAttributes().get("streamId").toString();
+        if("-1".equals(userId)) {
+            return;
+        }
         log.info("userId:{}-streamId:{} 的连接已关闭,status:{}", userId, streamId, closeStatus);
         // 次数减一, 如果记录为零,则从GROUPS中移除
         Integer time = getThridValue(userId, streamId);
         Map<String, String> key = getThridKey(userId, streamId);
+        log.info("userId: {}, streamId: {}, times:{}", userId, streamId, time);
         if(time > 1) {
             TIMES.put(key, time-1);
         } else {
             // 移除SESSON, 移除TIME
+            log.info("要移除的key: {}", key);
             TIMES.remove(key);
             // 删除此流下的用户session
             List<Map<String, WebSocketSession>> sessionMap = SESSIONS.get(userId);
