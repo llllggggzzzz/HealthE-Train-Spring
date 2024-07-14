@@ -6,8 +6,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class UniqueIdGenerator {
-    public static String generateUniqueId(String userId, String videoId) {
-        String combined = userId + ":" + videoId + DateTime.now();
+    public static String generateUniqueId(String key1, String key2) {
+        String combined = key1 + ":" + key2 + DateTime.now();
         UUID uuid = UUID.nameUUIDFromBytes(combined.getBytes(StandardCharsets.UTF_8));
         return uuid.toString();
     }

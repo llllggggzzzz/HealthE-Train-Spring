@@ -9,7 +9,8 @@ public enum ExceptionCode {
     UNAUTHORIZED(401, "未授权"),
     NOT_FOUND(404, "未找到"),
     JELLYFIN_INIT_ERROR(405, "JELLYFIN初始化异常"),
-    FILE_PATH_ERROR(406, "路径异常");
+    FILE_PATH_ERROR(406, "路径异常"),
+    LIVE_ERROR(410, "LIVE配置异常");
 
 
 

@@ -21,4 +21,7 @@ public interface InformationPortalClient {
     // 获取网站所有学生用户的信息
     @GetMapping("/users/students")
     List<User> getAllStudentsInfo();
+
+    @GetMapping("/category/{categoryId}")
+    String getCategoryNameById(@PathVariable("categoryId") Long categoryId);
 }

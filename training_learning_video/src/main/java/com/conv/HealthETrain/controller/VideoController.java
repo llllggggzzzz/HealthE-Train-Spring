@@ -8,14 +8,14 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.LessonClient;
-import com.conv.HealthETrain.domain.Chapter;
-import com.conv.HealthETrain.domain.Checkpoint;
+import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.VideoLoadDTO;
-import com.conv.HealthETrain.domain.Section;
-import com.conv.HealthETrain.domain.Video;
+import com.conv.HealthETrain.domain.domain.Schedule;
+import com.conv.HealthETrain.domain.domain.Video;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
+import com.conv.HealthETrain.service.ScheduleService;
 import com.conv.HealthETrain.service.VideoService;
 import com.conv.HealthETrain.utils.UniqueIdGenerator;
 import lombok.AllArgsConstructor;
@@ -25,9 +25,7 @@ import org.springframework.cloud.openfeign.aot.FeignClientBeanFactoryInitializat
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @RestController
@@ -40,6 +38,8 @@ public class VideoController {
     private final LessonClient lessonClient;
 
     private final VideoSocketHandler videoSocketHandler;
+
+    private final ScheduleService scheduleService;
 
     //TODO 更改此jellyfinBaseAddress设定为自己的jellyfin目录
     private final static String jellyfinBaseAddress = "";
@@ -94,7 +94,13 @@ public class VideoController {
         return ApiResponse.success(endByte);
     }
 
-
+    /**
+     * @description 获取视频对应的串流URL
+     * @param videoId 视频ID
+     * @param libraryName 媒体库名称
+     * @param userName jellyfin用户名称
+     * @return 返回串流URL
+     */
     @GetMapping("/streaming/{videoId}/library/{libraryName}")
     public ApiResponse<String> getVideoStreamingURL(@PathVariable("videoId") Long videoId,
                                                  @PathVariable("libraryName") String libraryName,
@@ -157,6 +163,53 @@ public class VideoController {
         }
     }
 
+    /**
+     * @description 更新学习时间
+     * @param requestBody 包含更新消息
+     * @return 返回是否更新成功
+     */
+    @PostMapping("/record")
+    public ApiResponse<String> recordStudyTime(@RequestBody JSONObject requestBody) {
+        Long userId = requestBody.getLong("user_id");
+        Long videoId = requestBody.getLong("video_id");
+        Double studyTime = requestBody.getDouble("study_time");
+        LambdaQueryWrapper<Schedule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Schedule::getVideoId, videoId).eq(Schedule::getUserId, userId);
+        Schedule oldSchedule = scheduleService.getOne(lambdaQueryWrapper);
+        Schedule schedule = new Schedule();
+        schedule.setVideoId(videoId);
+        schedule.setUserId(userId);
+        boolean saved = false;
+        if(ObjectUtil.isNull(oldSchedule)) {
+            schedule.setTime(studyTime);
+            saved = scheduleService.save(schedule);
+        } else {
+            Double sumTime = oldSchedule.getTime() + studyTime;
+            schedule.setTime(sumTime);
+            saved = scheduleService.update(schedule, lambdaQueryWrapper);
+        }
+        return saved ? ApiResponse.success():ApiResponse.error(ResponseCode.BAD_REQUEST);
+    }
+
+    @GetMapping("/time/user/{userId}")
+    public ApiResponse<Double> getLearningMin(@PathVariable("userId") Long userId) {
+        LambdaQueryWrapper<Schedule> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Schedule::getUserId, userId);
+        List<Schedule> scheduleList = scheduleService.list(lambdaQueryWrapper);
+        Double sumTime = 0.0;
+        for (Schedule schedule : scheduleList) {
+            sumTime += schedule.getTime();
+        }
+        return ApiResponse.success(sumTime);
+    }
+
+    /**
+     * @description 查询下一个视频的ID
+     * @param section 小节信息
+     * @param chapterInfo 章节信息
+     * @param lessonId 课程信息
+     * @return 返回下一个视频的ID
+     */
     public Long findNextVideo(Section section, Chapter chapterInfo, Long lessonId) {
         Section nextSection;
         Chapter nextChapter = null;
@@ -191,6 +244,8 @@ public class VideoController {
             return -1L;
         }
     }
+
+
 
 
 }

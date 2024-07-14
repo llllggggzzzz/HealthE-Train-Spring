@@ -26,7 +26,7 @@ spring:
         - id: training-learning-video
           uri: lb://training-learning-video
           predicates:
-            - Path=/api/v1/video/**
+            - Path=/api/v1/video/**, /api/v1/live/**
         - id: resource-management
           uri: lb://resource-management
           predicates:
@@ -96,6 +96,7 @@ healthe:
       - /users/teacher/**
       - /comment/**
       - /video/**
+      - /live/**
       - /admins/login/**
       - /admins/register/**
       - /questionBank/**

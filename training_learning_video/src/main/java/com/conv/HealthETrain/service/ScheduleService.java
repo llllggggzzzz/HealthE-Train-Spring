@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.Schedule;
+import com.conv.HealthETrain.domain.domain.Schedule;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
