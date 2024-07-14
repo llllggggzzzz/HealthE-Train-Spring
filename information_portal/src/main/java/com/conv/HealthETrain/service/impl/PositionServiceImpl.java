@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 public class PositionServiceImpl extends ServiceImpl<PositionMapper, Position>
     implements PositionService{
 
+    @Override
+    public String getPositionById(Long positionId) {
+        return lambdaQuery().eq(Position::getPositionId, positionId).one().getPositionName();
+    }
 }
 
 

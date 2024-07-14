@@ -40,6 +40,8 @@ public class TokenUtil {
     }
 
     public String createToken(Long userId, Duration ttl) {
+        Duration tokenTTL = Duration.ofMillis(1000);
+
         // 1.生成jws
         return JWT.create()
                 .setPayload("user", userId)

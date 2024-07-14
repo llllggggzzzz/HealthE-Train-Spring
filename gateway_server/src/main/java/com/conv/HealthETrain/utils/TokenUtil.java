@@ -60,29 +60,34 @@ public class TokenUtil {
         try {
             jwt = JWT.of(token).setSigner(jwtSigner);
         } catch (Exception e) {
+            System.out.println("12----------");
             throw new GlobalException("无效的token", ExceptionCode.UNAUTHORIZED);
         }
         // 2.校验jwt是否有效
         if (!jwt.verify()) {
             // 验证失败
+            System.out.println("22----------");
             throw new GlobalException("无效的token", ExceptionCode.UNAUTHORIZED);
         }
         // 3.校验是否过期
         try {
             JWTValidator.of(jwt).validateDate();
         } catch (ValidateException e) {
+            System.out.println("33----------");
             throw new GlobalException("token已经过期", ExceptionCode.UNAUTHORIZED);
         }
         // 4.数据格式校验
         Object userPayload = jwt.getPayload("user");
         if (userPayload == null) {
             // 数据为空
+            System.out.println("43----------");
             throw new GlobalException("无效的token", ExceptionCode.UNAUTHORIZED);
         }
 
         // 5.数据解析
         try {
         } catch (RuntimeException e) {
+            System.out.println("53----------");
             // 数据格式有误
             throw new GlobalException("无效的token", ExceptionCode.UNAUTHORIZED);
         }

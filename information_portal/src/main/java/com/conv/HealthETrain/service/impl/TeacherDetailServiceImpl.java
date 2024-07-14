@@ -37,6 +37,11 @@ public class TeacherDetailServiceImpl extends ServiceImpl<TeacherDetailMapper, T
         return qualificationCounts;
     }
 
+    @Override
+    public TeacherDetail getByUserId(Long userId) {
+        return lambdaQuery().eq(TeacherDetail::getUserId, userId).one();
+    }
+
     // 统计教师数量
     @Override
     public int countTeachers() {

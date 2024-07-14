@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.LessonAnnouncementMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.POJP.LessonAnnouncement">
+        <id property="laId" column="llc_id" jdbcType="BIGINT"/>
+        <result property="lessonId" column="lesson_id" jdbcType="BIGINT"/>
+        <result property="announcementTitle" column="lesson_overview" jdbcType="VARCHAR"/>
+        <result property="announcementContent" column="lesson_object" jdbcType="VARCHAR"/>
+        <result property="publishTime" column="preliminary_knowledge" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        la_id, lesson_id, announcement_title announcement_content, publish_time
+    </sql>
+</mapper>

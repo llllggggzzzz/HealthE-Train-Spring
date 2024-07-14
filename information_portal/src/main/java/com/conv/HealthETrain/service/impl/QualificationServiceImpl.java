@@ -15,6 +15,11 @@ import org.springframework.stereotype.Service;
 public class QualificationServiceImpl extends ServiceImpl<QualificationMapper, Qualification>
     implements QualificationService{
 
+    @Override
+    public String getQualificationById(Long qualificationId) {
+        return lambdaQuery().eq(Qualification::getQualificationId, qualificationId).one().getQualificationName();
+    }
+
 }
 
 

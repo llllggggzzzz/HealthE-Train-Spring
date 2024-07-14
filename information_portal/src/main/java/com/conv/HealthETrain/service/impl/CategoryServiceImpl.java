@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category>
     implements CategoryService{
 
+    @Override
+    public String getCategoryById(Long categoryId) {
+        return lambdaQuery().eq(Category::getCategoryId, categoryId).one().getCategoryName();
+    }
 }
 
 

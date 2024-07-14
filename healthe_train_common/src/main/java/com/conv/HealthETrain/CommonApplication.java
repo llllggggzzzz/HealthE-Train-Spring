@@ -15,7 +15,6 @@ public class CommonApplication {
     public static void main(String[] args) {
         SpringApplication.run(CommonApplication.class, args);
     }
-
     @Bean
     public Jackson2JsonMessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
