@@ -21,13 +21,15 @@ public interface UserService extends IService<User> {
      User getUser(Long userId);
      String loginByAccount(User loginUser);
 
-     String loginByPhone(User loginUser);
+     boolean sendEmailCode(User loginUser);
 
-     void sendEmailCode(User loginUser);
-
-     boolean verifyEmail(User loginUser, String code);
+     String verifyEmail(User loginUser, String code);
 
      boolean register(User registerUser);
+
+     User getUserByAccount(String account);
+
+     User getUserByEmail(String email);
 
      // 查询用户基本情况以及教师类别和权限类别
      List<UserDetailDTO> getAllUsersWithDetails();
@@ -36,4 +38,7 @@ public interface UserService extends IService<User> {
      List<User> findStudentUserList();
 
      List<User> getSearchUserList(String username);
+     // 封装加密方法，把加密后的密码返回
+     String encryption(String password);
+
 }

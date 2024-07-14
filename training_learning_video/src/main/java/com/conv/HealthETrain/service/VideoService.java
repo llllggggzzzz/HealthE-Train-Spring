@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.Video;
+import com.conv.HealthETrain.domain.domain.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

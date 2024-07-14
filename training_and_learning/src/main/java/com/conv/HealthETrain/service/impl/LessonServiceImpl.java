@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.LessonCategoryInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonSimpleInfoDTO;
 import com.conv.HealthETrain.domain.POJP.Lesson;
-import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
 import com.conv.HealthETrain.service.LessonService;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import lombok.AllArgsConstructor;
@@ -60,6 +59,7 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson>
         int rows = lessonMapper.update(lesson, updateWrapper);
         return rows > 0;
     }
+
 }
 
 

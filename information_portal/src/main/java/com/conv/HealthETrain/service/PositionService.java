@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-05 17:56:52
 */
 public interface PositionService extends IService<Position> {
-
+    String getPositionById(Long positionId);
 }

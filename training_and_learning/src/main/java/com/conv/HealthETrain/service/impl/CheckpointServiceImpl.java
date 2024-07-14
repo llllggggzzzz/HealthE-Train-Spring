@@ -81,6 +81,26 @@ public class CheckpointServiceImpl extends ServiceImpl<CheckpointMapper, Checkpo
 
         return totalSections;
     }
+
+    @Override
+    public Checkpoint getCheckpointByUserAndLesson(long userId, long lessonId, long chapterId) {
+        return checkpointMapper.getCheckpointByUserAndLesson(userId,lessonId,chapterId);
+    }
+
+    // 删除课程内指定学生列表的记录
+    @Override
+    public boolean deleteLessonStudentsCheckpoints(Long lessonId, List<Long> userIdList) {
+        if (lessonId == null || userIdList == null || userIdList.isEmpty()) {
+            return false;
+        }
+
+        int rowsAffected = checkpointMapper.delete(new QueryWrapper<Checkpoint>()
+                .eq("lesson_id", lessonId)
+                .in("user_id", userIdList));
+
+        return rowsAffected > 0;
+    }
+
 }
 
 

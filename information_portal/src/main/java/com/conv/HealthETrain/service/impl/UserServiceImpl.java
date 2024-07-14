@@ -75,32 +75,21 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
             throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
         }
 
-        return tokenUtil.createToken(Long.valueOf(user.getUserId()), jwtProperties.getTokenTTL());
-    }
-
-    // TODO 用户不存在时的邮箱和手机登录逻辑
-
-    @Override
-    public String loginByPhone(User loginUser) {
-//        User user = lambdaQuery().eq(User::getPhone, loginUser.getPhone()).one();
-//
-//        if (user == null) {
-//            throw new GlobalException("用户不存在", ExceptionCode.BAD_REQUEST);
-//        }
-//
-//        if (!passwordEncoder.matches(user.getPassword(), loginUser.getPassword())) {
-//            throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
-//        }
-//
-//        return tokenUtil.createToken(Long.valueOf(user.getUserId()), jwtProperties.getTokenTTL());
-        return "";
+        return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
     }
 
     @Override
-    public void sendEmailCode(User loginUser) {
+    public boolean sendEmailCode(User loginUser) {
         String code = RandomUtil.randomString(RandomUtil.BASE_CHAR_NUMBER, codeLen);
 
         String to = loginUser.getEmail();
+
+        // 判断邮箱是否存在
+        User user = lambdaQuery().eq(User::getEmail, to).one();
+        if (user == null) {
+            return false;
+        }
+
         String subject = "【HealthETrain】 登录邮箱验证码";
         String content = "您的验证码是：" + code + "。5分钟内有效，请勿泄露给他人。";
 
@@ -108,28 +97,42 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         mailUtil.sendEmail(to, subject, content);
         // Store the code in the memory
         codeUtil.storeCode(to, code);
+
+        return true;
     }
 
     @Override
-    public boolean verifyEmail(User loginUser, String code) {
+    public String verifyEmail(User loginUser, String code) {
         String email = loginUser.getEmail();
-        return codeUtil.verifyCode(email, code);
+        User user = lambdaQuery().eq(User::getEmail,email).one();
+
+        // 判断验证码是否正确
+        boolean result = codeUtil.verifyCode(email, code);
+        if (result) {
+            return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
+        }
+
+        return  "";
     }
 
 
     @Override
     public boolean register(User registerUser) {
-        User user = lambdaQuery().eq(User::getUsername, registerUser.getUsername()).one();
-        if (user != null) {
-            // The user already exists
-            throw new GlobalException("用户已存在", ExceptionCode.BAD_REQUEST);
-        }
-
         // Encode the password before storing it in the database
         registerUser.setPassword(passwordEncoder.encode(registerUser.getPassword()));
         int result = userMapper.insert(registerUser);
 
         return result > 0;
+    }
+
+    @Override
+    public User getUserByAccount(String account) {
+        return lambdaQuery().eq(User::getAccount, account).one();
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        return lambdaQuery().eq(User::getEmail, email).one();
     }
 
     @Override
@@ -173,6 +176,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public List<User> findStudentUserList() {
         return userMapper.findStudentUserList();
+    }
+
+    @Override
+    public String encryption(String password) {
+        return passwordEncoder.encode(password);
     }
 
 }

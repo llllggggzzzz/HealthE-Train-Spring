@@ -45,17 +45,21 @@ public class AuthGlobalFilter implements GlobalFilter, Ordered {
         if (headers != null && !headers.isEmpty()) {
             token = headers.get(0);
         }
+        System.out.println(token);
         // 4. 解析token
         Long userId = null;
         try {
+            // 解析不了
             userId = tokenUtil.parseToken(token);
         } catch (GlobalException e) {
+            System.out.println("1.-----------");
             ServerHttpResponse response = exchange.getResponse();
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
 
         // 5. 传递用户信息
+        System.out.println("2.----------------");
         String userInfo = userId.toString();
         ServerWebExchange swe = exchange.mutate()
                 .request(builder -> builder.header("user-info", userInfo))

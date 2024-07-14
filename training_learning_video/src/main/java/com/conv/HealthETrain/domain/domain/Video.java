@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -40,6 +39,8 @@ public class Video implements Serializable {
      */
     private Long size;
 
+    private String saveLibrary;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -59,7 +60,8 @@ public class Video implements Serializable {
             && (this.getPath() == null ? other.getPath() == null : this.getPath().equals(other.getPath()))
             && (this.getLength() == null ? other.getLength() == null : this.getLength().equals(other.getLength()))
             && (this.getSectionId() == null ? other.getSectionId() == null : this.getSectionId().equals(other.getSectionId()))
-            && (this.getSize() == null ? other.getSize() == null : this.getSize().equals(other.getSize()));
+            && (this.getSize() == null ? other.getSize() == null : this.getSize().equals(other.getSize()))
+            && (this.getSaveLibrary() == null ? other.getSaveLibrary() == null : this.getSaveLibrary().equals(other.getSaveLibrary()));
     }
 
     @Override
@@ -71,6 +73,7 @@ public class Video implements Serializable {
         result = prime * result + ((getLength() == null) ? 0 : getLength().hashCode());
         result = prime * result + ((getSectionId() == null) ? 0 : getSectionId().hashCode());
         result = prime * result + ((getSize() == null) ? 0 : getSize().hashCode());
+        result = prime * result + ((getSaveLibrary() == null) ? 0 : getSaveLibrary().hashCode());
         return result;
     }
 
@@ -85,6 +88,7 @@ public class Video implements Serializable {
         sb.append(", length=").append(length);
         sb.append(", sectionId=").append(sectionId);
         sb.append(", size=").append(size);
+        sb.append(", saveLibrary=").append(saveLibrary);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

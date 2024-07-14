@@ -23,7 +23,7 @@ public class Qualification implements Serializable {
     /**
      * 
      */
-    private String qualicationName;
+    private String qualificationName;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -41,7 +41,7 @@ public class Qualification implements Serializable {
         }
         Qualification other = (Qualification) that;
         return (this.getQualificationId() == null ? other.getQualificationId() == null : this.getQualificationId().equals(other.getQualificationId()))
-            && (this.getQualicationName() == null ? other.getQualicationName() == null : this.getQualicationName().equals(other.getQualicationName()));
+            && (this.getQualificationName() == null ? other.getQualificationName() == null : this.getQualificationName().equals(other.getQualificationName()));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class Qualification implements Serializable {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((getQualificationId() == null) ? 0 : getQualificationId().hashCode());
-        result = prime * result + ((getQualicationName() == null) ? 0 : getQualicationName().hashCode());
+        result = prime * result + ((getQualificationName() == null) ? 0 : getQualificationName().hashCode());
         return result;
     }
 
@@ -60,7 +60,7 @@ public class Qualification implements Serializable {
         sb.append(" [");
         sb.append("Hash = ").append(hashCode());
         sb.append(", qualificationId=").append(qualificationId);
-        sb.append(", qualicationName=").append(qualicationName);
+        sb.append(", qualificationName=").append(qualificationName);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

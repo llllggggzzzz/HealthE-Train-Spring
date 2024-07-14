@@ -1,6 +1,5 @@
-package com.conv.HealthETrain.domain;
+package com.conv.HealthETrain.domain.domain;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -33,7 +32,7 @@ public class Schedule implements Serializable {
     /**
      * 
      */
-    private Long second;
+    private Double time;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
@@ -53,7 +52,7 @@ public class Schedule implements Serializable {
         return (this.getScheduleId() == null ? other.getScheduleId() == null : this.getScheduleId().equals(other.getScheduleId()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getVideoId() == null ? other.getVideoId() == null : this.getVideoId().equals(other.getVideoId()))
-            && (this.getSecond() == null ? other.getSecond() == null : this.getSecond().equals(other.getSecond()));
+            && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()));
     }
 
     @Override
@@ -63,7 +62,7 @@ public class Schedule implements Serializable {
         result = prime * result + ((getScheduleId() == null) ? 0 : getScheduleId().hashCode());
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getVideoId() == null) ? 0 : getVideoId().hashCode());
-        result = prime * result + ((getSecond() == null) ? 0 : getSecond().hashCode());
+        result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         return result;
     }
 
@@ -76,7 +75,7 @@ public class Schedule implements Serializable {
         sb.append(", scheduleId=").append(scheduleId);
         sb.append(", userId=").append(userId);
         sb.append(", videoId=").append(videoId);
-        sb.append(", second=").append(second);
+        sb.append(", time=").append(time);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

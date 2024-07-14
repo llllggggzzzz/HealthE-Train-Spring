@@ -33,11 +33,19 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin>
             throw new GlobalException("用户不存在", ExceptionCode.BAD_REQUEST);
         }
 
-        if (!passwordEncoder.matches(loginAdmin.getPassword(), loginAdmin.getPassword())) {
+        if (!passwordEncoder.matches(loginAdmin.getPassword(), admin.getPassword())) {
             throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
         }
 
         return tokenUtil.createToken(Long.valueOf(admin.getAdminId()), jwtProperties.getTokenTTL());
+    }
+
+    @Override
+    public boolean registerAdmin(Admin admin) {
+        // 对密码进行加密存储
+        String encryptedPassword = passwordEncoder.encode(admin.getPassword());
+        admin.setPassword(encryptedPassword);
+        return save(admin);
     }
 }
 

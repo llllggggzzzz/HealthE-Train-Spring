@@ -15,6 +15,8 @@ public interface TeacherDetailService extends IService<TeacherDetail> {
     // 按照学历分类统计教师数量
     Map<String, Integer> countTeachersByQualification();
 
+    TeacherDetail getByUserId(Long userId);
+
     // 统计教师总数量
     int countTeachers();
 }

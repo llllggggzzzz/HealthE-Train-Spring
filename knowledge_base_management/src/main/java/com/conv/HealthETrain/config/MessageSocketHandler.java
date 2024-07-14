@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.config;
 
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
 import com.conv.HealthETrain.domain.DTO.ChatMessage;
 import com.conv.HealthETrain.enums.MessageType;
 import com.conv.HealthETrain.mq.RabbitMQSender;
@@ -8,6 +9,7 @@ import com.conv.HealthETrain.utils.ByteUtil;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -26,8 +28,8 @@ public class MessageSocketHandler extends TextWebSocketHandler {
     private static final Map<String, List<WebSocketSession>> USER_SESSIONS = new ConcurrentHashMap<>();
     private static final Map<String, Integer> USER_CONNECT_NUM_MAP = new ConcurrentHashMap<>();
 
-    private final RabbitMQSender rabbitMQSender;
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private final StringRedisTemplate redisTemplate;
 
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
@@ -72,14 +74,26 @@ public class MessageSocketHandler extends TextWebSocketHandler {
                     for (String userId : receiverIdList) {
                         List<WebSocketSession> webSocketSessionList = USER_SESSIONS.get(userId);
                         if(webSocketSessionList == null){
+                            //为空,当前用户不在线，存储到未读聊天记录
+                            String unreadKey = "unread:" + userId + ":From:" + senderId;
+                            redisTemplate.opsForList().leftPush(unreadKey, JSONUtil.toJsonStr(message));
+                            //存储聊天记录
+                            String chatKey = "chat:" + userId + ":with:" + senderId;
+                            redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(message));
+                            String reverseChatKey = "chat:" + senderId + ":with:" + userId;
+                            redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(message));
                             return;
                         }
                         for (WebSocketSession socketSession : webSocketSessionList){
                             if (socketSession.isOpen() && socketSession != null) {
-                                //redis存储消息列表和聊天记录
                                 socketSession.sendMessage(message);
                             }
                         }
+                        //redis存储聊天记录
+                        String chatKey = "chat:" + userId + ":with:" + senderId;
+                        redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(message));
+                        String reverseChatKey = "chat:" + senderId + ":with:" + userId;
+                        redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(message));
                     }
                 }
                 break;

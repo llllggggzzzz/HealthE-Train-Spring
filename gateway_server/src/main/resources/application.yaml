@@ -16,7 +16,8 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-            - Path=/users/**, /api/v1/userList/**
+#            - Path=/users/**, /api/v1/userList/**
+            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -26,16 +27,21 @@ spring:
         - id: training-learning-video
           uri: lb://training-learning-video
           predicates:
-            - Path=/api/v1/video/**
+            - Path=/api/v1/video/**, /api/v1/live/**
         - id: knowledge-base-management
           uri: lb://knowledge-base-management
           predicates:
             - Path=/api/v1/repository/**, /api/v1/note/**, /api/v1/notePrivilege/**, /api/v1/repositoryPrivilege/**, /api/v1/answer/**, 
-                 /api/v1/ask/**, /api/v1/noteLinkRepository/**, /api/v1/recentFile/**, /api/v1/ocr/**
+                 /api/v1/ask/**, /api/v1/noteLinkRepository/**, /api/v1/recentFile/**, /api/v1/ocr/**, /api/v1/message/**
 
-
-
-
+        - id: resource-management
+          uri: lb://resource-management
+          predicates:
+            - Path=/api/v1/questionBank/**
+        - id: exam-evaluation
+          uri: lb://exam-evaluation
+          predicates:
+            - Path=/api/v1/examQuestion/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -63,6 +69,17 @@ spring:
     user:
       name: user
       password: 123
+  data:
+    redis:
+      host: localhost
+      port: 9001
+      password: redis
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 0
+          max-wait: 100ms
 seata:
   tx-service-group: default  #这里每个服务都是对应不同的映射名,在配置中心可以看到
   registry:
@@ -80,6 +97,8 @@ healthe:
   auth:
     exclude-paths:
       - /users/login/**
+      - /users/check/**
+      - /users/register
       - /study/**
       - /repository/**
       - /repositoryPrivilege/**
@@ -88,16 +107,24 @@ healthe:
       - /answer/**
       - /ask/**
       - /userList/**
+      - /users/teacher/**
       - /comment/**
       - /video/**
+      - /live/**
       - /noteLinkRepository/**
       - /recentFile/**
       - /admins/login/**
+      - /admins/register/**
+      - /questionBank/**
+      - /users/statistic/**
+      - /examQuestion/**
+      - /userLinkCategory/**
+      - /users/**
       - /ocr/**
+      - /message/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
     alias: healthe
     password: healthe
-    tokenTTL: 10m
-
+    tokenTTL: 30m

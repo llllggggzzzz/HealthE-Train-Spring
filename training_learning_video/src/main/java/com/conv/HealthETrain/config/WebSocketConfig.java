@@ -58,7 +58,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
         @Override
         public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-            String query = request.getURI().getQuery();
+                String query = request.getURI().getQuery();
             String key = StrUtil.emptyIfNull(parseQueryString(query).get("key"));
             String path = StrUtil.emptyIfNull(parseQueryString(query).get("path"));
             String hostAddress = request.getRemoteAddress().getAddress().getHostAddress();

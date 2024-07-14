@@ -6,6 +6,7 @@ import com.conv.HealthETrain.mq.RabbitMQSender;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.web.socket.WebSocketHandler;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final RabbitMQSender rabbitMQSender;
+    private final StringRedisTemplate redisTemplate;
 
     private static Map<String, String> parseQueryString(String query) {
         Map<String, String> queryParams = new HashMap<>();
@@ -44,7 +46,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new MessageSocketHandler(rabbitMQSender), "/message")
+        registry.addHandler(new MessageSocketHandler(redisTemplate), "/message")
                 //设置处理类和连接路径
                 .setAllowedOrigins("*") //设置作用域
                 .addInterceptors(new MyWebSocketInterceptor());//设置拦截器

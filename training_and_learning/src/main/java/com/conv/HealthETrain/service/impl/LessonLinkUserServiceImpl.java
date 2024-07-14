@@ -3,7 +3,7 @@ package com.conv.HealthETrain.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.POJP.Chapter;
+import com.conv.HealthETrain.domain.Chapter;
 import com.conv.HealthETrain.domain.POJP.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonLinkUser;
 import com.conv.HealthETrain.domain.Section;
@@ -69,6 +69,25 @@ public class LessonLinkUserServiceImpl extends ServiceImpl<LessonLinkUserMapper,
             }
         }
         return totalSections;
+    }
+
+    // 获取课程内用户Id列表
+    @Override
+    public List<Long> getStudentsIdByLessonId(Long userId) {
+        return lessonLinkUserMapper.selectUserIdsByLessonId(userId);
+    }
+
+    // 删除课内多名学生
+    @Override
+    public boolean deleteLessonStudents(Long lessonId, List<Long> userIdList) {
+        if (lessonId == null || userIdList == null || userIdList.isEmpty()) {
+            return false;
+        }
+        int rowsAffected = lessonLinkUserMapper.delete(new QueryWrapper<LessonLinkUser>()
+                .eq("lesson_id", lessonId)
+                .in("user_id", userIdList));
+
+        return rowsAffected > 0;
     }
 }
 

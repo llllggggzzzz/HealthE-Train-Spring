@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -12,8 +13,11 @@ import java.util.List;
 @NoArgsConstructor
 public class ChatMessage {
     private String senderUserId;
+    private UserDTO senderUserInfo;
     private List<String> receiverIdList;
     private String message;
-    private NoteInfoDTO chatNote;
+    private RecentNoteDTO chatNote;
     private MessageType type;
+    private Date sendTime;
+
 }

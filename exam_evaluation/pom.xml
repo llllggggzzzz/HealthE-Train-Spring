@@ -77,6 +77,23 @@
             <artifactId>seata-spring-boot-starter</artifactId>
             <version>1.5.2</version>
         </dependency>
+        <dependency>
+            <groupId>com.conv.HealthETrain</groupId>
+            <artifactId>healthe_train_api</artifactId>
+            <version>1.0</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <!--redis依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!--common-pool-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
 
 
     </dependencies>

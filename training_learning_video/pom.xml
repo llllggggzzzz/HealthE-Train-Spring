@@ -86,9 +86,32 @@
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
 
+<!--        <dependency>-->
+<!--            <groupId>net.logstash.logback</groupId>-->
+<!--            <artifactId>logstash-logback-encoder</artifactId>-->
+<!--        </dependency>-->
+
+
+        <!--redis依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-redis</artifactId>
+        </dependency>
+        <!--common-pool-->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-pool2</artifactId>
+        </dependency>
+
         <dependency>
             <groupId>org.mp4parser</groupId>
             <artifactId>isoparser</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.conv.HealthETrain</groupId>
+            <artifactId>healthe_train_common</artifactId>
+            <version>1.0</version>
         </dependency>
     </dependencies>
 </project>
