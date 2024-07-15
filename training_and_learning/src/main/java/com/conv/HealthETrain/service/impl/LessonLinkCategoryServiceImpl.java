@@ -2,7 +2,7 @@ package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import com.conv.HealthETrain.service.LessonLinkCategoryService;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
 * @author flora

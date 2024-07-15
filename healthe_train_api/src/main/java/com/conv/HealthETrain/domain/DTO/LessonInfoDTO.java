@@ -1,7 +1,6 @@
 package com.conv.HealthETrain.domain.DTO;
 
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

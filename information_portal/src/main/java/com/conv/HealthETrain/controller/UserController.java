@@ -100,6 +100,8 @@ public class UserController {
      */
     @PostMapping("/register")
     public ApiResponse<Object> register(@RequestBody User registerUser) {
+        log.info(registerUser.toString());
+        registerUser.setUserId(null);
         userService.register(registerUser);
 
         return ApiResponse.success();
