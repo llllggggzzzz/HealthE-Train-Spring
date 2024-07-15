@@ -20,6 +20,7 @@ public class MessageService {
     @Autowired
     private ObjectMapper objectMapper;  // 使用Spring自动注入
 
+
     /**
     * @Description: 获取用户和指定用户的聊天记录
     * @Param:
@@ -34,7 +35,8 @@ public class MessageService {
         if(chatMessage != null){
             try {
                 for (String messageJson : chatMessage) {
-                    ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
+                    ChatMessage message = JSONUtil.toBean(messageJson, ChatMessage.class);
+//                    ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
                     chatMessageList.add(message);
                 }
             } catch (Exception e) {
@@ -50,28 +52,28 @@ public class MessageService {
     * @Author: flora
     * @Date: 2024/7/14
     */
-    public Map<String, List<ChatMessage>> getAllChatList(Long userId){
-        Map<String, List<ChatMessage>> allChatList = new HashMap<>();
+    public List<ChatMessage> getAllChatList(Long userId){
         Set<String> keyList = redisTemplate.keys("chat:" + userId + ":with:*");
+        List<ChatMessage> allMessageList = new ArrayList<>();
         if(keyList != null){
             for(String key: keyList){
-                String chatId = key.substring(key.lastIndexOf(":") + 1);
+//                String chatId = key.substring(key.lastIndexOf(":") + 1);
                 List<String> chatMessageList = redisTemplate.opsForList().range(key, 0, -1);
-                List<ChatMessage> allMessageList = new ArrayList<>();
+//                List<ChatMessage> allMessageList = new ArrayList<>();
                 if(chatMessageList != null){
                     try {
                         for (String messageJson : chatMessageList) {
-                            ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
+                            ChatMessage message = JSONUtil.toBean(messageJson, ChatMessage.class);
+//                            ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
                             allMessageList.add(message);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                allChatList.put(chatId, allMessageList);
             }
         }
-        return allChatList;
+        return allMessageList;
     }
     /**
     * @Description: 获取用户与指定用户的的未读聊天记录
@@ -87,7 +89,8 @@ public class MessageService {
         if(unreadMessages != null){
             try {
                 for (String messageJson : unreadMessages) {
-                    ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
+                    ChatMessage message = JSONUtil.toBean(messageJson, ChatMessage.class);
+//                    ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
                     allMessageList.add(message);
                 }
             } catch (Exception e) {
@@ -104,27 +107,26 @@ public class MessageService {
     * @Author: flora
     * @Date: 2024/7/14
     */
-    public Map<String, List<ChatMessage>> getAllUnReadMessageList(Long userId){
-        Map<String, List<ChatMessage>> unReadMessageList = new HashMap<>();
+    public List<ChatMessage> getAllUnReadMessageList(Long userId){
+        List<ChatMessage> allMessageList = new ArrayList<>();
         Set<String> keyList = redisTemplate.keys("unread:" + userId + ":From:*");
         if(keyList != null){
             for(String key: keyList){
                 String senderId = key.substring(key.lastIndexOf(":") + 1);
                 List<String> chatMessageList = redisTemplate.opsForList().range(key, 0, -1);
-                List<ChatMessage> allMessageList = new ArrayList<>();
                 if(chatMessageList != null){
                     try {
                         for (String messageJson : chatMessageList) {
-                            ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
+                            ChatMessage message = JSONUtil.toBean(messageJson, ChatMessage.class);
+//                            ChatMessage message = objectMapper.readValue(messageJson, ChatMessage.class);
                             allMessageList.add(message);
                         }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }
-                unReadMessageList.put(senderId, allMessageList);
             }
         }
-        return unReadMessageList;
+        return allMessageList;
     }
 }

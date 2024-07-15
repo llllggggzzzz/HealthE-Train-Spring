@@ -76,12 +76,12 @@ public class MessageSocketHandler extends TextWebSocketHandler {
                         if(webSocketSessionList == null){
                             //为空,当前用户不在线，存储到未读聊天记录
                             String unreadKey = "unread:" + userId + ":From:" + senderId;
-                            redisTemplate.opsForList().leftPush(unreadKey, JSONUtil.toJsonStr(message));
+                            redisTemplate.opsForList().leftPush(unreadKey, JSONUtil.toJsonStr(chatMessage));
                             //存储聊天记录
                             String chatKey = "chat:" + userId + ":with:" + senderId;
-                            redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(message));
+                            redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(chatMessage));
                             String reverseChatKey = "chat:" + senderId + ":with:" + userId;
-                            redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(message));
+                            redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(chatMessage));
                             return;
                         }
                         for (WebSocketSession socketSession : webSocketSessionList){
@@ -91,9 +91,9 @@ public class MessageSocketHandler extends TextWebSocketHandler {
                         }
                         //redis存储聊天记录
                         String chatKey = "chat:" + userId + ":with:" + senderId;
-                        redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(message));
+                        redisTemplate.opsForList().leftPush(chatKey, JSONUtil.toJsonStr(chatMessage));
                         String reverseChatKey = "chat:" + senderId + ":with:" + userId;
-                        redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(message));
+                        redisTemplate.opsForList().leftPush(reverseChatKey, JSONUtil.toJsonStr(chatMessage));
                     }
                 }
                 break;

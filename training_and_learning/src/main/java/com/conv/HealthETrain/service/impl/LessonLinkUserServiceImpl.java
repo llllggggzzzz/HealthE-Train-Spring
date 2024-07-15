@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Chapter;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonLinkUser;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.mapper.ChapterMapper;

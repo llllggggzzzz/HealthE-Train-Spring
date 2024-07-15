@@ -16,8 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-#            - Path=/users/**, /api/v1/userList/**
-            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
+            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**, /api/v1/userList/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -37,7 +36,7 @@ spring:
         - id: resource-management
           uri: lb://resource-management
           predicates:
-            - Path=/api/v1/questionBank/**
+            - Path=/api/v1/questionBank/**, /api/v1/file/**
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
@@ -122,6 +121,7 @@ healthe:
       - /users/**
       - /ocr/**
       - /message/**
+      - /file/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
