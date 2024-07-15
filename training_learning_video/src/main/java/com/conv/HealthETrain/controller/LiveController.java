@@ -115,29 +115,16 @@ public class LiveController {
     @GetMapping("/allLive")
     public ApiResponse<List<ApplyLiveUUDTO>> getAllLiveInfo(){
         Set<String> keys = redisTemplate.keys("live:*");
-        List<String> liveInfos = null;
+        List<ApplyLiveUUDTO> applyLiveUUDTOs = new ArrayList<>();
         if (keys != null) {
-            liveInfos = redisTemplate.opsForValue().multiGet(keys);
-        }
-        List<ApplyLiveUUDTO> applyLiveUUDTOs = null;
-        if (liveInfos != null) {
-            applyLiveUUDTOs = liveInfos.stream()
-                    .map(liveInfo -> {
-                        ApplyLiveUUDTO dto = JSONUtil.toBean(liveInfo, ApplyLiveUUDTO.class);
-                        dto.setUUID(getUUIDFromKey(liveInfo));
-                        return dto;
-                    })
-                    .toList();
+            for (String key : keys) {
+                String uuid = key.substring("live:".length());
+                String liveInfo = redisTemplate.opsForValue().get(key);
+                ApplyLiveUUDTO dto = JSONUtil.toBean(liveInfo, ApplyLiveUUDTO.class);
+                dto.setUUID(uuid);
+                applyLiveUUDTOs.add(dto);
+            }
         }
         return ApiResponse.success(applyLiveUUDTOs);
-    }
-
-    // 获取UUID参数
-    private String getUUIDFromKey(String key) {
-        int index = key.indexOf(':');
-        if (index != -1 && index + 1 < key.length()) {
-            return key.substring(index + 1);
-        }
-        return "";
     }
 }

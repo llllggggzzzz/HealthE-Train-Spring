@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.domain.DTO;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -20,5 +21,6 @@ public class ApplyLiveUUDTO {
     private String livaCover;
     private String liveIntroduction;
     private String categoryName="";
+    @JsonProperty("uuid")
     private String UUID;
 }
