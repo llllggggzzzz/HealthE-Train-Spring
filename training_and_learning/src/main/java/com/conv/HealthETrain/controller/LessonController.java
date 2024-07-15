@@ -489,4 +489,10 @@ public class LessonController {
             return lessons;
         }
     }
+
+    // 根据tdId查询所有ta教授的课程选择信息
+    @GetMapping("/lesson/select/{tdId}")
+    public ApiResponse<List<LessonSelectDTO>> getLessonSelectInfoByTeacherId(@PathVariable("tdId") Long tdId){
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonLinkTeacherService.getLessonSelectInfoByTdId(tdId));
+    }
 }
