@@ -46,6 +46,11 @@ public class Note implements Serializable {
      */
     private Integer type;
 
+    /**
+     * 
+     */
+    private Integer visibility;
+
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
@@ -66,7 +71,8 @@ public class Note implements Serializable {
             && (this.getNoteTitle() == null ? other.getNoteTitle() == null : this.getNoteTitle().equals(other.getNoteTitle()))
             && (this.getUserId() == null ? other.getUserId() == null : this.getUserId().equals(other.getUserId()))
             && (this.getTime() == null ? other.getTime() == null : this.getTime().equals(other.getTime()))
-            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()));
+            && (this.getType() == null ? other.getType() == null : this.getType().equals(other.getType()))
+            && (this.getVisibility() == null ? other.getVisibility() == null : this.getVisibility().equals(other.getVisibility()));
     }
 
     @Override
@@ -79,6 +85,7 @@ public class Note implements Serializable {
         result = prime * result + ((getUserId() == null) ? 0 : getUserId().hashCode());
         result = prime * result + ((getTime() == null) ? 0 : getTime().hashCode());
         result = prime * result + ((getType() == null) ? 0 : getType().hashCode());
+        result = prime * result + ((getVisibility() == null) ? 0 : getVisibility().hashCode());
         return result;
     }
 
@@ -94,6 +101,7 @@ public class Note implements Serializable {
         sb.append(", userId=").append(userId);
         sb.append(", time=").append(time);
         sb.append(", type=").append(type);
+        sb.append(", visibility=").append(visibility);
         sb.append(", serialVersionUID=").append(serialVersionUID);
         sb.append("]");
         return sb.toString();

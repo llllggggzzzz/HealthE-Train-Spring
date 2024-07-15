@@ -1,9 +1,11 @@
 package com.conv.HealthETrain.domain.POJP;
 
-import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -12,7 +14,10 @@ import java.io.Serializable;
  */
 @Data
 @TableName(value ="lesson_detail")
+@AllArgsConstructor
+@NoArgsConstructor
 public class LessonDetail implements Serializable {
+    @TableId
     private Long ldId;
     private Long lessonId;
     private String lessonOverview;

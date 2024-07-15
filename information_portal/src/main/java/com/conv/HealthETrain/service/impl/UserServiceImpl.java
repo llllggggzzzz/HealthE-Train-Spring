@@ -1,8 +1,10 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
@@ -12,6 +14,7 @@ import com.conv.HealthETrain.mapper.UserLinkCategoryMapper;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.conv.HealthETrain.utils.CodeUtil;
 import com.conv.HealthETrain.utils.MailUtil;
 import com.conv.HealthETrain.utils.TokenUtil;
@@ -25,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.List;
+
 /**
 * @author john
 * @description 针对表【user】的数据库操作Service实现
@@ -34,6 +39,19 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> userList = userMapper.selectList(null);
+        return userList;
+    }
+
+    @Override
+    public User getUser(Long userId) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return userMapper.selectOne(queryWrapper);
+    }
 
     private final CodeUtil codeUtil;
     private final MailUtil mailUtil;
@@ -115,6 +133,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Override
     public User getUserByEmail(String email) {
         return lambdaQuery().eq(User::getEmail, email).one();
+    }
+
+    @Override
+    public List<User> getSearchUserList(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("username", username);
+        return userMapper.selectList(queryWrapper);
     }
 
     // 查询用户基本情况以及教师类别和权限类别

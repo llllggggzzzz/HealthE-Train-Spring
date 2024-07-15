@@ -1,11 +1,14 @@
-package com.conv.HealthETrain.domain.POJP;
+package com.conv.HealthETrain.domain;
 
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 
@@ -13,6 +16,8 @@ import lombok.Data;
  */
 @TableName(value ="lesson")
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class Lesson implements Serializable {
     /**
      * 

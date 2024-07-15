@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.client;
 
 
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -17,6 +18,13 @@ public interface InformationPortalClient {
 
     @GetMapping("/users/{id}")
     User getUserInfo(@PathVariable("id") Long id);
+
+    @GetMapping("/userList")
+    List<User> getAllUsers();
+
+    @GetMapping("/userList/{id}")
+    User getUser(@PathVariable Long id);
+
 
     // 获取网站所有学生用户的信息
     @GetMapping("/users/students")

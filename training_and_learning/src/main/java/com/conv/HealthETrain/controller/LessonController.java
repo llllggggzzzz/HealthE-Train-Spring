@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
+import com.conv.HealthETrain.domain.POJP.LessonDetail;
+import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.conv.HealthETrain.domain.POJP.Star;
 import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
@@ -21,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -39,6 +40,8 @@ public class LessonController {
     private final LessonLinkTeacherService lessonLinkTeacherService;
 
     private final LessonService lessonService;
+
+    private final LessonDetailService lessonDetailService;
 
     private final InformationPortalClient informationPortalClient;
 
@@ -490,9 +493,91 @@ public class LessonController {
         }
     }
 
-    // 根据tdId查询所有ta教授的课程选择信息
-    @GetMapping("/lesson/select/{tdId}")
-    public ApiResponse<List<LessonSelectDTO>> getLessonSelectInfoByTeacherId(@PathVariable("tdId") Long tdId){
-        return ApiResponse.success(ResponseCode.SUCCEED,"成功",lessonLinkTeacherService.getLessonSelectInfoByTdId(tdId));
+    /**
+     * 获取教师的所有课程
+     * @param tdId
+     * @return
+     */
+    @GetMapping("/lesson/teacher/{id}")
+    public ApiResponse<Object> getAllTeacherLessons(@PathVariable("id") Long tdId) {
+        List<Long> lessonIds = lessonLinkTeacherService.getLessonsByTeacherId(tdId);
+        List<LessonDetailInfoDTO> lessonDetailInfoDTOS = new ArrayList<>();
+
+        for(Long lessonId : lessonIds) {
+            Lesson lesson = lessonService.getById(lessonId);
+            LessonDetail lessonDetail = lessonDetailService.getByLessonId(lessonId);
+
+            // 如果课程是必修，则查询对应的种类
+            List<Boolean> lessonCategories = null;
+            if (lesson.getLessonType() == 1) {
+                List<Long> categoryIds = lessonLinkCategoryService.getCategoriesByLessonId(lessonId);
+
+                lessonCategories = new ArrayList<>();
+                for (int i = 1; i <= 7; i++) {
+                    if (categoryIds.contains((long) i)) {
+                        lessonCategories.add(true);
+                        continue;
+                    }
+                    lessonCategories.add(false);
+                }
+            }
+
+            LessonDetailInfoDTO lessonDetailInfoDTO = new LessonDetailInfoDTO(
+                    lessonId, lesson.getLessonName(), lesson.getLessonType(), lesson.getStartTime(),
+                    lesson.getEndTime(), lesson.getLessonCover(), lessonCategories, lessonDetail.getLessonOverview(),
+                    lessonDetail.getLessonObject(), lessonDetail.getPreliminaryKnowledge(), lessonDetail.getLessonMaterial());
+
+            lessonDetailInfoDTOS.add(lessonDetailInfoDTO);
+        }
+
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonDetailInfoDTOS);
+    }
+
+    /**
+     * 教师添加课程
+     * @param tdId
+     * @param lessonDetailInfo
+     * @return
+     */
+    @PostMapping("/lesson/teacher/{id}")
+    public ApiResponse<Object> teacherAddLesson(@PathVariable("id") Long tdId, @RequestBody LessonDetailInfoDTO lessonDetailInfo) {
+        // 更新的表有 Lesson LessonDetail LessonLinkTeacher LessonLinkCategory
+
+        // 1. 更新Lesson表
+        Lesson lesson = new Lesson(null, lessonDetailInfo.getLessonName(), lessonDetailInfo.getLessonType(),
+                lessonDetailInfo.getStartTime(), lessonDetailInfo.getEndTime(), lessonDetailInfo.getLessonCover());
+
+        Long lessonId = lessonService.insertLesson(lesson);
+        // 2. 更新LessonDetail表
+        LessonDetail lessonDetail = new LessonDetail(null, lessonId, lessonDetailInfo.getLessonOverview(), lessonDetailInfo.getLessonObject(),
+                                                    lessonDetailInfo.getPreliminaryKnowledge(), lessonDetailInfo.getReferenceMaterial());
+        boolean saveLessonDetail = lessonDetailService.save(lessonDetail);
+
+        // 3. 更新LessonLinkTeacher表
+        LessonLinkTeacher lessonLinkTeacher = new LessonLinkTeacher(null, lessonId, tdId);
+        boolean saveLLinkT = lessonLinkTeacherService.save(lessonLinkTeacher);
+
+        // 4. 看需要更新LessonLinkCategory表
+        boolean saveLLinkC = true;
+        if (lessonDetailInfo.getLessonType() == 1) {
+            // 如果是必修课程，需要更新LessonLinkCategory表
+            List<Long> categoryIds = new ArrayList<>();
+            int counts = 1;
+            for (boolean b : lessonDetailInfo.getLessonCategories()) {
+                if (b) {
+                    categoryIds.add((long) counts);
+                }
+                counts++;
+            }
+
+            saveLLinkC = lessonLinkCategoryService.saveCategoriesByLessonId(lessonId, categoryIds);
+        }
+
+        log.info("saveLessonDetail: {}, saveLLinkT: {}, saveLLinkC: {}", saveLessonDetail, saveLLinkT, saveLLinkC);
+
+        if (saveLessonDetail && saveLLinkT && saveLLinkC) {
+            return ApiResponse.success(ResponseCode.SUCCEED, "更新成功");
+        }
+        return  ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR, "更新失败");
     }
 }

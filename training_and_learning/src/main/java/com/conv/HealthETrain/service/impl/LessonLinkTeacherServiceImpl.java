@@ -29,7 +29,6 @@ public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherM
     implements LessonLinkTeacherService{
 
     private final LessonLinkTeacherMapper lessonLinkTeacherMapper;
-    private final LessonMapper lessonMapper;
 
     @Override
     public List<Long> getTeachersByLessonId(Long lessonId) {
@@ -59,6 +58,15 @@ public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherM
         }
         return lessonSelectDTOs;
     }
+
+    @Override
+    public List<Long> getLessonsByTeacherId(Long tdId) {
+        LambdaQueryWrapper<LessonLinkTeacher> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(LessonLinkTeacher::getTdId, tdId).select(LessonLinkTeacher::getLessonId);
+        List<LessonLinkTeacher> lessonLinkTeachers = lessonLinkTeacherMapper.selectList(lambdaQueryWrapper);
+        return CollUtil.getFieldValues(lessonLinkTeachers, "lessonId", Long.class);
+    }
+
 }
 
 

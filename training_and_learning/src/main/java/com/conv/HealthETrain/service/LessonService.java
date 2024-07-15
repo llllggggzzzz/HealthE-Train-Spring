@@ -3,8 +3,7 @@ package com.conv.HealthETrain.service;
 import com.conv.HealthETrain.domain.DTO.LessonBrowseDTO;
 import com.conv.HealthETrain.domain.DTO.LessonCategoryInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonSimpleInfoDTO;
-import com.conv.HealthETrain.domain.DTO.LessonStudentSituationDTO;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 import java.util.List;
@@ -21,6 +20,8 @@ public interface LessonService extends IService<Lesson> {
     List<LessonCategoryInfoDTO> getLessonCategoryInfo();
     // 更新某项课程的选修必修
     boolean updateLessonType(Long lessonId, Integer lessonType);
+
+    Long insertLesson(Lesson lesson);
     // 根据字符串搜索课程信息
     List<LessonBrowseDTO> searchLessons(String searchString);
 }

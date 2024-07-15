@@ -1,10 +1,15 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Ask;
 import com.conv.HealthETrain.service.AskService;
 import com.conv.HealthETrain.mapper.AskMapper;
+import org.checkerframework.checker.units.qual.A;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -14,7 +19,34 @@ import org.springframework.stereotype.Service;
 @Service
 public class AskServiceImpl extends ServiceImpl<AskMapper, Ask>
     implements AskService{
+    @Autowired
+    private AskMapper askMapper;
 
+    @Override
+    public Boolean addOneAsk(Ask ask) {
+        Ask newAsk = new Ask();
+        newAsk.setNoteId(ask.getNoteId());
+        return askMapper.insert(newAsk) > 0;
+    }
+
+    @Override
+    public List<Ask> getAllAsk() {
+        return askMapper.selectList(null);
+    }
+
+    @Override
+    public Ask getAskById(Long askId) {
+        QueryWrapper<Ask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ask_id", askId);
+        return askMapper.selectOne(queryWrapper);
+    }
+
+    @Override
+    public Ask getAskByNoteId(Long noteId) {
+        QueryWrapper<Ask> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("note_id", noteId);
+        return askMapper.selectOne(queryWrapper);
+    }
 }
 
 

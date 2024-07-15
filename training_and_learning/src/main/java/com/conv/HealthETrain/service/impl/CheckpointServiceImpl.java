@@ -4,13 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Checkpoint;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import com.conv.HealthETrain.mapper.SectionMapper;
 import com.conv.HealthETrain.service.CheckpointService;
 import com.conv.HealthETrain.mapper.CheckpointMapper;
-import com.conv.HealthETrain.service.LessonService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 

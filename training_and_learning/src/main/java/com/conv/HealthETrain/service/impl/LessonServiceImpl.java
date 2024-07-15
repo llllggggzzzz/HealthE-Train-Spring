@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.LessonBrowseDTO;
 import com.conv.HealthETrain.domain.DTO.LessonCategoryInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonSimpleInfoDTO;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonDetail;
 import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
 import com.conv.HealthETrain.domain.POJP.Star;
@@ -111,6 +111,12 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson>
             }
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @Override
+    public Long insertLesson(Lesson lesson) {
+        lessonMapper.insert(lesson);
+        return lesson.getLessonId();
     }
 
 }
