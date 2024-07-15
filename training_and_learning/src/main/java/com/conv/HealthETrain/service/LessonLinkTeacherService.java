@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.LessonSelectDTO;
 import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 

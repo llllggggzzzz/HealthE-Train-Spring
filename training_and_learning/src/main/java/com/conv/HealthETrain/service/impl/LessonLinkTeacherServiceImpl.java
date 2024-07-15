@@ -6,7 +6,8 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.LessonSelectDTO;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import com.conv.HealthETrain.service.LessonLinkTeacherService;
@@ -29,6 +30,7 @@ public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherM
     implements LessonLinkTeacherService{
 
     private final LessonLinkTeacherMapper lessonLinkTeacherMapper;
+    private final LessonMapper lessonMapper;
 
     @Override
     public List<Long> getTeachersByLessonId(Long lessonId) {
