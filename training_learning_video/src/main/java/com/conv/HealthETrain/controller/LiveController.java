@@ -6,6 +6,7 @@ import cn.hutool.json.JSONParser;
 import cn.hutool.json.JSONUtil;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.ApplyLiveDTO;
+import com.conv.HealthETrain.domain.DTO.ApplyLiveUUDTO;
 import com.conv.HealthETrain.domain.DTO.StreamPublishInfo;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -21,6 +22,8 @@ import org.springframework.web.servlet.HandlerMapping;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
@@ -109,4 +112,32 @@ public class LiveController {
         return ApiResponse.success(applyLiveDTO);
     }
 
+    @GetMapping("/allLive")
+    public ApiResponse<List<ApplyLiveUUDTO>> getAllLiveInfo(){
+        Set<String> keys = redisTemplate.keys("live:*");
+        List<String> liveInfos = null;
+        if (keys != null) {
+            liveInfos = redisTemplate.opsForValue().multiGet(keys);
+        }
+        List<ApplyLiveUUDTO> applyLiveUUDTOs = null;
+        if (liveInfos != null) {
+            applyLiveUUDTOs = liveInfos.stream()
+                    .map(liveInfo -> {
+                        ApplyLiveUUDTO dto = JSONUtil.toBean(liveInfo, ApplyLiveUUDTO.class);
+                        dto.setUUID(getUUIDFromKey(liveInfo));
+                        return dto;
+                    })
+                    .toList();
+        }
+        return ApiResponse.success(applyLiveUUDTOs);
+    }
+
+    // 获取UUID参数
+    private String getUUIDFromKey(String key) {
+        int index = key.indexOf(':');
+        if (index != -1 && index + 1 < key.length()) {
+            return key.substring(index + 1);
+        }
+        return "";
+    }
 }
