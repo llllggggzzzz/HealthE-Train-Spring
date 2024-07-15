@@ -30,7 +30,7 @@ spring:
         - id: resource-management
           uri: lb://resource-management
           predicates:
-            - Path=/api/v1/questionBank/**
+            - Path=/api/v1/questionBank/**, /api/v1/file/**
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
@@ -104,6 +104,7 @@ healthe:
       - /examQuestion/**
       - /userLinkCategory/**
       - /users/**
+      - /file/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
