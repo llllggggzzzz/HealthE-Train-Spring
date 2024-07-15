@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.Star;
 import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
@@ -21,7 +21,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.text.DecimalFormat;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;

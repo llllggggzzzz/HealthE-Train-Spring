@@ -12,12 +12,16 @@
             <result property="duration" column="duration" jdbcType="INTEGER"/>
             <result property="level" column="level" jdbcType="INTEGER"/>
             <result property="passScore" column="pass_score" jdbcType="DOUBLE"/>
-            <result property="retryTimes" column="retry_times" jdbcType="INTEGER"/>
+        <result property="retryTimes" column="retry_times" jdbcType="INTEGER"/>
+        <result property="startTime" column="start_time" jdbcType="DATE"/>
+        <result property="endTime" column="end_time" jdbcType="DATE"/>
+        <result property="examName" column="exam_name" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
         exam_id,paper_id,creator_id,
         lession_id,duration,level,
-        pass_score,retry_times
+        pass_score,retry_times,
+        start_time, end_time
     </sql>
 </mapper>

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.LessonBrowseDTO;
 import com.conv.HealthETrain.domain.DTO.LessonCategoryInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonSimpleInfoDTO;
-import com.conv.HealthETrain.domain.POJP.Lesson;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonDetail;
 import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
 import com.conv.HealthETrain.domain.POJP.Star;
