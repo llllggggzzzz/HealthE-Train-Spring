@@ -349,7 +349,6 @@ public class LessonController {
         return saved ? ApiResponse.success(true) : ApiResponse.error(ResponseCode.GONE);
 
     }
-
     // 查询用户的必修课学习总进度
     @GetMapping("/users/lesson/CompulsoryProcess")
     public ApiResponse<List<AllProcessDTO>> getAllUserCompulsoryLessonProcess() throws JsonProcessingException {
@@ -460,7 +459,7 @@ public class LessonController {
     }
 
     // 根据字符串查询课程信息
-    @GetMapping("/browses")
+    @GetMapping("/browse/lessons")
     public List<LessonBrowseDTO> searchLessons(@RequestParam String searchText) {
         String redisKey = "browse:" + searchText;
         String cachedData = stringRedisTemplate.opsForValue().get(redisKey);

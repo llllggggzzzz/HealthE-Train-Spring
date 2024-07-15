@@ -86,11 +86,12 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson>
             );
             // 平均评分
             double averageScore = starMapper.selectObjs(
-                            new QueryWrapper<Star>().eq("lesson_id", lesson.getLessonId())
+                            new QueryWrapper<Star>().select("score").eq("lesson_id", lesson.getLessonId())
                     ).stream()
                     .mapToDouble(score -> ((Number) score).doubleValue()) // 将任意 Number 类型转换为 double
                     .average()
                     .orElse(0.0);
+
             averageScore = Double.parseDouble(df.format(averageScore));
             // 课程对应的所有category
             List<Long> categoryIds = lessonLinkCategoryMapper.selectList(
