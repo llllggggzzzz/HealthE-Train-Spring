@@ -2,6 +2,9 @@ package com.conv.HealthETrain.service;
 
 import com.conv.HealthETrain.domain.Ask;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.checkerframework.checker.units.qual.A;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -9,5 +12,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:51:31
 */
 public interface AskService extends IService<Ask> {
+    Boolean addOneAsk(Ask ask);
+    List<Ask> getAllAsk();
+    Ask getAskById(Long askId);
+    Ask getAskByNoteId(Long noteId);
 
 }

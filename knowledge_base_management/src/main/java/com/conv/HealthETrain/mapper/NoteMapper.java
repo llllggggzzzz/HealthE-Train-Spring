@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 /**
 * @author flora
 * @description 针对表【note】的数据库操作Mapper
-* @createDate 2024-07-07 11:51:31
+* @createDate 2024-07-08 13:26:13
 * @Entity com.conv.HealthETrain.domain.Note
 */
 public interface NoteMapper extends BaseMapper<Note> {
