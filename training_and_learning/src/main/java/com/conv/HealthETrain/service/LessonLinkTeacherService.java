@@ -13,4 +13,6 @@ import java.util.List;
 public interface LessonLinkTeacherService extends IService<LessonLinkTeacher> {
 
      List<Long> getTeachersByLessonId(Long lessonIds);
+
+     List<Long> getLessonsByTeacherId(Long tdId);
 }

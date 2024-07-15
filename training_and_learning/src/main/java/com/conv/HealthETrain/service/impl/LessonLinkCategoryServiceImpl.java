@@ -1,15 +1,21 @@
 package com.conv.HealthETrain.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonLinkCategory;
+import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.conv.HealthETrain.mapper.LessonMapper;
 import com.conv.HealthETrain.service.LessonLinkCategoryService;
 import com.conv.HealthETrain.mapper.LessonLinkCategoryMapper;
 import lombok.AllArgsConstructor;
+import org.apache.ibatis.executor.BatchResult;
 import org.springframework.stereotype.Service;
 
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,8 +69,37 @@ public class LessonLinkCategoryServiceImpl extends ServiceImpl<LessonLinkCategor
         }
         return categoryCountMap;
     }
+
+    @Override
+    public List<Long> getCategoriesByLessonId(Long lessonId) {
+        LambdaQueryWrapper<LessonLinkCategory> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(LessonLinkCategory::getLessonId, lessonId).select(LessonLinkCategory::getCategoryId);
+        List<LessonLinkCategory> lessonLinkCategories = lessonLinkCategoryMapper.selectList(lambdaQueryWrapper);
+        return CollUtil.getFieldValues(lessonLinkCategories, "categoryId", Long.class);
+    }
+
+    @Override
+    public Boolean saveCategoriesByLessonId(Long lessonId, List<Long> categoryIds) {
+        Collection<LessonLinkCategory> lessonLinkCategories = new HashSet<>();
+
+        for (Long categoryId : categoryIds) {
+            LessonLinkCategory lessonLinkCategory = new LessonLinkCategory();
+            lessonLinkCategory.setLessonId(lessonId);
+            lessonLinkCategory.setCategoryId(categoryId);
+
+            lessonLinkCategories.add(lessonLinkCategory);
+        }
+
+        List<BatchResult> results = lessonLinkCategoryMapper.insert(lessonLinkCategories);
+
+        for (BatchResult result : results) {
+            int[] updateCounts = result.getUpdateCounts();
+            for (int count : updateCounts) {
+                if (count == 0) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
 }
-
-
-
-

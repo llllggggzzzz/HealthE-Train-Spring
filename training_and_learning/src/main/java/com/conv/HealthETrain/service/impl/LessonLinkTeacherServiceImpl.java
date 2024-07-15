@@ -32,6 +32,15 @@ public class LessonLinkTeacherServiceImpl extends ServiceImpl<LessonLinkTeacherM
         List<LessonLinkTeacher> lessonLinkTeachers = lessonLinkTeacherMapper.selectList(lambdaQueryWrapper);
         return CollUtil.getFieldValues(lessonLinkTeachers, "tdId", Long.class);
     }
+
+    @Override
+    public List<Long> getLessonsByTeacherId(Long tdId) {
+        LambdaQueryWrapper<LessonLinkTeacher> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(LessonLinkTeacher::getTdId, tdId).select(LessonLinkTeacher::getLessonId);
+        List<LessonLinkTeacher> lessonLinkTeachers = lessonLinkTeacherMapper.selectList(lambdaQueryWrapper);
+        return CollUtil.getFieldValues(lessonLinkTeachers, "lessonId", Long.class);
+    }
+
 }
 
 
