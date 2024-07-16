@@ -3,6 +3,7 @@ package com.conv.HealthETrain.controller;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
+import com.conv.HealthETrain.domain.dto.PasswordDTO;
 import com.conv.HealthETrain.domain.dto.TeacherDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserStatistic;
@@ -12,6 +13,9 @@ import com.conv.HealthETrain.service.*;
 import com.conv.HealthETrain.service.TeacherDetailService;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
+import com.conv.HealthETrain.utils.ConfigUtil;
+import com.conv.HealthETrain.utils.ImageUploadHandler;
+import com.conv.HealthETrain.utils.TokenUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -20,12 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author liusg
@@ -285,5 +289,52 @@ public class UserController {
         teacherDetailDTO.setQualification(qualificationService.getQualificationById(teacherDetail.getQualificationId()));
 
         return ApiResponse.success(teacherDetailDTO);
+    }
+
+    @PostMapping("/update/password")
+    public ApiResponse<Boolean> updateUserPassword(@RequestBody PasswordDTO passwordDTO){
+        boolean flag= userService.updatePassword(passwordDTO);
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",flag);
+    }
+    @PostMapping("/update/userInfo")
+    public ApiResponse<String> updateUserInfo(@RequestBody User user){
+        boolean flag = userService.isExistAccount(user.getUserId(),user.getAccount());
+        if(!flag)
+            return ApiResponse.error(ResponseCode.GONE,"失败","error1");
+        else{
+            boolean flag2 = userService.updateUserInfo(user);
+            if(flag2)
+                return ApiResponse.success(ResponseCode.SUCCEED,"成功","success");
+            else
+                return ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","error2");
+        }
+    }
+    @PostMapping("/update/cover")
+    public ApiResponse<String> updateUserCover(@RequestParam("avatar") MultipartFile avatar,
+                                               @RequestParam("userId") Long userId) {
+        if (avatar.isEmpty()) {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY, "上传头像为空", "上传头像为空");
+        }
+        try {
+            // 读取文件内容并进行 Base64 编码
+            byte[] fileContent = avatar.getBytes();
+            String contentB64 = Base64.getEncoder().encodeToString(fileContent);
+
+            String token = ConfigUtil.getImgSaveToken();
+            String repo = ConfigUtil.getImgSaveRepo();
+            String pathPrefix = ConfigUtil.getImgSaveFolder();
+            String commitMessage = "上传图片到图床";
+
+            String imageUrl = ImageUploadHandler.uploadBase64ToGitHub(token, repo, pathPrefix, contentB64, commitMessage);
+            if(imageUrl!=null) {
+                boolean flag = userService.updateUserCover(userId,imageUrl);
+                return ApiResponse.success(ResponseCode.SUCCEED, "成功", imageUrl);
+            }
+            else
+                return ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","失败");
+        } catch (IOException e) {
+            System.out.println("捕捉错误");
+            return  ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","失败");
+        }
     }
 }

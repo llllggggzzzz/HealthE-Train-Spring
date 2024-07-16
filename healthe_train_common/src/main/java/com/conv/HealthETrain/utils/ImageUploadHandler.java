@@ -11,6 +11,7 @@ import cn.hutool.json.JSONUtil;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,11 +99,13 @@ public class ImageUploadHandler {
         String token = ConfigUtil.getImgSaveToken();
         String repo = ConfigUtil.getImgSaveRepo();
         String pathPrefix = ConfigUtil.getImgSaveFolder();
-        String filePath = "/home/john/Desktop/Snipaste_2024-07-06_09-29-03.png";
+        String filePath = "C:\\Users\\25181\\Desktop\\BF75[`JBKW@F1N~QNHY)T1K.png";
         String commitMessage = "上传图片到图床";
+        byte[] bytes = FileUtil.readBytes(filePath);
+        String s = Base64.getEncoder().encodeToString(bytes);
         // 上传图片
-        String imageUrl = uploadFileToGitHub(token, repo, pathPrefix, filePath, commitMessage);
-
+//        String imageUrl = uploadFileToGitHub(token, repo, pathPrefix, filePath, commitMessage);
+        String imageUrl = uploadBase64ToGitHub(token, repo, pathPrefix, s, commitMessage);
         if (imageUrl != null) {
             Console.log("图片链接：{}", imageUrl);
         }
