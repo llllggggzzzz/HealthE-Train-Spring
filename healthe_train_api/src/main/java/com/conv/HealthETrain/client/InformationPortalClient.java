@@ -18,6 +18,11 @@ public interface InformationPortalClient {
     @GetMapping("/users/{id}")
     User getUserInfo(@PathVariable("id") Long id);
 
+
+    @GetMapping("/account/{account}")
+    User getUserInfoByAccount(@PathVariable("account") String account);
+
+
     // 获取网站所有学生用户的信息
     @GetMapping("/users/students")
     List<User> getAllStudentsInfo();

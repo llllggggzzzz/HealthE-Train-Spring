@@ -98,7 +98,7 @@ public class ImageUploadHandler {
         String token = ConfigUtil.getImgSaveToken();
         String repo = ConfigUtil.getImgSaveRepo();
         String pathPrefix = ConfigUtil.getImgSaveFolder();
-        String filePath = "/home/john/Desktop/Snipaste_2024-07-06_09-29-03.png";
+        String filePath = "/home/john/Desktop/123.png";
         String commitMessage = "上传图片到图床";
         // 上传图片
         String imageUrl = uploadFileToGitHub(token, repo, pathPrefix, filePath, commitMessage);

@@ -6,6 +6,8 @@ import com.conv.HealthETrain.factory.JellyfinFactory;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
@@ -17,15 +19,12 @@ class JellyfinUtilTest {
 //        Console.log(streamingVideoUrl);
 
         byte[] bytes = FileUtil.readBytes("/home/john/Desktop/test.mp4");
-        Boolean mediaLibrary =  JellyfinFactory
-                .build("/home/john/env/后台/jellyfin/")
-                        .saveFile(bytes,
-                                "test.mp4",
-                                "test",
-                                true);
+        List<String> allMediaLibrary = JellyfinFactory
+                .build("/home/john/env/server/jellyfin")
+                .getAllMediaLibrary("");
 //                .createMediaLibrary("video/test", "test", "homevideos");
 //        Boolean mediaLibrary = JellyfinUtil.createMediaLibrary("/video/test", "test", "homevideos");
-        Console.log(mediaLibrary);
+        Console.log(allMediaLibrary);
     }
 
 }

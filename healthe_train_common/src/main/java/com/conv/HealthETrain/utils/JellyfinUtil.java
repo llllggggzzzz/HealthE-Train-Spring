@@ -16,7 +16,9 @@ import com.conv.HealthETrain.exception.GlobalException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
-
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Slf4j
@@ -40,7 +42,7 @@ public class JellyfinUtil {
     public  String findStreamingVideoUrl(String videoName, String mediaLibrary, String userName) {
         if(StrUtil.isBlankOrUndefined(userName)) {
             log.warn("未检测到设置用户名, 使用默认用户");
-            userName = "root";
+            userName = "jellyfin";
         }
         String jellyfinApiKey = ConfigUtil.getJellyfinApiKey();
         // 获取API_Key
@@ -143,6 +145,70 @@ public class JellyfinUtil {
         log.error("获取视频ID失败");
         return "";
     }
+
+
+    public List<String> getAllMediaLibrary(String userName) {
+        if(StrUtil.isBlankOrUndefined(userName)) {
+            log.warn("未检测到设置用户名, 使用默认用户");
+            userName = "jellyfin";
+        }
+        String jellyfinApiKey = ConfigUtil.getJellyfinApiKey();
+        // 获取API_Key
+        String address = JellyfinBaseAddress + ":" + JellyfinPort;
+        String api_key = "?api_key=" + jellyfinApiKey;
+        String refreshUrl = address + "/Library/Refresh" + api_key;
+        // 刷新所有媒体库
+        HttpRequest.post(refreshUrl).execute();
+
+        String findUserIdUrl = address + "/Users" + api_key;
+        String userIdResponseBody = HttpRequest.get(findUserIdUrl).execute().body();
+        JSONArray userJsonArray = JSONUtil.parseArray(userIdResponseBody);
+        if(userJsonArray.isEmpty()) {
+            log.error("刷新媒体库请求失败");
+            return new ArrayList<>();
+        }
+        log.info("刷新媒体库成功");
+        // 查询所有媒体库信息,
+        String userId = "";
+//        Console.log(userJsonArray);
+        for (int i = 0; i < userJsonArray.size(); i++) {
+            JSONObject jsonObject = userJsonArray.getJSONObject(i);
+            String objectUserName = jsonObject.getStr("Name");
+            if(StrUtil.equals(objectUserName, userName)) {
+                userId = jsonObject.getStr("Id");
+                break;
+            }
+        }
+        // 未查询到用户id, 用户不存在
+        if(StrUtil.isBlank(userId)) {
+            log.error("未查询到用户id, 用户不存在");
+            return new ArrayList<>();
+        }
+
+        log.info("成功查询到用户ID: {}", userId);
+
+
+        String mediaLibraryUrl = address + StrUtil.format("/Users/{}/Views", userId) + api_key;
+        String mediaLibraryResponse = HttpRequest.get(mediaLibraryUrl).execute().body();
+        JSONObject mediaLibraryJson = JSONUtil.parseObj(mediaLibraryResponse);
+        if(!mediaLibraryJson.isEmpty()) {
+            JSONArray items = mediaLibraryJson.getJSONArray("Items");
+            if(items.isEmpty()) {
+                log.error("查询媒体库列表失败");
+                return new ArrayList<>();
+            }
+            return items.stream().map(item -> {
+                JSONObject jsonItem = JSONUtil.parseObj(item);
+                if(jsonItem.containsKey("Name")) {
+                    return jsonItem.getStr("Name");
+                }
+                return "";
+            }).collect(Collectors.toList());
+        }
+        return new ArrayList<>();
+    }
+
+
 
     /**
      * @description 传入挂载的相对路径,即可创建媒体库

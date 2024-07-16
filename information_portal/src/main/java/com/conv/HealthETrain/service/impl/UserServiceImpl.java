@@ -1,6 +1,8 @@
 package com.conv.HealthETrain.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
 import com.conv.HealthETrain.domain.User;
@@ -13,6 +15,7 @@ import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
 import com.conv.HealthETrain.utils.CodeUtil;
+import com.conv.HealthETrain.utils.FaceUtil;
 import com.conv.HealthETrain.utils.MailUtil;
 import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +49,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     private final UserLinkCategoryMapper userLinkCategoryMapper;
     private final UserLinkCategoryService userLinkCategoryService;
 
+
     @Override
     public String loginByAccount(User loginUser) {
         User user = lambdaQuery().eq(User::getAccount, loginUser.getAccount()).one();
@@ -58,6 +62,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
 
         return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
+    }
+
+    @Override
+    public String loginByFace(String account,
+                              String tempFacePath,
+                              String targetFacePath,
+                              Double threshold) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getAccount, account);
+        User user = getOne(lambdaQueryWrapper);
+        Double faceSim = FaceUtil.getFaceSim(tempFacePath, targetFacePath);
+        if(faceSim > threshold) return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
+        else throw new GlobalException("人脸识别不通过", ExceptionCode.BAD_REQUEST);
     }
 
     @Override

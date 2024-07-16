@@ -16,6 +16,11 @@ import java.util.Map;
 public interface UserService extends IService<User> {
      String loginByAccount(User loginUser);
 
+     String loginByFace(String account,
+                        String tempFacePath,
+                        String targetFacePath,
+                        Double threshold);
+
      boolean sendEmailCode(User loginUser);
 
      String verifyEmail(User loginUser, String code);

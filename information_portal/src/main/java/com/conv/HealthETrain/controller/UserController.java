@@ -1,5 +1,8 @@
 package com.conv.HealthETrain.controller;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.hash.Hash;
+import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
@@ -12,19 +15,23 @@ import com.conv.HealthETrain.service.*;
 import com.conv.HealthETrain.service.TeacherDetailService;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
+import com.conv.HealthETrain.service.impl.UserServiceImpl;
+import com.conv.HealthETrain.utils.FaceUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,6 +52,10 @@ public class UserController {
     private final PositionService positionService;
     private final CategoryService categoryService;
     private final QualificationService qualificationService;
+
+    @Autowired
+    private UserServiceImpl userServiceImpl;
+
     /**
      * 用户登录接口
      * @param loginUser
@@ -231,6 +242,11 @@ public class UserController {
         return userService.getById(id);
     }
 
+
+    @GetMapping("/account/{account}")
+    public User getUserInfoByAccount(@PathVariable("account") String account) {
+        return userService.getUserByAccount(account);
+    }
     /**
      * 检验邮箱是否存在
      * @param email
@@ -283,5 +299,39 @@ public class UserController {
         teacherDetailDTO.setQualification(qualificationService.getQualificationById(teacherDetail.getQualificationId()));
 
         return ApiResponse.success(teacherDetailDTO);
+    }
+
+    @PostMapping("/login/face")
+    public ApiResponse<HashMap<String, Object>> loginByFace(@RequestParam("account") String account,
+                                                            @RequestParam("faceInfo") MultipartFile multipartFile) throws IOException {
+        // TODO 获取人脸库中用户人脸信息
+        User user = userServiceImpl.getUserByAccount(account);
+        if(user == null) {
+            return  ApiResponse.error(ResponseCode.BAD_REQUEST, "帐号不存在");
+        }
+
+        String targetFacePath = FaceUtil.getTargetFacePath(user.getUserId());
+        if(StrUtil.isBlank(targetFacePath)) {
+            // 用户未存储人脸信息
+            return ApiResponse.error(ResponseCode.NOT_FOUND, "用户未存储人脸信息");
+        }
+
+        // 为multipartFile创建一个临时文件, 读取其路径
+        String tempPathPrefix = "uploaded-face-" + user.getUserId() + new Date().toString();
+        String tempFilePath = Files.createTempFile(tempPathPrefix, FaceUtil.getSaveSuffix()).toString();
+        String token = userService.loginByFace(account,
+                tempFilePath,
+                targetFacePath,
+                FaceUtil.getFaceSimThreshold());
+        // 删除临时文件
+        Files.deleteIfExists(Path.of(tempFilePath));
+
+        if(token == null) {
+            return ApiResponse.error(ResponseCode.BAD_REQUEST);
+        }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("user", user);
+        return  ApiResponse.success(data);
     }
 }
