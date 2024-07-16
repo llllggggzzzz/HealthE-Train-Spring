@@ -41,7 +41,7 @@ spring:
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
-            - Path=/api/v1/examQuestion/**,/api/v1/paper/**
+            - Path=/api/v1/examQuestion/**,/api/v1/paper/**,/api/v1/exam/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -124,6 +124,7 @@ healthe:
       - /message/**
       - /file/**
       - /paper/**
+      - /exam/**
     include-paths:
   jwt:
     location: classpath:healthe.jks
