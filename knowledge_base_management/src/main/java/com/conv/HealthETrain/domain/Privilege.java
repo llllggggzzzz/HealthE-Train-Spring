@@ -23,7 +23,7 @@ public class Privilege implements Serializable {
     /**
      * 
      */
-    private Integer privilegeLevel;
+    private String privilegeLevel;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

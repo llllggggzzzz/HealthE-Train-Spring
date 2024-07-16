@@ -1,12 +1,17 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cn.hutool.core.util.RandomUtil;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
+import com.conv.HealthETrain.domain.dto.PasswordDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.enums.ExceptionCode;
 import com.conv.HealthETrain.exception.GlobalException;
@@ -14,6 +19,7 @@ import com.conv.HealthETrain.mapper.UserLinkCategoryMapper;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import com.conv.HealthETrain.utils.CodeUtil;
 import com.conv.HealthETrain.utils.FaceUtil;
 import com.conv.HealthETrain.utils.MailUtil;
@@ -27,6 +33,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import java.util.List;
 
 /**
 * @author john
@@ -62,6 +70,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
 
         return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        List<User> userList = userMapper.selectList(null);
+        return userList;
+    }
+
+    @Override
+    public User getUser(Long userId) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("user_id", userId);
+        return userMapper.selectOne(queryWrapper);
     }
 
     @Override
@@ -134,6 +155,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return lambdaQuery().eq(User::getEmail, email).one();
     }
 
+    @Override
+    public List<User> getSearchUserList(String username) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("username", username);
+        return userMapper.selectList(queryWrapper);
+    }
+
     // 查询用户基本情况以及教师类别和权限类别
     @Override
     public List<UserDetailDTO> getAllUsersWithDetails() {
@@ -175,6 +203,60 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return passwordEncoder.encode(password);
     }
 
+    @Override
+    public boolean updatePassword(PasswordDTO passwordDTO) {
+        // 查询用户是否存在且旧密码正确
+        QueryWrapper<User> queryWrapper = Wrappers.query();
+        queryWrapper.eq("user_id", passwordDTO.getUserId());
+        User user = userMapper.selectOne(queryWrapper);
+        if(user==null)
+            return false;
+        boolean flag = passwordEncoder.matches(passwordDTO.getOldPassword(),user.getPassword());
+        if(flag)
+        {
+            // 更新用户密码
+            UpdateWrapper<User> updateWrapper = Wrappers.update();
+            updateWrapper.eq("user_id", passwordDTO.getUserId())
+                    .set("password", passwordEncoder.encode(passwordDTO.getNewPassword()));
+
+            userMapper.update(null, updateWrapper);
+            return true;
+        }
+        else {
+            return false;
+        }
+    }
+
+    // 是否重复账号
+    @Override
+    public boolean isExistAccount(Long userId, String account) {
+        QueryWrapper<User> queryWrapper = Wrappers.query();
+        queryWrapper.eq("account", account)
+                .ne(userId != null, "user_id", userId);
+        int count = Math.toIntExact(userMapper.selectCount(queryWrapper));
+        return count == 0;
+    }
+
+    @Override
+    public boolean updateUserInfo(User user) {
+        UpdateWrapper<User> updateWrapper = Wrappers.update();
+        updateWrapper.eq("user_id", user.getUserId())
+                .set("account", user.getAccount())
+                .set("username", user.getUsername())
+                .set("email", user.getEmail())
+                .set("phone", user.getPhone());
+        int rows = userMapper.update(null, updateWrapper);
+        return rows > 0;
+    }
+
+    @Override
+    public boolean updateUserCover(Long userId, String cover) {
+        UpdateWrapper<User> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("user_id", userId)  // 设置更新条件
+                .set("cover", cover);   // 设置更新的字段和值
+        int rows = baseMapper.update(null, updateWrapper);
+        return rows > 0;
+    }
 }
 
 

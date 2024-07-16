@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.conv.HealthETrain.mapper.UserNotePrivilegeMapper">
+
+    <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.UserNotePrivilege">
+            <id property="unpId" column="unp_id" jdbcType="BIGINT"/>
+            <result property="userId" column="user_id" jdbcType="BIGINT"/>
+            <result property="noteId" column="note_id" jdbcType="BIGINT"/>
+            <result property="privilegeId" column="privilege_id" jdbcType="BIGINT"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        unp_id,user_id,note_id,
+        privilege_id
+    </sql>
+</mapper>

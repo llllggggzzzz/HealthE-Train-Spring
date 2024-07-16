@@ -1,12 +1,16 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.conv.HealthETrain.domain.dto.PasswordDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 import java.util.Map;
+
+import java.util.List;
 
 /**
 * @author john
@@ -14,6 +18,8 @@ import java.util.Map;
 * @createDate 2024-07-05 17:56:52
 */
 public interface UserService extends IService<User> {
+     List<User> getAllUsers();
+     User getUser(Long userId);
      String loginByAccount(User loginUser);
 
      String loginByFace(String account,
@@ -37,7 +43,12 @@ public interface UserService extends IService<User> {
      // 查询所有用户
      List<User> findStudentUserList();
 
+     List<User> getSearchUserList(String username);
      // 封装加密方法，把加密后的密码返回
      String encryption(String password);
+     boolean updatePassword(PasswordDTO passwordDTO);
+     boolean isExistAccount(Long userId,String account);
+     boolean updateUserInfo(User user);
+     boolean updateUserCover(Long userId,String cover);
 
 }

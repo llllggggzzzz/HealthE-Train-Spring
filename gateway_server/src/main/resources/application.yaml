@@ -16,6 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
+#            - Path=/users/**, /api/v1/userList/**
             - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
@@ -27,6 +28,12 @@ spring:
           uri: lb://training-learning-video
           predicates:
             - Path=/api/v1/video/**, /api/v1/live/**
+        - id: knowledge-base-management
+          uri: lb://knowledge-base-management
+          predicates:
+            - Path=/api/v1/repository/**, /api/v1/note/**, /api/v1/notePrivilege/**, /api/v1/repositoryPrivilege/**, /api/v1/answer/**, 
+                 /api/v1/ask/**, /api/v1/noteLinkRepository/**, /api/v1/recentFile/**, /api/v1/ocr/**, /api/v1/message/**
+
         - id: resource-management
           uri: lb://resource-management
           predicates:
@@ -34,7 +41,7 @@ spring:
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
-            - Path=/api/v1/examQuestion/**, /api/v1/exam/**
+            - Path=/api/v1/examQuestion/**,/api/v1/paper/**,/api/v1/exam/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -93,10 +100,19 @@ healthe:
       - /users/check/**
       - /users/register
       - /study/**
+      - /repository/**
+      - /repositoryPrivilege/**
+      - /note/**
+      - /notePrivilege/**
+      - /answer/**
+      - /ask/**
+      - /userList/**
       - /users/teacher/**
       - /comment/**
       - /video/**
       - /live/**
+      - /noteLinkRepository/**
+      - /recentFile/**
       - /admins/login/**
       - /admins/register/**
       - /questionBank/**
@@ -104,7 +120,10 @@ healthe:
       - /examQuestion/**
       - /userLinkCategory/**
       - /users/**
+      - /ocr/**
+      - /message/**
       - /file/**
+      - /paper/**
       - /exam/**
     include-paths:
   jwt:

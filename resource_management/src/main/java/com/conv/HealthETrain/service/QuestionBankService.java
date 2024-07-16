@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.QuestionBankSelectDTO;
 import com.conv.HealthETrain.domain.QuestionBank;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -13,5 +14,6 @@ import java.util.List;
 public interface QuestionBankService extends IService<QuestionBank> {
     // 获取题库信息列表
     public List<QuestionBank> getAllQuestionBanks();
+    public List<QuestionBankSelectDTO> getQuestionBankSelectDTOByLessonId(Long lessonId);
 
 }

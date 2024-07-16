@@ -66,3 +66,6 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: assign_id
+#ngrok:
+#  enabled: true
+#  auth-token: 2j6cSm9y6q5osF57BWSwB8NT1GR_2oCoDuLfvpAxCdsAZ7bvA

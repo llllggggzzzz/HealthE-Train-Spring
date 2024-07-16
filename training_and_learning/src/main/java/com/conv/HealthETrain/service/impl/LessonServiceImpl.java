@@ -113,6 +113,12 @@ public class LessonServiceImpl extends ServiceImpl<LessonMapper, Lesson>
         }).collect(Collectors.toList());
     }
 
+    @Override
+    public Long insertLesson(Lesson lesson) {
+        lessonMapper.insert(lesson);
+        return lesson.getLessonId();
+    }
+
 }
 
 

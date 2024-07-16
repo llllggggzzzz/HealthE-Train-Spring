@@ -6,7 +6,7 @@
 
     <resultMap id="BaseResultMap" type="com.conv.HealthETrain.domain.Privilege">
             <id property="privilegeId" column="privilege_id" jdbcType="BIGINT"/>
-            <result property="privilegeLevel" column="privilege_level" jdbcType="INTEGER"/>
+            <result property="privilegeLevel" column="privilege_level" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
