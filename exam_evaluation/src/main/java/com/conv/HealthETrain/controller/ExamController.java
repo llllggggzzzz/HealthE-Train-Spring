@@ -373,21 +373,33 @@ public class ExamController {
     public ApiResponse<List<ExamResult>> getExamResult(@PathVariable("examId") Long examId,
                                                        @PathVariable("userId") Long userId) {
         // 根据examId 和 userId去查询信息
+        List<ExamResult> examResults = null;
         // 1. 首先查询redis
         if(redisTemplate.hasKey("exam-result:"+examId+"-"+userId)) {
             List<String> stringList = redisTemplate.opsForList().range("exam-result:" + examId + "-" + userId, 0, -1);
             if(stringList != null) {
-                List<ExamResult> examResults = stringList.stream().map(str -> JSONUtil.toBean(str, ExamResult.class)).toList();
-                return ApiResponse.success(examResults);
-            } else {
-                return ApiResponse.success(new ArrayList<>());
+                examResults = stringList.stream().map(str -> JSONUtil.toBean(str, ExamResult.class)).toList();
             }
         } else {
             LambdaQueryWrapper<ExamResult> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(ExamResult::getExamId, examId).eq(ExamResult::getUserId, userId);
-            List<ExamResult> results = examResultService.list(lambdaQueryWrapper);
-            return ApiResponse.success(results);
+            examResults = examResultService.list(lambdaQueryWrapper);
         }
+
+        // 添加Note查询
+        if(examResults == null) {
+            return ApiResponse.success(new ArrayList<>());
+        }
+        for (ExamResult examResult : examResults) {
+            Long eqId = examResult.getEqId();
+            ExamQuestion examQuestion = examQuestionService.getById(eqId);
+            if(examQuestion != null) {
+                Long noteId = examQuestion.getNoteId();
+                Note note = noteService.getById(noteId);
+                examResult.setNote(note);
+            }
+        }
+        return ApiResponse.success(examResults);
     }
 
 
@@ -395,7 +407,7 @@ public class ExamController {
     public ApiResponse<List<LessonExamInfoDTO>> getLessonExamInfos(@PathVariable("lessonId") Long lessonId,
                                                                    @PathVariable("userId")Long userId) throws JsonProcessingException {
         String redisKey = "examLessonInfo:"+lessonId+":"+userId;
-        String cachedData = stringRedisTemplate.opsForValue().get(redisKey);
+        String cachedData = redisTemplate.opsForValue().get(redisKey);
         if (cachedData != null) {
             List<LessonExamInfoDTO> cachedExamLesson = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonExamInfoDTO.class));
             return ApiResponse.success(ResponseCode.SUCCEED, "成功", cachedExamLesson);
