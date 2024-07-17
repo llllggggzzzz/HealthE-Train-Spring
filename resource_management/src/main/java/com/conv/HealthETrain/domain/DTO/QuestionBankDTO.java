@@ -1,7 +1,7 @@
 package com.conv.HealthETrain.domain.DTO;
 
 import lombok.Data;
-
+import com.conv.HealthETrain.domain.DTO.ll.ExamQuestionDTO;
 import java.util.Date;
 import java.util.List;
 

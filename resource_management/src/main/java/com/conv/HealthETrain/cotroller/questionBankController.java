@@ -3,7 +3,7 @@ package com.conv.HealthETrain.cotroller;
 import com.conv.HealthETrain.client.ExamQuestionClient;
 import com.conv.HealthETrain.client.LessonClient;
 import com.conv.HealthETrain.domain.*;
-import com.conv.HealthETrain.domain.DTO.ExamQuestionDTO;
+import com.conv.HealthETrain.domain.DTO.ll.ExamQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.LessonDetailInfoDTO;
 import com.conv.HealthETrain.domain.DTO.QuestionBankDTO;
 import com.conv.HealthETrain.enums.ResponseCode;

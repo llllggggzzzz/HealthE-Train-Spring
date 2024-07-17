@@ -43,9 +43,6 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
         }
         return questionBankSelectDTOs;
     }
-}
-
-
 
     @Override
     public List<QuestionBank> getQuestionBankByLessonId(Long lessonId) {

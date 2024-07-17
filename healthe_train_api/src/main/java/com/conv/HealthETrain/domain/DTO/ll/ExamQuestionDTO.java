@@ -1,8 +1,9 @@
-package com.conv.HealthETrain.domain.DTO;
+package com.conv.HealthETrain.domain.DTO.ll;
 
 import lombok.Data;
 
 /**
+ * @author liusg
  * @author liusg
  */
 @Data

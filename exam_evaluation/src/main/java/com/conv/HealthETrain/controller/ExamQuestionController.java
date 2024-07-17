@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.controller;
 
-import com.conv.HealthETrain.domain.DTO.ExamQuestionDTO;
+import com.conv.HealthETrain.domain.DTO.ll.ExamQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.EqOption;

@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.client;
 
-import com.conv.HealthETrain.domain.DTO.ExamQuestionDTO;
+import com.conv.HealthETrain.domain.DTO.ll.ExamQuestionDTO;
 import com.conv.HealthETrain.domain.EqOption;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.conv.HealthETrain.domain.Note;
