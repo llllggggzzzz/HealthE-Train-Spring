@@ -109,13 +109,11 @@ public class ImageUploadHandler {
         String token = ConfigUtil.getImgSaveToken();
         String repo = ConfigUtil.getImgSaveRepo();
         String pathPrefix = ConfigUtil.getImgSaveFolder();
-        String filePath = "C:\\Users\\25181\\Desktop\\BF75[`JBKW@F1N~QNHY)T1K.png";
+        String filePath = "/home/john/Desktop/123.png";
         String commitMessage = "上传图片到图床";
-        byte[] bytes = FileUtil.readBytes(filePath);
-        String s = Base64.getEncoder().encodeToString(bytes);
         // 上传图片
-//        String imageUrl = uploadFileToGitHub(token, repo, pathPrefix, filePath, commitMessage);
-        String imageUrl = uploadBase64ToGitHub(token, repo, pathPrefix, s, commitMessage);
+        String imageUrl = uploadFileToGitHub(token, repo, pathPrefix, filePath, commitMessage);
+
         if (imageUrl != null) {
             Console.log("图片链接：{}", imageUrl);
         }

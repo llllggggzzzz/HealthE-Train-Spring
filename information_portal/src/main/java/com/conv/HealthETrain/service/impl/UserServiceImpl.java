@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import cn.hutool.core.util.RandomUtil;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.conditions.update.LambdaUpdateChainWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.config.JwtProperties;
 import com.conv.HealthETrain.domain.DTO.UserDTO;
@@ -19,6 +21,7 @@ import com.conv.HealthETrain.service.UserService;
 import com.conv.HealthETrain.mapper.UserMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.conv.HealthETrain.utils.CodeUtil;
+import com.conv.HealthETrain.utils.FaceUtil;
 import com.conv.HealthETrain.utils.MailUtil;
 import com.conv.HealthETrain.utils.TokenUtil;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +46,32 @@ import java.util.List;
 public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     implements UserService{
 
+    private final CodeUtil codeUtil;
+    private final MailUtil mailUtil;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final TokenUtil tokenUtil;
+    private final JwtProperties jwtProperties;
+    private final int codeLen = 6;
+
+    private final UserLinkCategoryMapper userLinkCategoryMapper;
+    private final UserLinkCategoryService userLinkCategoryService;
+
+
+    @Override
+    public String loginByAccount(User loginUser) {
+        User user = lambdaQuery().eq(User::getAccount, loginUser.getAccount()).one();
+        if (user == null) {
+            throw new GlobalException("用户不存在", ExceptionCode.BAD_REQUEST);
+        }
+
+        if (!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
+            throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
+        }
+
+        return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
+    }
+
     @Override
     public List<User> getAllUsers() {
         List<User> userList = userMapper.selectList(null);
@@ -56,28 +85,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         return userMapper.selectOne(queryWrapper);
     }
 
-    private final CodeUtil codeUtil;
-    private final MailUtil mailUtil;
-    private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
-    private final TokenUtil tokenUtil;
-    private final JwtProperties jwtProperties;
-    private final int codeLen = 6;
-
-    private final UserLinkCategoryMapper userLinkCategoryMapper;
-    private final UserLinkCategoryService userLinkCategoryService;
-
     @Override
-    public String loginByAccount(User loginUser) {
-        User user = lambdaQuery().eq(User::getAccount, loginUser.getAccount()).one();
-        if (user == null) {
-            throw new GlobalException("用户不存在", ExceptionCode.BAD_REQUEST);
-        }
-
-        if (!passwordEncoder.matches(loginUser.getPassword(), user.getPassword())) {
-            throw new GlobalException("密码错误", ExceptionCode.BAD_REQUEST);
-        }
-
+    public String loginByFace(String account) {
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(User::getAccount, account);
+        User user = getOne(lambdaQueryWrapper);
+        if(user == null) return "";
         return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
     }
 

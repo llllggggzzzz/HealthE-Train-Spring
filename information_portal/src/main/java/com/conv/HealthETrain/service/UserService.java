@@ -22,6 +22,8 @@ public interface UserService extends IService<User> {
      User getUser(Long userId);
      String loginByAccount(User loginUser);
 
+     String loginByFace(String account);
+
      boolean sendEmailCode(User loginUser);
 
      String verifyEmail(User loginUser, String code);
