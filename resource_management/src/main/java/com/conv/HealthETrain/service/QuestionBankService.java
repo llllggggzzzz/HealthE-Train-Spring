@@ -14,7 +14,6 @@ import java.util.List;
 public interface QuestionBankService extends IService<QuestionBank> {
     // 获取题库信息列表
     List<QuestionBank> getAllQuestionBanks();
-    public List<QuestionBank> getAllQuestionBanks();
     public List<QuestionBankSelectDTO> getQuestionBankSelectDTOByLessonId(Long lessonId);
 
     List<QuestionBank> getQuestionBankByLessonId(Long lessonId);
