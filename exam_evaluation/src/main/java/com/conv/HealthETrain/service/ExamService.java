@@ -1,7 +1,10 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.LessonExamInfoDTO;
 import com.conv.HealthETrain.domain.Exam;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author flora
@@ -10,4 +13,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ExamService extends IService<Exam> {
 
+    List<LessonExamInfoDTO> getLessonExamInfo(Long lessonId, Long userId);
 }
