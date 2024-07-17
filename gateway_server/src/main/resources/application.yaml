@@ -16,8 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-#            - Path=/users/**, /api/v1/userList/**
-            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
+            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**, /api/v1/userList/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
