@@ -10,17 +10,26 @@ import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.client.LessonClient;
+import com.conv.HealthETrain.domain.DTO.ExamDTO;
+import com.conv.HealthETrain.domain.DTO.LessonExamInfoDTO;
+import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
 import com.conv.HealthETrain.domain.Exam;
+import com.conv.HealthETrain.domain.Paper;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
+import com.conv.HealthETrain.service.ExamService;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -30,6 +39,7 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,6 +55,7 @@ public class ExamController {
     private final ExamService examService ;
 
     private final InformationPortalClient informationPortalClient;
+    private static final ObjectMapper mapper = new ObjectMapper();
 
     private final PaperLinkQuestionService paperLinkQuestionService;
 
@@ -376,6 +387,24 @@ public class ExamController {
             lambdaQueryWrapper.eq(ExamResult::getExamId, examId).eq(ExamResult::getUserId, userId);
             List<ExamResult> results = examResultService.list(lambdaQueryWrapper);
             return ApiResponse.success(results);
+        }
+    }
+
+
+    @GetMapping("/information/{lessonId}/{userId}")
+    public ApiResponse<List<LessonExamInfoDTO>> getLessonExamInfos(@PathVariable("lessonId") Long lessonId,
+                                                                   @PathVariable("userId")Long userId) throws JsonProcessingException {
+        String redisKey = "examLessonInfo:"+lessonId+":"+userId;
+        String cachedData = stringRedisTemplate.opsForValue().get(redisKey);
+        if (cachedData != null) {
+            List<LessonExamInfoDTO> cachedExamLesson = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonExamInfoDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", cachedExamLesson);
+        } else {
+            List<LessonExamInfoDTO> lessonExamInfoDTOS = examService.getLessonExamInfo(lessonId,userId);
+            String jsonExamLesson = mapper.writeValueAsString(lessonExamInfoDTOS);
+            redisTemplate.opsForValue().set(redisKey, jsonExamLesson);
+            redisTemplate.expire(redisKey, 10, TimeUnit.MINUTES);
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonExamInfoDTOS);
         }
     }
 
