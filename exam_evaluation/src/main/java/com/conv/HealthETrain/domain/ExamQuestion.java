@@ -19,12 +19,10 @@ public class ExamQuestion implements Serializable {
      */
     @TableId
     private Long eqId;
-
     /**
      * 
      */
     private Long eqTypeId;
-
     /**
      * 
      */
