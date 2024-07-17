@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -20,5 +21,7 @@ public interface ExamQuestionService extends IService<ExamQuestion> {
     List<ExamQuestionStatisticDTO> getExamQuestionsStatisticByQbId(Long qbId);
     // 批量删除题库中的一些题目
     void batchDeleteExamQuestions(Long qbId, List<Long> eqIds);
+
+    List<CreatPaperQuestionDTO> getExamQuestionInfoByQBID(Long qbId);
 
 }

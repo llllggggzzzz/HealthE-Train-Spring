@@ -10,14 +10,12 @@ import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
 import com.conv.HealthETrain.domain.Exam;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.ExamService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -65,5 +63,17 @@ public class ExamController {
         }
 
         return ApiResponse.success(examDTOList);
+    }
+
+    @PostMapping("/add")
+    public ApiResponse<String> addExam(@RequestBody Exam exam){
+        boolean flag = examService.save(exam);
+        if(flag){
+            return ApiResponse.success(ResponseCode.SUCCEED,"成功");
+        }
+        else
+        {
+            return ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败");
+        }
     }
 }

@@ -3,6 +3,7 @@ package com.conv.HealthETrain.service;
 import com.conv.HealthETrain.domain.DTO.UserDTO;
 import com.conv.HealthETrain.domain.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.conv.HealthETrain.domain.dto.PasswordDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import org.apache.ibatis.annotations.Select;
 
@@ -40,5 +41,9 @@ public interface UserService extends IService<User> {
      List<User> getSearchUserList(String username);
      // 封装加密方法，把加密后的密码返回
      String encryption(String password);
+     boolean updatePassword(PasswordDTO passwordDTO);
+     boolean isExistAccount(Long userId,String account);
+     boolean updateUserInfo(User user);
+     boolean updateUserCover(Long userId,String cover);
 
 }
