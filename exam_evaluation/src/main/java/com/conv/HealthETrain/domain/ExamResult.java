@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import lombok.Data;
+import org.aspectj.weaver.ast.Not;
 
 /**
  * 
@@ -58,6 +59,9 @@ public class ExamResult implements Serializable {
      * 
      */
     private Integer sumScore;
+
+    @TableField(exist = false)
+    private Note note;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;
