@@ -19,9 +19,9 @@ class JellyfinUtilTest {
 //        Console.log(streamingVideoUrl);
 
         byte[] bytes = FileUtil.readBytes("/home/john/Desktop/test.mp4");
-        List<String> allMediaLibrary = JellyfinFactory
+        String allMediaLibrary = JellyfinFactory
                 .build("/home/john/env/server/jellyfin")
-                .getAllMediaLibrary("");
+                .findImagePath("-1", "face", "");
 //                .createMediaLibrary("video/test", "test", "homevideos");
 //        Boolean mediaLibrary = JellyfinUtil.createMediaLibrary("/video/test", "test", "homevideos");
         Console.log(allMediaLibrary);

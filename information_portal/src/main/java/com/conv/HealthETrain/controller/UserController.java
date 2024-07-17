@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.controller;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.PathUtil;
 import cn.hutool.core.lang.hash.Hash;
 import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.domain.TeacherDetail;
@@ -11,16 +12,14 @@ import com.conv.HealthETrain.domain.dto.TeacherDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserStatistic;
 import com.conv.HealthETrain.enums.ResponseCode;
+import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import com.conv.HealthETrain.service.TeacherDetailService;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
-import com.conv.HealthETrain.utils.ConfigUtil;
-import com.conv.HealthETrain.utils.ImageUploadHandler;
-import com.conv.HealthETrain.utils.TokenUtil;
+import com.conv.HealthETrain.utils.*;
 import com.conv.HealthETrain.service.impl.UserServiceImpl;
-import com.conv.HealthETrain.utils.FaceUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
@@ -358,7 +357,7 @@ public class UserController {
     @PostMapping("/login/face")
     public ApiResponse<HashMap<String, Object>> loginByFace(@RequestParam("account") String account,
                                                             @RequestParam("faceInfo") MultipartFile multipartFile) throws IOException {
-        // TODO 获取人脸库中用户人脸信息
+        // 获取人脸库中用户人脸信息
         User user = userServiceImpl.getUserByAccount(account);
         if(user == null) {
             return  ApiResponse.error(ResponseCode.BAD_REQUEST, "帐号不存在");
@@ -370,22 +369,88 @@ public class UserController {
             return ApiResponse.error(ResponseCode.NOT_FOUND, "用户未存储人脸信息");
         }
 
-        // 为multipartFile创建一个临时文件, 读取其路径
-        String tempPathPrefix = "uploaded-face-" + user.getUserId() + new Date().toString();
-        String tempFilePath = Files.createTempFile(tempPathPrefix, FaceUtil.getSaveSuffix()).toString();
-        String token = userService.loginByFace(account,
-                tempFilePath,
-                targetFacePath,
-                FaceUtil.getFaceSimThreshold());
+        String tempPathPrefix = "uploaded-face-" + user.getUserId() + System.currentTimeMillis();
+        String tempFilePath = Files.createFile(Path.of(tempPathPrefix+FaceUtil.getSaveSuffix()))
+                .toAbsolutePath().toString();
+        log.info("临时文件绝对路径： {}", tempFilePath);
+        Path path = Path.of(tempFilePath);
+        if(Files.exists(path)) {
+            FileUtil.writeBytes(multipartFile.getBytes(), tempFilePath);
+        }
+        log.info("临时文件目录: {} 人脸库中人脸目录: {}", tempFilePath, targetFacePath);
+        Double faceSim = FaceUtil.getFaceSim(tempFilePath, targetFacePath);
+        log.info("读取到匹配值： {}", faceSim);
+        if(faceSim < 0) {
+            // 人脸错误
+            return ApiResponse.error(ResponseCode.SERVICE_UNAVAILABLE, "人脸不清晰");
+        }
+        if (faceSim < FaceUtil.getFaceSimThreshold()) {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY,
+                    "人脸不匹配");
+        }
+        String token = userService.loginByFace(account);
         // 删除临时文件
-        Files.deleteIfExists(Path.of(tempFilePath));
 
-        if(token == null) {
+        FileUtil.del(path);
+        if(StrUtil.isBlank(token)) {
             return ApiResponse.error(ResponseCode.BAD_REQUEST);
         }
         HashMap<String, Object> data = new HashMap<>();
         data.put("token", token);
         data.put("user", user);
         return  ApiResponse.success(data);
+    }
+
+
+    /**
+     * @description 将用户照片上传到人脸库, 设定图片名称为userId
+     * @param userId 用户id
+     * @param multipartFile 图片信息
+     * @return 返回是否人脸库成功
+     */
+    @PostMapping("/face")
+    public ApiResponse<Boolean> setFace(@RequestParam("userId") Long userId,
+                                        @RequestParam("faceImage") MultipartFile multipartFile) throws IOException {
+        // 将人脸上传至人脸库
+        String uuid = UniqueIdGenerator.generateUniqueId(new Date().toString(), new Date().toString());
+        String tempPathPrefix = "library-face-" + userId.toString() + uuid;
+        String tempFilePath = Files.createFile(Path.of(tempPathPrefix+FaceUtil.getSaveSuffix()))
+                .toAbsolutePath().toString();
+        String tempSaveDirPath = Files.createTempDirectory("library-save").toAbsolutePath().toString();
+        log.info("临时文件绝对路径： {}", tempFilePath);
+        Path tempPath = Path.of(tempFilePath);
+        if(Files.exists(tempPath)) {
+            FileUtil.writeBytes(multipartFile.getBytes(), tempFilePath);
+        }
+        Path tempSaveDir = Path.of(tempSaveDirPath);
+        if(!Files.exists(tempSaveDir) || !Files.isDirectory(tempSaveDir)) {
+            Files.createDirectory(tempSaveDir);
+        }
+        // 进行人脸截取识别
+        Boolean extracted = FaceUtil.faceExtract(tempFilePath, tempSaveDirPath);
+        String tempSaveFilePath = tempSaveDirPath + "/" + tempPathPrefix + FaceUtil.getSaveSuffix();
+        log.info("人脸提取结果: {}", extracted);
+        log.info("人脸提取路径: {}", tempSaveFilePath);
+        byte[] extractFaceBytes;
+        Path tempSavePath = Path.of(tempSaveFilePath);
+        if(extracted && Files.exists(tempSavePath)) {
+            log.info("人脸提取成功，读取byte");
+            extractFaceBytes = FileUtil.readBytes(tempSaveFilePath);
+        } else {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY, "未检测到人脸, 请重新录入", false);
+        }
+        JellyfinUtil jellyfinUtil = JellyfinFactory.build(JellyfinFactory.configPath);
+        List<String> allMediaLibrary = jellyfinUtil.getAllMediaLibrary("");
+        // 创建媒体库
+        log.info("查询到所有媒体库: {}", allMediaLibrary);
+        if(!allMediaLibrary.contains("face")) {
+            jellyfinUtil.createMediaLibrary("/image/face", "face", "");
+        }
+        // 保存媒体文件
+        String fileName = userId + ".jpg";
+        Boolean saved = jellyfinUtil.saveFile(extractFaceBytes, fileName, "face", true);
+        FileUtil.del(tempPath);
+        FileUtil.del(tempSavePath);
+        return ApiResponse.success(saved);
     }
 }

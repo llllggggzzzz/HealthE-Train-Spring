@@ -41,8 +41,6 @@ public class VideoController {
 
     private final ScheduleService scheduleService;
 
-    //TODO 更改此jellyfinBaseAddress设定为自己的jellyfin目录
-    private final static String jellyfinBaseAddress = "";
     private final FeignClientBeanFactoryInitializationAotProcessor feignClientBeanFactoryInitializationCodeGenerator;
 
     @GetMapping("/{id}/user/{userId}")
@@ -117,7 +115,7 @@ public class VideoController {
             return ApiResponse.error(ResponseCode.GONE);
         }
         String videoName = split[0];
-        String streamingVideoUrl = JellyfinFactory.build(jellyfinBaseAddress)
+        String streamingVideoUrl = JellyfinFactory.build(JellyfinFactory.configPath)
                 .findStreamingVideoUrl(videoName, libraryName, userName);
         return StrUtil.isBlank(streamingVideoUrl) ?
                 ApiResponse.error(ResponseCode.NOT_FOUND)

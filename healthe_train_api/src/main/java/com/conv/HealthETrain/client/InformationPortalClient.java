@@ -20,7 +20,7 @@ public interface InformationPortalClient {
     User getUserInfo(@PathVariable("id") Long id);
 
 
-    @GetMapping("/account/{account}")
+    @GetMapping("/users/account/{account}")
     User getUserInfoByAccount(@PathVariable("account") String account);
 
 

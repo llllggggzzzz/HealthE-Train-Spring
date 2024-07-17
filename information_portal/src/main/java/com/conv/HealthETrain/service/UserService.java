@@ -22,10 +22,7 @@ public interface UserService extends IService<User> {
      User getUser(Long userId);
      String loginByAccount(User loginUser);
 
-     String loginByFace(String account,
-                        String tempFacePath,
-                        String targetFacePath,
-                        Double threshold);
+     String loginByFace(String account);
 
      boolean sendEmailCode(User loginUser);
 

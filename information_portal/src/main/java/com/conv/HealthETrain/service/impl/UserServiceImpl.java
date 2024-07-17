@@ -86,16 +86,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     }
 
     @Override
-    public String loginByFace(String account,
-                              String tempFacePath,
-                              String targetFacePath,
-                              Double threshold) {
+    public String loginByFace(String account) {
         LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(User::getAccount, account);
         User user = getOne(lambdaQueryWrapper);
-        Double faceSim = FaceUtil.getFaceSim(tempFacePath, targetFacePath);
-        if(faceSim > threshold) return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
-        else throw new GlobalException("人脸识别不通过", ExceptionCode.BAD_REQUEST);
+        if(user == null) return "";
+        return tokenUtil.createToken(user.getUserId(), jwtProperties.getTokenTTL());
     }
 
     @Override

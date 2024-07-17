@@ -6,6 +6,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 public class JellyfinFactory {
+    public static final String configPath = "/home/john/env/server/jellyfin";
     private JellyfinFactory () {};
     public static JellyfinUtil build(String JellyfinConfigPath) {
         try {
