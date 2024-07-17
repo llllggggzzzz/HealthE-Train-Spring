@@ -49,6 +49,6 @@ public class ApiResponse<T> {
 
     // 失败的响应（带错误码，自定义消息以及自定义数据）
     public static <T> ApiResponse<T> error(ResponseCode errorCode, String message, T data) {
-        return new ApiResponse<>(errorCode, errorCode.getMessage(), data);
+        return new ApiResponse<>(errorCode, message, data);
     }
 }

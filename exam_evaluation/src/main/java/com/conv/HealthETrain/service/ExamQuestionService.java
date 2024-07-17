@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -26,4 +27,6 @@ public interface ExamQuestionService extends IService<ExamQuestion> {
     ExamQuestion insertExamQuestion(ExamQuestion examQuestion);
 
     ExamQuestion updateExamQuestion(ExamQuestion examQuestion);
+    List<CreatPaperQuestionDTO> getExamQuestionInfoByQBID(Long qbId);
+
 }

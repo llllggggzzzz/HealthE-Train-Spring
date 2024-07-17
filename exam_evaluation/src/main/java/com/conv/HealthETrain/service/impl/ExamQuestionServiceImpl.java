@@ -3,10 +3,13 @@ package com.conv.HealthETrain.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.Exam;
+import com.conv.HealthETrain.domain.EqOption;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.conv.HealthETrain.domain.Note;
+import com.conv.HealthETrain.mapper.EqOptionMapper;
 import com.conv.HealthETrain.mapper.NoteMapper;
 import com.conv.HealthETrain.service.ExamQuestionService;
 import com.conv.HealthETrain.mapper.ExamQuestionMapper;
@@ -30,6 +33,7 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
 
     private final ExamQuestionMapper examQuestionMapper;
     private final NoteMapper noteMapper;
+    private final EqOptionMapper eqOptionMapper;
 
     // 根据题型来统计五类题型的数量
     @Override
@@ -81,6 +85,37 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
         // 删除 note 表中对应的笔记记录
         noteMapper.delete(new QueryWrapper<Note>()
                 .in("eq_id", eqIds));
+    }
+    @Override
+    public List<CreatPaperQuestionDTO> getExamQuestionInfoByQBID(Long qbId) {
+        List<ExamQuestion> examQuestions = examQuestionMapper.selectList(
+                new QueryWrapper<ExamQuestion>().eq("qb_id", qbId));
+        List<CreatPaperQuestionDTO> result = new ArrayList<>();
+        for (ExamQuestion examQuestion : examQuestions) {
+            CreatPaperQuestionDTO dto = new CreatPaperQuestionDTO();
+            dto.setEqId(examQuestion.getEqId());
+            dto.setAnswer(examQuestion.getAnswer());
+            dto.setEqTypeId(examQuestion.getEqTypeId());
+
+            Note note = noteMapper.selectById(examQuestion.getNoteId());
+            if (note != null) {
+                dto.setContent(note.getNoteContent());
+            }
+            if (examQuestion.getEqTypeId() == 1 || examQuestion.getEqTypeId() == 2) {
+                List<EqOption> eqOptions = eqOptionMapper.selectList(
+                        new QueryWrapper<EqOption>().eq("eq_id", examQuestion.getEqId()));
+                List<String> options = new ArrayList<>();
+                for (EqOption eqOption : eqOptions) {
+                    options.add(eqOption.getEqA());
+                    options.add(eqOption.getEqB());
+                    options.add(eqOption.getEqC());
+                    options.add(eqOption.getEqD());
+                }
+                dto.setOptions(options);
+            }
+            result.add(dto);
+        }
+        return result;
     }
 
     @Override

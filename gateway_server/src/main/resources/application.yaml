@@ -16,8 +16,7 @@ spring:
         - id: information-portal
           uri: lb://information-portal
           predicates:
-#            - Path=/users/**, /api/v1/userList/**
-            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**
+            - Path=/api/v1/users/**,/api/v1/admins/**,/api/v1/userLinkCategory/**, /api/v1/userList/**
           filters:
             - RewritePath=/api/v1/(?<segment>.*), /$\{segment}
         - id: training-and-learning
@@ -41,7 +40,7 @@ spring:
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
-            - Path=/api/v1/examQuestion/**
+            - Path=/api/v1/examQuestion/**,/api/v1/paper/**,/api/v1/exam/**
   rabbitmq:
     host: localhost
     port: 5672
@@ -126,6 +125,8 @@ healthe:
       - /file/**
       - /courseware/**
       - /part/**
+      - /paper/**
+      - /exam/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

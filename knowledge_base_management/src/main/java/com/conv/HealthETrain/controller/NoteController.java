@@ -1,4 +1,5 @@
 package com.conv.HealthETrain.controller;
+import cn.hutool.core.lang.Console;
 import com.conv.HealthETrain.client.InformationPortalClient;
 import com.conv.HealthETrain.domain.DTO.NoteDTO;
 import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
@@ -23,6 +24,7 @@ import java.util.List;
 
 import static com.conv.HealthETrain.enums.ResponseCode.*;
 import static com.conv.HealthETrain.utils.ImageUploadHandler.uploadBase64ToGitHub;
+import static com.conv.HealthETrain.utils.ImageUploadHandler.uploadFileToGitHub;
 
 @RestController
 @AllArgsConstructor
@@ -195,32 +197,6 @@ public class NoteController {
 
     }
     /**
-    * @Description: 将笔记里面图片上传到github图床
-    * @Param:
-    * @return:
-    * @Author: flora
-    * @Date: 2024/7/9
-    */
-    @PostMapping("/uploadImage")
-    public ApiResponse<String> uploadImage(@RequestBody String base64EncoderFile){
-        // 设置参数
-        String token = ConfigUtil.getImgSaveToken();
-        String repo = ConfigUtil.getImgSaveRepo();
-        String pathPrefix = ConfigUtil.getImgSaveFolder();
-        String fileEncode = base64EncoderFile;
-        String commitMessage = "上传图片到图床";
-
-        String imageUrl = uploadBase64ToGitHub(token, repo, pathPrefix, fileEncode, commitMessage);
-        if(imageUrl != null){
-            log.info("上传图片" + imageUrl + "成功");
-            return ApiResponse.success(imageUrl);
-        }else{
-            log.info("上传图片失败");
-            return ApiResponse.error(NOT_IMPLEMENTED);
-        }
-
-    }
-    /**
     * @Description: 模糊搜索社区提问的问题
     * @Param:
     * @return: 返回List<NoteInfoDTO>
@@ -264,4 +240,30 @@ public class NoteController {
 //            return ApiResponse.error(NOT_IMPLEMENTED);
 //        }
 //    }
+
+    /**
+    * @Description: 上传base64编码返回图床上的url
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/17
+    */
+    @PostMapping("/uploadImage")
+    public ApiResponse<String> uploadImage(@RequestBody String base64Encode){
+        // 设置参数
+        String token = ConfigUtil.getImgSaveToken();
+        String repo = ConfigUtil.getImgSaveRepo();
+        String pathPrefix = ConfigUtil.getImgSaveFolder();
+        String commitMessage = "上传图片到图床";
+        log.info(base64Encode);
+        // 上传图片
+        String imageUrl = uploadBase64ToGitHub(token, repo, pathPrefix, base64Encode, commitMessage);
+        if(imageUrl != null){
+            log.info("上传图片成功,返回url为" + imageUrl);
+            return ApiResponse.success(imageUrl);
+        }else{
+            log.error("上传失败");
+            return ApiResponse.error(NOT_IMPLEMENTED);
+        }
+    }
 }

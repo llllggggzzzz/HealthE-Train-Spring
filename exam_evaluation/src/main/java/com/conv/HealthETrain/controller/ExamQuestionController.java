@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.controller;
 
 import com.conv.HealthETrain.domain.DTO.ExamQuestionDTO;
+import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
 import com.conv.HealthETrain.domain.EqOption;
 import com.conv.HealthETrain.domain.EqType;
@@ -253,4 +254,20 @@ public class ExamQuestionController {
         return ApiResponse.success(ResponseCode.SUCCEED, "成功", examQuestion);
     }
 
+
+    @GetMapping("/questionBank/{id}/createPaper")
+    public ApiResponse<List<CreatPaperQuestionDTO>> getCreatePaperQuestionByQbId(@PathVariable("id") Long qbId) throws JsonProcessingException {
+        String redisKey = "questionBank:" + qbId + ":createPaper";
+        String cachedData = stringRedisTemplate.opsForValue().get(redisKey);
+        if (cachedData != null) {
+            List<CreatPaperQuestionDTO> cachedQuestions = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, CreatPaperQuestionDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", cachedQuestions);
+        } else {
+            List<CreatPaperQuestionDTO> createPaperQuestionDTOS = examQuestionService.getExamQuestionInfoByQBID(qbId);
+            String jsonQuestions = mapper.writeValueAsString(createPaperQuestionDTOS);
+            stringRedisTemplate.opsForValue().set(redisKey, jsonQuestions);
+            stringRedisTemplate.expire(redisKey, 10, TimeUnit.MINUTES);
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", createPaperQuestionDTOS);
+        }
+    }
 }

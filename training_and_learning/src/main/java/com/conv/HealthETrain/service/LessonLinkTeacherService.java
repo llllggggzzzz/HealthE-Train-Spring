@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service;
 
+import com.conv.HealthETrain.domain.DTO.LessonSelectDTO;
 import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -15,4 +16,5 @@ public interface LessonLinkTeacherService extends IService<LessonLinkTeacher> {
      List<Long> getTeachersByLessonId(Long lessonIds);
 
      List<Long> getLessonsByTeacherId(Long tdId);
+     List<LessonSelectDTO> getLessonSelectInfoByTdId(Long tdId);
 }

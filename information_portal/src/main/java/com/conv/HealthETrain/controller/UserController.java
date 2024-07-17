@@ -1,31 +1,44 @@
 package com.conv.HealthETrain.controller;
 
+import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.PathUtil;
+import cn.hutool.core.lang.hash.Hash;
+import cn.hutool.core.util.StrUtil;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
+import com.conv.HealthETrain.domain.dto.PasswordDTO;
 import com.conv.HealthETrain.domain.dto.TeacherDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserDetailDTO;
 import com.conv.HealthETrain.domain.dto.UserStatistic;
 import com.conv.HealthETrain.enums.ResponseCode;
+import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
 import com.conv.HealthETrain.service.TeacherDetailService;
 import com.conv.HealthETrain.service.UserLinkCategoryService;
 import com.conv.HealthETrain.service.UserService;
+import com.conv.HealthETrain.utils.*;
+import com.conv.HealthETrain.service.impl.UserServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.IOException;
+import java.util.*;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+
 
 /**
  * @author liusg
@@ -45,6 +58,8 @@ public class UserController {
     private final PositionService positionService;
     private final CategoryService categoryService;
     private final QualificationService qualificationService;
+    private final UserServiceImpl userServiceImpl;
+
     /**
      * 用户登录接口
      * @param loginUser
@@ -233,6 +248,11 @@ public class UserController {
         return userService.getById(id);
     }
 
+
+    @GetMapping("/account/{account}")
+    public User getUserInfoByAccount(@PathVariable("account") String account) {
+        return userService.getUserByAccount(account);
+    }
     /**
      * 检验邮箱是否存在
      * @param email
@@ -313,5 +333,152 @@ public class UserController {
         }
 
         return ApiResponse.success(teacherDetailDTOS);
+    }
+
+    @PostMapping("/update/password")
+    public ApiResponse<Boolean> updateUserPassword(@RequestBody PasswordDTO passwordDTO){
+        boolean flag= userService.updatePassword(passwordDTO);
+        return ApiResponse.success(ResponseCode.SUCCEED,"成功",flag);
+    }
+    @PostMapping("/update/userInfo")
+    public ApiResponse<String> updateUserInfo(@RequestBody User user){
+        boolean flag = userService.isExistAccount(user.getUserId(),user.getAccount());
+        if(!flag)
+            return ApiResponse.error(ResponseCode.GONE,"失败","error1");
+        else{
+            boolean flag2 = userService.updateUserInfo(user);
+            if(flag2)
+                return ApiResponse.success(ResponseCode.SUCCEED,"成功","success");
+            else
+                return ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","error2");
+        }
+    }
+    @PostMapping("/update/cover")
+    public ApiResponse<String> updateUserCover(@RequestParam("avatar") MultipartFile avatar,
+                                               @RequestParam("userId") Long userId) {
+        if (avatar.isEmpty()) {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY, "上传头像为空", "上传头像为空");
+        }
+        try {
+            // 读取文件内容并进行 Base64 编码
+            byte[] fileContent = avatar.getBytes();
+            String contentB64 = Base64.getEncoder().encodeToString(fileContent);
+
+            String token = ConfigUtil.getImgSaveToken();
+            String repo = ConfigUtil.getImgSaveRepo();
+            String pathPrefix = ConfigUtil.getImgSaveFolder();
+            String commitMessage = "上传图片到图床";
+
+            String imageUrl = ImageUploadHandler.uploadBase64ToGitHub(token, repo, pathPrefix, contentB64, commitMessage);
+            if(imageUrl!=null) {
+                boolean flag = userService.updateUserCover(userId,imageUrl);
+                return ApiResponse.success(ResponseCode.SUCCEED, "成功", imageUrl);
+            }
+            else
+                return ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","失败");
+        } catch (IOException e) {
+            System.out.println("捕捉错误");
+            return  ApiResponse.error(ResponseCode.NOT_IMPLEMENTED,"失败","失败");
+        }
+    }
+
+    @PostMapping("/login/face")
+    public ApiResponse<HashMap<String, Object>> loginByFace(@RequestParam("account") String account,
+                                                            @RequestParam("faceInfo") MultipartFile multipartFile) throws IOException {
+        // 获取人脸库中用户人脸信息
+        User user = userServiceImpl.getUserByAccount(account);
+        if(user == null) {
+            return  ApiResponse.error(ResponseCode.BAD_REQUEST, "帐号不存在");
+        }
+
+        String targetFacePath = FaceUtil.getTargetFacePath(user.getUserId());
+        if(StrUtil.isBlank(targetFacePath)) {
+            // 用户未存储人脸信息
+            return ApiResponse.error(ResponseCode.NOT_FOUND, "用户未存储人脸信息");
+        }
+
+        String tempPathPrefix = "uploaded-face-" + user.getUserId() + System.currentTimeMillis();
+        String tempFilePath = Files.createFile(Path.of(tempPathPrefix+FaceUtil.getSaveSuffix()))
+                .toAbsolutePath().toString();
+        log.info("临时文件绝对路径： {}", tempFilePath);
+        Path path = Path.of(tempFilePath);
+        if(Files.exists(path)) {
+            FileUtil.writeBytes(multipartFile.getBytes(), tempFilePath);
+        }
+        log.info("临时文件目录: {} 人脸库中人脸目录: {}", tempFilePath, targetFacePath);
+        Double faceSim = FaceUtil.getFaceSim(tempFilePath, targetFacePath);
+        log.info("读取到匹配值： {}", faceSim);
+        if(faceSim < 0) {
+            // 人脸错误
+            return ApiResponse.error(ResponseCode.SERVICE_UNAVAILABLE, "人脸不清晰");
+        }
+        if (faceSim < FaceUtil.getFaceSimThreshold()) {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY,
+                    "人脸不匹配");
+        }
+        String token = userService.loginByFace(account);
+        // 删除临时文件
+
+        FileUtil.del(path);
+        if(StrUtil.isBlank(token)) {
+            return ApiResponse.error(ResponseCode.BAD_REQUEST);
+        }
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("user", user);
+        return  ApiResponse.success(data);
+    }
+
+
+    /**
+     * @description 将用户照片上传到人脸库, 设定图片名称为userId
+     * @param userId 用户id
+     * @param multipartFile 图片信息
+     * @return 返回是否人脸库成功
+     */
+    @PostMapping("/face")
+    public ApiResponse<Boolean> setFace(@RequestParam("userId") Long userId,
+                                        @RequestParam("faceImage") MultipartFile multipartFile) throws IOException {
+        // 将人脸上传至人脸库
+        String uuid = UniqueIdGenerator.generateUniqueId(new Date().toString(), new Date().toString());
+        String tempPathPrefix = "library-face-" + userId.toString() + uuid;
+        String tempFilePath = Files.createFile(Path.of(tempPathPrefix+FaceUtil.getSaveSuffix()))
+                .toAbsolutePath().toString();
+        String tempSaveDirPath = Files.createTempDirectory("library-save").toAbsolutePath().toString();
+        log.info("临时文件绝对路径： {}", tempFilePath);
+        Path tempPath = Path.of(tempFilePath);
+        if(Files.exists(tempPath)) {
+            FileUtil.writeBytes(multipartFile.getBytes(), tempFilePath);
+        }
+        Path tempSaveDir = Path.of(tempSaveDirPath);
+        if(!Files.exists(tempSaveDir) || !Files.isDirectory(tempSaveDir)) {
+            Files.createDirectory(tempSaveDir);
+        }
+        // 进行人脸截取识别
+        Boolean extracted = FaceUtil.faceExtract(tempFilePath, tempSaveDirPath);
+        String tempSaveFilePath = tempSaveDirPath + "/" + tempPathPrefix + FaceUtil.getSaveSuffix();
+        log.info("人脸提取结果: {}", extracted);
+        log.info("人脸提取路径: {}", tempSaveFilePath);
+        byte[] extractFaceBytes;
+        Path tempSavePath = Path.of(tempSaveFilePath);
+        if(extracted && Files.exists(tempSavePath)) {
+            log.info("人脸提取成功，读取byte");
+            extractFaceBytes = FileUtil.readBytes(tempSaveFilePath);
+        } else {
+            return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY, "未检测到人脸, 请重新录入", false);
+        }
+        JellyfinUtil jellyfinUtil = JellyfinFactory.build(JellyfinFactory.configPath);
+        List<String> allMediaLibrary = jellyfinUtil.getAllMediaLibrary("");
+        // 创建媒体库
+        log.info("查询到所有媒体库: {}", allMediaLibrary);
+        if(!allMediaLibrary.contains("face")) {
+            jellyfinUtil.createMediaLibrary("/image/face", "face", "");
+        }
+        // 保存媒体文件
+        String fileName = userId + ".jpg";
+        Boolean saved = jellyfinUtil.saveFile(extractFaceBytes, fileName, "face", true);
+        FileUtil.del(tempPath);
+        FileUtil.del(tempSavePath);
+        return ApiResponse.success(saved);
     }
 }

@@ -31,8 +31,8 @@ public class MessageController {
     * @Date: 2024/7/14
     */
     @GetMapping("/chatList/{userId}")
-    public ApiResponse<Map<String, List<ChatMessage>>> getAllChatList(@PathVariable Long userId){
-        Map<String, List<ChatMessage>> allChatList = messageService.getAllChatList(userId);
+    public ApiResponse<List<ChatMessage>> getAllChatList(@PathVariable Long userId){
+        List<ChatMessage> allChatList = messageService.getAllChatList(userId);
         if(allChatList != null){
             log.info("获取" + userId+ "全部消息列表成功！");
             return ApiResponse.success(allChatList);
@@ -50,8 +50,8 @@ public class MessageController {
     * @Date: 2024/7/14
     */
     @GetMapping("/unreadList/{userId}")
-    public ApiResponse<Map<String, List<ChatMessage>>> getAllUnreadChatList(@PathVariable Long userId){
-        Map<String, List<ChatMessage>> allUnreadChatList = messageService.getAllUnReadMessageList(userId);
+    public ApiResponse<List<ChatMessage>> getAllUnreadChatList(@PathVariable Long userId){
+        List<ChatMessage> allUnreadChatList = messageService.getAllUnReadMessageList(userId);
         if(allUnreadChatList != null){
             log.info("获取" + userId+ "全部未读消息列表成功！");
             return ApiResponse.success(allUnreadChatList);

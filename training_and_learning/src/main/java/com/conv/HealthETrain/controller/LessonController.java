@@ -691,4 +691,19 @@ public class LessonController {
         return  ApiResponse.success(ResponseCode.SUCCEED, "成功", result);
     }
 
+    @GetMapping("/paper/lessonInfo/{tdId}")
+    public ApiResponse<List<LessonSelectDTO>> getLessonSelectDTOsByTeacherId(@PathVariable("tdId")Long tdId) throws JsonProcessingException {
+        String redisKey = "teacher:" + tdId + ":lessonInfo";
+        String cachedData = stringRedisTemplate.opsForValue().get(redisKey);
+        if (cachedData != null) {
+            List<LessonSelectDTO> cachedLessons = mapper.readValue(cachedData, mapper.getTypeFactory().constructCollectionType(List.class, LessonSelectDTO.class));
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", cachedLessons);
+        } else {
+            List<LessonSelectDTO> lessonSelectDTOS = lessonLinkTeacherService.getLessonSelectInfoByTdId(tdId);
+            String jsonLessons = mapper.writeValueAsString(lessonSelectDTOS);
+            stringRedisTemplate.opsForValue().set(redisKey, jsonLessons);
+            stringRedisTemplate.expire(redisKey, 10, TimeUnit.MINUTES);
+            return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonSelectDTOS);
+        }
+    }
 }
