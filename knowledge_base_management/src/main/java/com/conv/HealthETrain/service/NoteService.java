@@ -19,5 +19,7 @@ public interface NoteService extends IService<Note> {
    List<Note> getMySharedNoteList(Long userId);
    List<Note> findNoteListByNoteIdList(List<Long> noteIdList);
    List<Note> findNoteListByNoteTitle(String title);
+   List<Note> findMatchNoteByNoteContent(String content);
+
 
 }

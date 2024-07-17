@@ -8,8 +8,10 @@ import com.conv.HealthETrain.domain.DTO.NoteInfoDTO;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.AnswerService;
+import com.conv.HealthETrain.service.AskService;
 import com.conv.HealthETrain.service.NoteService;
 import lombok.AllArgsConstructor;
+import lombok.experimental.PackagePrivate;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,6 +28,7 @@ public class AnswerController {
     private final AnswerService answerService;
     private final NoteService noteService;
     private final InformationPortalClient informationPortalClient;
+    private final AskService askService;
 
     /**
     * @Description: 添加对应提问的回答
@@ -148,6 +151,34 @@ public class AnswerController {
         }else{
             log.info("未获取到点赞数");
             return ApiResponse.error(NOT_FOUND);
+        }
+    }
+
+    /**
+    * @Description: 根据用户的提问返回最匹配的答案
+    * @Param:
+    * @return:
+    * @Author: flora
+    * @Date: 2024/7/18
+    */
+    @GetMapping("/getAnswer/{content}")
+    public ApiResponse<String> matchAnswerOfAsk(@PathVariable String content){
+        List<Note> noteList = noteService.findMatchNoteByNoteContent(content);
+        if(noteList.size() != 0){
+            Long noteId = noteList.get(0).getNoteId();
+            Long askId = askService.getAskByNoteId(noteId).getAskId();
+            Answer answer = answerService.getBestAnswer(askId);
+            Note note = noteService.findNoteByNoteId(answer.getNoteId());
+            if(note != null){
+                log.info("获取最佳回答成功");
+                return ApiResponse.success(note.getNoteContent());
+            }else{
+                log.info("无最佳回答");
+                return ApiResponse.success();
+            }
+        }else{
+            log.info("无最佳回答");
+            return ApiResponse.success();
         }
     }
 }

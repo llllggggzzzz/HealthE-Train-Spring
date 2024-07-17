@@ -64,6 +64,9 @@ public class ExamResult implements Serializable {
     private Note note;
 
     @TableField(exist = false)
+    private EqOption eqOption;
+
+    @TableField(exist = false)
     private static final long serialVersionUID = 1L;
 
     @Override
