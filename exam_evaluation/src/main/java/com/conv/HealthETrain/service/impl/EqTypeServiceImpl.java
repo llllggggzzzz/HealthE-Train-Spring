@@ -15,6 +15,10 @@ import org.springframework.stereotype.Service;
 public class EqTypeServiceImpl extends ServiceImpl<EqTypeMapper, EqType>
     implements EqTypeService{
 
+    @Override
+    public EqType getEqTypeIdByEqTypeName(String type) {
+        return lambdaQuery().eq(EqType::getEqTypeName, type).one();
+    }
 }
 
 

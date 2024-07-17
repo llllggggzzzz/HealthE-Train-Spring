@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.QuestionBank;
 import com.conv.HealthETrain.service.QuestionBankService;
@@ -24,8 +25,18 @@ public class QuestionBankServiceImpl extends ServiceImpl<QuestionBankMapper, Que
     public List<QuestionBank> getAllQuestionBanks() {
         return questionBankMapper.selectList(null);
     }
+
+    @Override
+    public List<QuestionBank> getQuestionBankByLessonId(Long lessonId) {
+        LambdaQueryWrapper<QuestionBank> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(QuestionBank::getLessonId, lessonId);
+        return questionBankMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public QuestionBank saveQuestionBank(QuestionBank questionBank) {
+        questionBankMapper.insert(questionBank);
+        return questionBank;
+    }
+
 }
-
-
-
-

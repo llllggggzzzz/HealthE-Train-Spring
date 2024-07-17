@@ -277,7 +277,7 @@ public class UserController {
         TeacherDetailDTO teacherDetailDTO = new TeacherDetailDTO();
 
         // 从 TeacherDetail 中获取数据，放入 TeacherDetailDTO 中
-        teacherDetailDTO.setTeacherId(teacherDetail.getTdId());
+        teacherDetailDTO.setTdId(teacherDetail.getTdId());
         teacherDetailDTO.setUserId(teacherDetail.getUserId());
         teacherDetailDTO.setRealName(teacherDetail.getRealName());
         teacherDetailDTO.setPosition(positionService.getPositionById(teacherDetail.getPositionId()));
@@ -285,5 +285,33 @@ public class UserController {
         teacherDetailDTO.setQualification(qualificationService.getQualificationById(teacherDetail.getQualificationId()));
 
         return ApiResponse.success(teacherDetailDTO);
+    }
+
+    /**
+     * 模糊搜索教师
+     * @param keyword
+     * @return
+     */
+    @PostMapping("/teacher/fuzzy")
+    public ApiResponse<List<TeacherDetailDTO>> getTeacherByFuzzySearch(@RequestBody String keyword) {
+        log.info("keyword: " + keyword);
+        List<TeacherDetail> teacherDetails = teacherDetailService.getTeacherByFuzzySearch(keyword);
+
+        List<TeacherDetailDTO> teacherDetailDTOS = new ArrayList<>();
+
+        for (TeacherDetail teacherDetail : teacherDetails) {
+            TeacherDetailDTO teacherDetailDTO = new TeacherDetailDTO();
+
+            teacherDetailDTO.setTdId(teacherDetail.getTdId());
+            teacherDetailDTO.setUserId(teacherDetail.getUserId());
+            teacherDetailDTO.setRealName(teacherDetail.getRealName());
+            teacherDetailDTO.setPosition(positionService.getPositionById(teacherDetail.getPositionId()));
+            teacherDetailDTO.setCategory(categoryService.getCategoryById(teacherDetail.getCategoryId()));
+            teacherDetailDTO.setQualification(qualificationService.getQualificationById(teacherDetail.getQualificationId()));
+
+            teacherDetailDTOS.add(teacherDetailDTO);
+        }
+
+        return ApiResponse.success(teacherDetailDTOS);
     }
 }

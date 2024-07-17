@@ -1,6 +1,6 @@
 package com.conv.HealthETrain.service;
 
-import com.conv.HealthETrain.domain.domain.Video;
+import com.conv.HealthETrain.domain.Video;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:53:19
 */
 public interface VideoService extends IService<Video> {
-
+    Video getVideoBySectionId(Long sectionId);
 }

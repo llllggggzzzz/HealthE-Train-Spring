@@ -21,4 +21,9 @@ public interface ExamQuestionService extends IService<ExamQuestion> {
     // 批量删除题库中的一些题目
     void batchDeleteExamQuestions(Long qbId, List<Long> eqIds);
 
+    List<ExamQuestion> getExamQuestionsByQbId(Long qbId);
+
+    ExamQuestion insertExamQuestion(ExamQuestion examQuestion);
+
+    ExamQuestion updateExamQuestion(ExamQuestion examQuestion);
 }

@@ -9,5 +9,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:47:43
 */
 public interface EqOptionService extends IService<EqOption> {
+    EqOption getByEqId(Long eqId);
 
+    EqOption insertEqOption(EqOption eqOption);
+
+    EqOption updateOptionByEqId(EqOption eqOption);
+
+    boolean deleteOptionByEqId(Long eqId);
 }

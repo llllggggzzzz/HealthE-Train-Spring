@@ -23,7 +23,7 @@ spring:
         - id: training-and-learning
           uri: lb://training-and-learning
           predicates:
-            - Path=/api/v1/comment/**, /api/v1/study/**
+            - Path=/api/v1/comment/**, /api/v1/study/**, /api/v1/announce/**, /api/v1/part/**
         - id: training-learning-video
           uri: lb://training-learning-video
           predicates:
@@ -37,7 +37,7 @@ spring:
         - id: resource-management
           uri: lb://resource-management
           predicates:
-            - Path=/api/v1/questionBank/**, /api/v1/file/**
+            - Path=/api/v1/questionBank/**, /api/v1/file/**, /api/v1/courseware/**
         - id: exam-evaluation
           uri: lb://exam-evaluation
           predicates:
@@ -100,6 +100,7 @@ healthe:
       - /users/check/**
       - /users/register
       - /study/**
+      - /announce/**
       - /repository/**
       - /repositoryPrivilege/**
       - /note/**
@@ -123,6 +124,8 @@ healthe:
       - /ocr/**
       - /message/**
       - /file/**
+      - /courseware/**
+      - /part/**
     include-paths:
   jwt:
     location: classpath:healthe.jks

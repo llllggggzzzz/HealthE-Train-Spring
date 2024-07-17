@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.TeacherDetail;
@@ -40,6 +41,14 @@ public class TeacherDetailServiceImpl extends ServiceImpl<TeacherDetailMapper, T
     @Override
     public TeacherDetail getByUserId(Long userId) {
         return lambdaQuery().eq(TeacherDetail::getUserId, userId).one();
+    }
+
+    @Override
+    public List<TeacherDetail> getTeacherByFuzzySearch(String keyword) {
+        keyword = "%" + keyword + "%";
+        QueryWrapper<TeacherDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.like("real_name", keyword);
+        return teacherDetailMapper.selectList(queryWrapper);
     }
 
     // 统计教师数量

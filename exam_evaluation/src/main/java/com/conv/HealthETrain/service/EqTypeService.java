@@ -9,5 +9,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
 * @createDate 2024-07-07 11:47:43
 */
 public interface EqTypeService extends IService<EqType> {
-
+    EqType getEqTypeIdByEqTypeName(String type);
 }

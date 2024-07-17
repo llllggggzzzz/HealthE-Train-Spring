@@ -17,6 +17,8 @@ public interface TeacherDetailService extends IService<TeacherDetail> {
 
     TeacherDetail getByUserId(Long userId);
 
+    List<TeacherDetail> getTeacherByFuzzySearch(String keyword);
+
     // 统计教师总数量
     int countTeachers();
 }

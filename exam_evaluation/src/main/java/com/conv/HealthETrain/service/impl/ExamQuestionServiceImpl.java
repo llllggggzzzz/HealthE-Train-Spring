@@ -1,8 +1,10 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
+import com.conv.HealthETrain.domain.Exam;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.mapper.NoteMapper;
@@ -79,6 +81,25 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
         // 删除 note 表中对应的笔记记录
         noteMapper.delete(new QueryWrapper<Note>()
                 .in("eq_id", eqIds));
+    }
+
+    @Override
+    public List<ExamQuestion> getExamQuestionsByQbId(Long qbId) {
+        LambdaQueryWrapper<ExamQuestion> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ExamQuestion::getQbId, qbId);
+        return examQuestionMapper.selectList(lambdaQueryWrapper);
+    }
+
+    @Override
+    public ExamQuestion insertExamQuestion(ExamQuestion examQuestion) {
+        examQuestionMapper.insert(examQuestion);
+        return examQuestion;
+    }
+
+    @Override
+    public ExamQuestion updateExamQuestion(ExamQuestion examQuestion) {
+        examQuestionMapper.updateById(examQuestion);
+        return examQuestion;
     }
 }
 
