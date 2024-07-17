@@ -21,6 +21,7 @@ import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.enums.ResponseCode;
+import com.conv.HealthETrain.mapper.ExamMapper;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.ExamService;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -70,6 +71,7 @@ public class ExamController {
     private final StringRedisTemplate redisTemplate;
 
     private final ExamResultService examResultService;
+    private final ExamMapper examMapper;
 
 
     @GetMapping("/list/{userId}")
@@ -395,6 +397,10 @@ public class ExamController {
             ExamQuestion examQuestion = examQuestionService.getById(eqId);
             if(examQuestion != null) {
                 Long noteId = examQuestion.getNoteId();
+                LambdaQueryWrapper<EqOption> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.eq(EqOption::getEqId, examQuestion.getEqId());
+                EqOption option = eqOptionService.getOne(lambdaQueryWrapper);
+                examResult.setEqOption(option);
                 Note note = noteService.getById(noteId);
                 examResult.setNote(note);
             }
@@ -420,4 +426,15 @@ public class ExamController {
         }
     }
 
+
+    @GetMapping("/teacher/{teacherId}")
+    public ApiResponse<List<Exam>> getExamInfoByTeacherId(@PathVariable("teacherId") Long teacherId) {
+        // 根据td_id查询发布的考试
+        LambdaQueryWrapper<Exam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(Exam::getCreatorId, teacherId);
+        // 考试列表
+        List<Exam> examList = examService.list(lambdaQueryWrapper);
+        return ApiResponse.success(examList);
+
+    }
 }

@@ -1,4 +1,5 @@
 package com.conv.HealthETrain.controller;
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.net.url.UrlBuilder;
 import cn.hutool.core.util.StrUtil;
@@ -7,21 +8,23 @@ import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.client.InformationPortalClient;
+import com.conv.HealthETrain.domain.DTO.ExceptionInfoDTO;
+import com.conv.HealthETrain.domain.ExceptionInfo;
+import com.conv.HealthETrain.domain.JellyfinImage;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
+import com.conv.HealthETrain.service.ExceptionInfoService;
 import com.conv.HealthETrain.utils.FaceUtil;
 import com.conv.HealthETrain.utils.JellyfinUtil;
 import com.conv.HealthETrain.utils.UniqueIdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -29,9 +32,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/exam/behavior")
@@ -44,6 +45,9 @@ public class ExamBehaviorController {
     private final StringRedisTemplate redisTemplate;
 
     private static final String behaviorMediaLibraryName = "userBehavior";
+
+    private final ExceptionInfoService exceptionInfoService;
+
     /**
      * @description 根据用户行为图片来进行判断
      * @param userId 用户ID
@@ -125,6 +129,14 @@ public class ExamBehaviorController {
         if(jsonObject.containsKey("predictions")) {
             JSONArray predictions = jsonObject.getJSONArray("predictions");
             log.info("获取到检测信息: {}", predictions);
+            ExceptionInfo exceptionInfo = new ExceptionInfo();
+            exceptionInfo.setExamId(examId);
+            exceptionInfo.setUserId(userId);
+            exceptionInfo.setAddTime(time);
+            if(predictions != null) {
+                exceptionInfo.setInfo(predictions.toString());
+            }
+            exceptionInfoService.save(exceptionInfo);
             if(predictions != null) {
                 for (int i = 0; i < predictions.size(); i++) {
                     JSONObject prediction = predictions.getJSONObject(i);
@@ -177,6 +189,56 @@ public class ExamBehaviorController {
             return ApiResponse.error(ResponseCode.METHOD_NOT_ALLOWED, "比对失败", false);
         }
 
+    }
+
+
+    @GetMapping("/{examId}/user/{userId}")
+    public ApiResponse<List<ExceptionInfoDTO>> getUserBehaviors(@PathVariable("examId") Long examId,
+                                                                @PathVariable("userId") Long userId) {
+        // 查询所有用户的所有行为信息, 读取行为库
+        String mediaLibraryName = "userBehavior-" + examId.toString() + "-behavior";
+        JellyfinUtil jellyfinUtil = JellyfinFactory.build(JellyfinFactory.configPath);
+        List<JellyfinImage> imagePathList = jellyfinUtil.findImagePathList(userId.toString(), mediaLibraryName, "");
+        HashSet<String> timeSet = new HashSet<>();
+        List<ExceptionInfoDTO> exceptionInfoDTOArrayList = new ArrayList<>();
+        for (JellyfinImage jellyfinImage : imagePathList) {
+            // 建立时间set
+            String imageName = jellyfinImage.getImageName();
+            String[] split = imageName.split("-");
+            if(split.length < 3) {
+                continue;
+            }
+            String time = split[1];
+            timeSet.add(time);
+        }
+
+        for (String time : timeSet) {
+            ExceptionInfoDTO exceptionInfoDTO = new ExceptionInfoDTO();
+            String originImageName = userId + "-" + time + "-origin";
+            String detectImageName = userId + "-" + time + "-detect";
+            JellyfinImage originImage = CollUtil.findOne(imagePathList, jellyfinImage -> StrUtil.equals(jellyfinImage.getImageName(), originImageName));
+            JellyfinImage detectImage = CollUtil.findOne(imagePathList, jellyfinImage -> StrUtil.equals(jellyfinImage.getImageName(), detectImageName));
+            if(originImage != null) {
+                exceptionInfoDTO.setOriginPicPath(originImage.getPath());
+            }
+            if(detectImage != null) {
+                exceptionInfoDTO.setDetectPicPath(detectImage.getPath());
+            }
+            exceptionInfoDTO.setTime(time);
+
+            LambdaQueryWrapper<ExceptionInfo> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper
+                    .eq(ExceptionInfo::getExamId, examId)
+                    .eq(ExceptionInfo::getUserId, userId)
+                    .eq(ExceptionInfo::getAddTime, time);
+            ExceptionInfo exceptionInfo = exceptionInfoService.getOne(lambdaQueryWrapper);
+            if(exceptionInfo != null) {
+                exceptionInfoDTO.setInfo(exceptionInfo.getInfo());
+            }
+            exceptionInfoDTOArrayList.add(exceptionInfoDTO);
+        }
+
+        return ApiResponse.success(exceptionInfoDTOArrayList);
     }
 
 }
