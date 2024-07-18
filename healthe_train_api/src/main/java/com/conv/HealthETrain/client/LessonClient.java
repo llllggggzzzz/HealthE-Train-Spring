@@ -2,7 +2,9 @@ package com.conv.HealthETrain.client;
 
 import com.conv.HealthETrain.domain.Chapter;
 import com.conv.HealthETrain.domain.Checkpoint;
+import com.conv.HealthETrain.domain.DTO.LessonDetailInfoDTO;
 import com.conv.HealthETrain.domain.DTO.LessonInfoDTO;
+import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.response.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -40,5 +42,11 @@ public interface LessonClient {
 
     @GetMapping("/user/{id}")
     ApiResponse<List<LessonInfoDTO>> getLessons(@PathVariable("id") Long id);
+
+    @GetMapping("/study/lesson/simple/{id}")
+    ApiResponse<Lesson> getLessonById(@PathVariable("id") String lessonId);
+
+    @GetMapping("/study/lesson/teacher/{id}")
+    ApiResponse<List<LessonDetailInfoDTO>> getAllTeacherLessons(@PathVariable("id") Long tdId);
 }
 

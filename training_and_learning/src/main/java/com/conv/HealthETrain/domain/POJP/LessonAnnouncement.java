@@ -1,10 +1,12 @@
 package com.conv.HealthETrain.domain.POJP;
 
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @author liusg
@@ -12,11 +14,12 @@ import java.io.Serializable;
 @Data
 @TableName("lesson_announcement")
 public class LessonAnnouncement implements Serializable {
+    @TableId
     private Long laId;
     private Long lessonId;
     private String announcementTitle;
     private String announcementContent;
-    private String publishTime;
+    private Date publishTime;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

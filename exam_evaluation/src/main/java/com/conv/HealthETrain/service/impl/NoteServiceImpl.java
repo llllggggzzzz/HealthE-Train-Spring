@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Note;
 import com.conv.HealthETrain.service.NoteService;
 import com.conv.HealthETrain.mapper.NoteMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 /**
@@ -12,9 +13,23 @@ import org.springframework.stereotype.Service;
 * @createDate 2024-07-07 11:47:43
 */
 @Service
+@RequiredArgsConstructor
 public class NoteServiceImpl extends ServiceImpl<NoteMapper, Note>
     implements NoteService{
 
+    final private NoteMapper noteMapper;
+
+    @Override
+    public Note insertNote(Note note) {
+        noteMapper.insert(note);
+        return note;
+    }
+
+    @Override
+    public Note updateNote(Note note) {
+        noteMapper.updateById(note);
+        return note;
+    }
 }
 
 

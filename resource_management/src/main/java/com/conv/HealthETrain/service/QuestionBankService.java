@@ -13,7 +13,10 @@ import java.util.List;
 */
 public interface QuestionBankService extends IService<QuestionBank> {
     // 获取题库信息列表
-    public List<QuestionBank> getAllQuestionBanks();
+    List<QuestionBank> getAllQuestionBanks();
     public List<QuestionBankSelectDTO> getQuestionBankSelectDTOByLessonId(Long lessonId);
 
+    List<QuestionBank> getQuestionBankByLessonId(Long lessonId);
+
+    QuestionBank saveQuestionBank(QuestionBank questionBank);
 }

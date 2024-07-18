@@ -21,8 +21,8 @@ import java.util.List;
 @RequestMapping("/file")
 @Slf4j
 public class FileController {
-    private static final String fileBaseAddress = "/home/john/Desktop/file";
-    private static final String fileMD5BaseAddress = "/home/john/Desktop/md5";
+    private static final String fileBaseAddress = "/home/liusg/Desktop/file";
+    private static final String fileMD5BaseAddress = "/home/liusg/Desktop/md5";
 
     @GetMapping("/{md5}")
     public ApiResponse<List<String>> checkFileByMd5(@PathVariable("md5") String md5) {
