@@ -43,7 +43,6 @@ public class LiveSocketHandler extends TextWebSocketHandler {
                     // 已经包含, 不重复添加到GROUP和SESSIONS
                     updateTimes(userId, streamId);
                     log.info("添加计数+1: userId-{}, streamId-{}, times-{}", userId, streamId, getThridValue(userId, streamId));
-
                     return;
                 }
             }
@@ -171,6 +170,8 @@ public class LiveSocketHandler extends TextWebSocketHandler {
         log.info("userId: {}, streamId: {}, times:{}", userId, streamId, time);
         if(time > 1) {
             TIMES.put(key, time-1);
+            log.info("userId: {}, streamId: {}, times:{}", userId, streamId,getThridValue(userId, streamId));
+
         } else {
             // 移除SESSON, 移除TIME
             log.info("要移除的key: {}", key);

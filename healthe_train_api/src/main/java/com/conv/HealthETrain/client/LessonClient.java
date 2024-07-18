@@ -8,10 +8,7 @@ import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.response.ApiResponse;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -40,7 +37,9 @@ public interface LessonClient {
     Checkpoint getCheckPoint(@PathVariable("sectionId") Long sectionId,
                              @PathVariable("userId") Long userId);
 
-    @GetMapping("/user/{id}")
+
+
+    @GetMapping("/study/user/{id}")
     ApiResponse<List<LessonInfoDTO>> getLessons(@PathVariable("id") Long id);
 
     @GetMapping("/study/lesson/simple/{id}")
@@ -48,5 +47,8 @@ public interface LessonClient {
 
     @GetMapping("/study/lesson/teacher/{id}")
     ApiResponse<List<LessonDetailInfoDTO>> getAllTeacherLessons(@PathVariable("id") Long tdId);
+
+    @PutMapping("/study/section/video")
+    ApiResponse<Boolean> sectionSetVideo(@RequestParam Long sectionId, @RequestParam Long videoId);
 }
 

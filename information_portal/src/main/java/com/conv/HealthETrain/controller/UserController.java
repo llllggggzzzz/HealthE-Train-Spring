@@ -4,6 +4,7 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.file.PathUtil;
 import cn.hutool.core.lang.hash.Hash;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.conv.HealthETrain.domain.TeacherDetail;
 import com.conv.HealthETrain.domain.User;
 import com.conv.HealthETrain.domain.UserLinkCategory;
@@ -38,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 
 /**
@@ -408,6 +410,7 @@ public class UserController {
         log.info("临时文件目录: {} 人脸库中人脸目录: {}", tempFilePath, targetFacePath);
         Double faceSim = FaceUtil.getFaceSim(tempFilePath, targetFacePath);
         log.info("读取到匹配值： {}", faceSim);
+        FileUtil.del(path);
         if(faceSim < 0) {
             // 人脸错误
             return ApiResponse.error(ResponseCode.SERVICE_UNAVAILABLE, "人脸不清晰");
@@ -419,7 +422,6 @@ public class UserController {
         String token = userService.loginByFace(account);
         // 删除临时文件
 
-        FileUtil.del(path);
         if(StrUtil.isBlank(token)) {
             return ApiResponse.error(ResponseCode.BAD_REQUEST);
         }
@@ -427,6 +429,27 @@ public class UserController {
         data.put("token", token);
         data.put("user", user);
         return  ApiResponse.success(data);
+    }
+
+    @GetMapping("/info/ids/{ids}")
+    public List<User> getUserByIds(@PathVariable("ids") String ids) {
+        log.info("ids: {}", ids);
+        List<Long> userIds = parseStringToList(ids);
+        LambdaQueryWrapper<User> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.in(User::getUserId, userIds);
+        return userService.list(lambdaQueryWrapper);
+    }
+
+    private static List<Long> parseStringToList(String string) {
+        // 去除方括号和空格
+        String cleanString = string.replaceAll("[\\[\\] ]", "");
+
+        // 将逗号分隔的数字转换为 Long 类型的列表
+        List<Long> userIds = Arrays.stream(cleanString.split(","))
+                .map(Long::valueOf)
+                .collect(Collectors.toList());
+
+        return userIds;
     }
 
 

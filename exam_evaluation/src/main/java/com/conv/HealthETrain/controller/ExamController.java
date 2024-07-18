@@ -24,11 +24,13 @@ import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.mapper.ExamMapper;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.ExamService;
+import com.conv.HealthETrain.utils.AIAnswerUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.conv.HealthETrain.service.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -37,11 +39,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -73,6 +72,8 @@ public class ExamController {
     private final ExamResultService examResultService;
     private final ExamMapper examMapper;
 
+    private final ExamLinkUserService examLinkUserService;
+
 
     @GetMapping("/list/{userId}")
     public ApiResponse<List<ExamDTO>> getExamInfoList(@PathVariable("userId") Long userId) {
@@ -80,10 +81,16 @@ public class ExamController {
         List<ExamDTO> examDTOList = new ArrayList<>();
         if(lessonsResponse != null) {
             List<LessonInfoDTO> lessons = lessonsResponse.getData();
+            if(lessons == null) {
+                return ApiResponse.success(new ArrayList<>());
+            }
+            log.info("lessonInfoDTO: {}", lessons);
             List<Long> lessonIds = CollUtil.getFieldValues(lessons, "lessonId", Long.class);
             LambdaQueryWrapper<Exam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.in(Exam::getLessionId, lessonIds);
+            log.info("lessonIds: {}", lessonIds);
             List<Exam> examList = examService.list(lambdaQueryWrapper);
+            log.info("examList: {}", examList);
             if(examList != null) {
                 // 遍历examList, 查询teacherName和teacherCover
                 for (Exam exam : examList) {
@@ -125,7 +132,7 @@ public class ExamController {
         ExamInfoDTO examInfoDTO = new ExamInfoDTO(exam);
         // 查询是否交卷
         LambdaQueryWrapper<ExamResult> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(ExamResult::getExamId, examInfoDTO).eq(ExamResult::getUserAnswer, userId);
+        lambdaQueryWrapper.eq(ExamResult::getExamId, examId).eq(ExamResult::getUserAnswer, userId);
         List<ExamResult> results = examResultService.list(lambdaQueryWrapper);
         if(results != null && !results.isEmpty()) {
             // 已经交卷过
@@ -296,7 +303,7 @@ public class ExamController {
                     if(realAnswerChooes.size() > userAnswerChoose.size()) {
                         if(realAnswerChooes.containsAll(userAnswerChoose)) {
                             // 得到半分
-                            examResult.setGetScore((double) (sumScore - sumScore % 2));
+                            examResult.setGetScore((double) (Math.floorDiv(sumScore, 2)));
                         } else {
                             // 包含错误选项， 不得分
                             examResult.setGetScore(0.0);
@@ -318,12 +325,31 @@ public class ExamController {
 
             } else if (typeId == 4L) {
                 // 填空题
-                // TODO 调用AI进行问答
-                examResult.setGetScore(Double.valueOf(sumScore));
+                // 调用AI进行问答
+                // 查询问题内容
+                LambdaQueryWrapper<Note> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.eq(Note::getEqId, examQuestionId);
+                Note note = noteService.getOne(lambdaQueryWrapper);
+                if(note != null) {
+                    String noteContent = note.getNoteContent();
+                    Double score = AIAnswerUtil.getScore(noteContent, realAnswer, userAnswer, sumScore.toString());
+                    if(score != null) {
+                        examResult.setGetScore(score);
+                    }
+                }
+
             } else if (typeId == 5L) {
                 // 简答题
-                // TODO 调用AI进行问答
-                examResult.setGetScore(Double.valueOf(sumScore));
+                // 调用AI进行问答
+                // 查询问题内容
+                LambdaQueryWrapper<Note> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+                lambdaQueryWrapper.eq(Note::getEqId, examQuestionId);
+                Note note = noteService.getOne(lambdaQueryWrapper);
+                if(note != null) {
+                    String noteContent = note.getNoteContent();
+                    Double score = AIAnswerUtil.getScore(noteContent, realAnswer, userAnswer, sumScore.toString());
+                    examResult.setGetScore(score);
+                }
             } else {
                 // 题目不存在
                 log.error("题目类型不存在");
@@ -335,7 +361,7 @@ public class ExamController {
                 eqResults.stream().map(JSONUtil::toJsonStr).toList());
         // 保存到数据库中
         examResultService.saveBatch(eqResults);
-
+        // 验卷成功
         return ApiResponse.success(eqResults);
     }
 
@@ -370,23 +396,55 @@ public class ExamController {
         return indices;
     }
 
+    @PostMapping("/submit/teacher")
+    public ApiResponse<Boolean> teacherSubmit(@RequestBody JSONObject submitInfo) {
+        Long examId = submitInfo.getLong("examId");
+        Long userId = submitInfo.getLong("userId");
+
+        String scoreMapStr = submitInfo.getStr("scoreMap");
+        HashMap<Long, String> scoreMap = JSONUtil.toBean(scoreMapStr, new TypeReference<>() {
+        }, true);
+        // 上传到scoreMap中， 更新scoreMap的信息
+        Set<Long> eqIds = scoreMap.keySet();
+        for (Long eqId : eqIds) {
+            LambdaQueryWrapper<ExamResult> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+            lambdaQueryWrapper.eq(ExamResult::getExamId, examId)
+                    .eq(ExamResult::getUserId, userId).eq(ExamResult::getEqId, eqId);
+            ExamResult examResult = examResultService.getOne(lambdaQueryWrapper);
+            if(examResult != null) {
+                Double score = Double.valueOf(scoreMap.get(eqId));
+                examResult.setGetScore(score);
+                examResultService.updateById(examResult);
+            }
+        }
+        return ApiResponse.success(true);
+    }
+
+
     @GetMapping("/result/exam/{examId}/user/{userId}")
     public ApiResponse<List<ExamResult>> getExamResult(@PathVariable("examId") Long examId,
                                                        @PathVariable("userId") Long userId) {
+
         // 根据examId 和 userId去查询信息
         List<ExamResult> examResults = null;
+
         // 1. 首先查询redis
         if(redisTemplate.hasKey("exam-result:"+examId+"-"+userId)) {
             List<String> stringList = redisTemplate.opsForList().range("exam-result:" + examId + "-" + userId, 0, -1);
+            log.info("redis: {}", stringList);
             if(stringList != null) {
                 examResults = stringList.stream().map(str -> JSONUtil.toBean(str, ExamResult.class)).toList();
             }
-        } else {
+        }
+
+        if(examResults == null) {
+            log.info("读取数据库查询examResult: {}, user {}", examId, userId);
             LambdaQueryWrapper<ExamResult> lambdaQueryWrapper = new LambdaQueryWrapper<>();
             lambdaQueryWrapper.eq(ExamResult::getExamId, examId).eq(ExamResult::getUserId, userId);
             examResults = examResultService.list(lambdaQueryWrapper);
         }
 
+        log.info("查询到examResults: {}", examResults);
         // 添加Note查询
         if(examResults == null) {
             return ApiResponse.success(new ArrayList<>());
@@ -426,13 +484,46 @@ public class ExamController {
     }
 
 
+    @GetMapping("/{examId}/users")
+    public ApiResponse<List<User>> getAllUsersInExam(@PathVariable("examId") Long examId) {
+        // 根据examId查询所有参与考试的学生信息
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("exam-users:" + examId))) {
+            List<String> stringList = redisTemplate.opsForList().range("exam-users:" + examId, 0, -1);
+            if(stringList != null) {
+                List<User> users = stringList.stream().map(str -> JSONUtil.toBean(str, User.class)).toList();
+                return ApiResponse.success(users);
+            }
+        }
+        LambdaQueryWrapper<ExamLinkUser> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ExamLinkUser::getExamId, examId);
+        List<ExamLinkUser> examLinkUserList = examLinkUserService.list(lambdaQueryWrapper);
+        List<Long> userIds = examLinkUserList.stream().map(ExamLinkUser::getUserId).toList();
+        // 返回所有user信息8
+        log.info("查询到所有userId: {}", userIds);
+        if(userIds.isEmpty()) {
+            return ApiResponse.success(new ArrayList<>());
+        }
+        List<User> users = informationPortalClient.getUserByIds(userIds.toString());
+        redisTemplate.opsForList().rightPushAll("exam-users:"+examId, users.stream().map(JSONUtil::toJsonStr).toList());
+        return ApiResponse.success(users);
+    }
+
     @GetMapping("/teacher/{teacherId}")
     public ApiResponse<List<Exam>> getExamInfoByTeacherId(@PathVariable("teacherId") Long teacherId) {
         // 根据td_id查询发布的考试
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("teacher-exam:" + teacherId))) {
+            List<String> stringList = redisTemplate.opsForList().range("teacher-exam:" + teacherId, 0, -1);
+            if(stringList != null) {
+                List<Exam> exams = stringList.stream().map(str -> JSONUtil.toBean(str, Exam.class)).toList();
+                return ApiResponse.success(exams);
+            }
+        }
         LambdaQueryWrapper<Exam> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Exam::getCreatorId, teacherId);
         // 考试列表
         List<Exam> examList = examService.list(lambdaQueryWrapper);
+        redisTemplate.opsForList().rightPushAll("teacher-exam:"+teacherId,
+                examList.stream().map(JSONUtil::toJsonStr).toList());
         return ApiResponse.success(examList);
 
     }

@@ -196,6 +196,13 @@ public class ExamBehaviorController {
     public ApiResponse<List<ExceptionInfoDTO>> getUserBehaviors(@PathVariable("examId") Long examId,
                                                                 @PathVariable("userId") Long userId) {
         // 查询所有用户的所有行为信息, 读取行为库
+        if(Boolean.TRUE.equals(redisTemplate.hasKey("behavior-" + examId + userId))) {
+            List<String> stringList = redisTemplate.opsForList().range("behavior-" + examId + userId, 0, -1);
+            if (stringList != null) {
+                List<ExceptionInfoDTO> exceptionInfoDTOS = stringList.stream().map(str -> JSONUtil.toBean(str, ExceptionInfoDTO.class)).toList();
+                return ApiResponse.success(exceptionInfoDTOS);
+            }
+        }
         String mediaLibraryName = "userBehavior-" + examId.toString() + "-behavior";
         JellyfinUtil jellyfinUtil = JellyfinFactory.build(JellyfinFactory.configPath);
         List<JellyfinImage> imagePathList = jellyfinUtil.findImagePathList(userId.toString(), mediaLibraryName, "");
@@ -236,6 +243,10 @@ public class ExamBehaviorController {
                 exceptionInfoDTO.setInfo(exceptionInfo.getInfo());
             }
             exceptionInfoDTOArrayList.add(exceptionInfoDTO);
+        }
+        if(!exceptionInfoDTOArrayList.isEmpty()) {
+            redisTemplate.opsForList().rightPushAll("behavior-"+examId+userId,
+                    exceptionInfoDTOArrayList.stream().map(JSONUtil::toJsonStr).toList());
         }
 
         return ApiResponse.success(exceptionInfoDTOArrayList);

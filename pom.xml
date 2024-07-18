@@ -79,6 +79,12 @@
         </dependency>
 
         <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.29</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.github.openfeign</groupId>
             <artifactId>feign-okhttp</artifactId>
         </dependency>
@@ -87,12 +93,6 @@
             <groupId>com.conv.HealthETrain</groupId>
             <artifactId>healthe_train_common</artifactId>
             <version>1.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-all</artifactId>
-            <version>5.8.29</version>
         </dependency>
 
     </dependencies>
@@ -115,6 +115,12 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-web</artifactId>
                 <version>3.3.1</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.bytedeco</groupId>
+                <artifactId>javacv-platform</artifactId>
+                <version>1.5.7</version>
             </dependency>
 
             <dependency>
@@ -188,8 +194,6 @@
             </dependency>
 
         </dependencies>
-
-
 
     </dependencyManagement>
 
