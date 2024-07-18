@@ -77,6 +77,17 @@ public class LessonLinkUserServiceImpl extends ServiceImpl<LessonLinkUserMapper,
         return lessonLinkUserMapper.selectUserIdsByLessonId(userId);
     }
 
+    @Override
+    public boolean checkLessonSelected(Long userId, Long lessonId) {
+        if (userId == null || lessonId == null) {
+            return false;
+        }
+        LessonLinkUser lessonLinkUser = lessonLinkUserMapper.selectOne(new QueryWrapper<LessonLinkUser>()
+                .eq("user_id", userId)
+                .eq("lesson_id", lessonId));
+        return lessonLinkUser == null;
+    }
+
     // 删除课内多名学生
     @Override
     public boolean deleteLessonStudents(Long lessonId, List<Long> userIdList) {

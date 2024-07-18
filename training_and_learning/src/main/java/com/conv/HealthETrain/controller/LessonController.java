@@ -11,6 +11,7 @@ import com.conv.HealthETrain.domain.DTO.*;
 import com.conv.HealthETrain.domain.Lesson;
 import com.conv.HealthETrain.domain.POJP.LessonDetail;
 import com.conv.HealthETrain.domain.POJP.LessonLinkTeacher;
+import com.conv.HealthETrain.domain.POJP.LessonLinkUser;
 import com.conv.HealthETrain.domain.POJP.Star;
 import com.conv.HealthETrain.domain.VO.ChapterStatusVO;
 import com.conv.HealthETrain.domain.VO.SectionCheckVO;
@@ -719,5 +720,43 @@ public class LessonController {
             stringRedisTemplate.expire(redisKey, 10, TimeUnit.MINUTES);
             return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonSelectDTOS);
         }
+    }
+
+    /**
+     * 查询课程是否被选
+     * @param lessonId
+     * @param userId
+     * @return
+     */
+    @GetMapping("/lesson/check/select")
+    public ApiResponse<Boolean> checkLessonSelect(@RequestParam Long lessonId, @RequestParam Long userId) {
+        return ApiResponse.success(lessonLinkUserService.checkLessonSelected(lessonId, userId));
+    }
+
+    /**
+     * 选课
+     * @param lessonLinkUser
+     * @return
+     */
+    @PostMapping("/lesson/select")
+    public ApiResponse<Object> selectLesson(@RequestBody LessonLinkUser lessonLinkUser) {
+        boolean saved = lessonLinkUserService.save(lessonLinkUser);
+        return saved ? ApiResponse.success(ResponseCode.SUCCEED, "选课成功") : ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR, "选课失败");
+    }
+
+    /**
+     * 设置课程的视频信息
+     * @param sectionId
+     * @param videoId
+     * @return
+     */
+    @PutMapping("/section/video")
+    public ApiResponse<Boolean> sectionSetVideo(@RequestParam Long sectionId, @RequestParam Long videoId) {
+        Section section = sectionService.getById(sectionId);
+        section.setVideoId(videoId);
+
+        boolean b = sectionService.updateById(section);
+
+        return ApiResponse.success(b);
     }
 }
