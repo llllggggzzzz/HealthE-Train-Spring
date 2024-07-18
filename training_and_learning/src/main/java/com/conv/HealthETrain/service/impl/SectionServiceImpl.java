@@ -1,6 +1,7 @@
 package com.conv.HealthETrain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.Section;
 import com.conv.HealthETrain.service.SectionService;
@@ -27,6 +28,24 @@ public class SectionServiceImpl extends ServiceImpl<SectionMapper, Section>
         LambdaQueryWrapper<Section> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(Section::getChapterId, chapterId);
         return sectionMapper.selectList(lambdaQueryWrapper);
+    }
+
+    @Override
+    public Section updateSectionTitleById(Section section) {
+        UpdateWrapper<Section> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("section_id", section.getSectionId()).set("section_title", section.getSectionTitle());
+        int update = sectionMapper.update(section, updateWrapper);
+        if (update > 0) {
+            return section;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public Section addSection(Section section) {
+        sectionMapper.insert(section);
+        return section;
     }
 }
 

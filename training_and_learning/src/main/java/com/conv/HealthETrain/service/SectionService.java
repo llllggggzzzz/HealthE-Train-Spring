@@ -12,4 +12,8 @@ import java.util.List;
 */
 public interface SectionService extends IService<Section> {
     List<Section> getSectionsByChapterId(Long chapterId);
+
+    Section updateSectionTitleById(Section section);
+
+    Section addSection(Section section);
 }

@@ -1,9 +1,11 @@
 package com.conv.HealthETrain.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.conv.HealthETrain.domain.DTO.CreatPaperQuestionDTO;
 import com.conv.HealthETrain.domain.DTO.ExamQuestionStatisticDTO;
+import com.conv.HealthETrain.domain.Exam;
 import com.conv.HealthETrain.domain.EqOption;
 import com.conv.HealthETrain.domain.ExamQuestion;
 import com.conv.HealthETrain.domain.Note;
@@ -114,6 +116,25 @@ public class ExamQuestionServiceImpl extends ServiceImpl<ExamQuestionMapper, Exa
             result.add(dto);
         }
         return result;
+    }
+
+    @Override
+    public List<ExamQuestion> getExamQuestionsByQbId(Long qbId) {
+        LambdaQueryWrapper<ExamQuestion> lambdaQueryWrapper = new LambdaQueryWrapper<>();
+        lambdaQueryWrapper.eq(ExamQuestion::getQbId, qbId);
+        return examQuestionMapper.selectList(lambdaQueryWrapper);
+    }
+
+    @Override
+    public ExamQuestion insertExamQuestion(ExamQuestion examQuestion) {
+        examQuestionMapper.insert(examQuestion);
+        return examQuestion;
+    }
+
+    @Override
+    public ExamQuestion updateExamQuestion(ExamQuestion examQuestion) {
+        examQuestionMapper.updateById(examQuestion);
+        return examQuestion;
     }
 }
 

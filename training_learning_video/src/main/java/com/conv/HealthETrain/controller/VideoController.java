@@ -11,7 +11,7 @@ import com.conv.HealthETrain.client.LessonClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.VideoLoadDTO;
 import com.conv.HealthETrain.domain.domain.Schedule;
-import com.conv.HealthETrain.domain.domain.Video;
+import com.conv.HealthETrain.domain.Video;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
@@ -243,7 +243,31 @@ public class VideoController {
         }
     }
 
+    /**
+     * 根据章节id获取视频
+     * @param sectionId
+     * @return
+     */
+    @GetMapping("/section/{id}")
+    public ApiResponse<Video> getVideoBySectionId(@PathVariable("id") Long sectionId) {
+        Video video = videoService.getVideoBySectionId(sectionId);
+        return ApiResponse.success(video);
+    }
 
-
+    /**
+     * 发布视频
+     * @param video
+     * @return
+     */
+    @PostMapping("/new")
+    public ApiResponse<Object> addVideo(@RequestBody Video video) {
+        video.setVideoId(null);
+        boolean save = videoService.save(video);
+        if (save) {
+            return ApiResponse.success();
+        } else {
+            return ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR, "发布视频失败");
+        }
+    }
 
 }
