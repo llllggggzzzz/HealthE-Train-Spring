@@ -410,6 +410,7 @@ public class UserController {
         log.info("临时文件目录: {} 人脸库中人脸目录: {}", tempFilePath, targetFacePath);
         Double faceSim = FaceUtil.getFaceSim(tempFilePath, targetFacePath);
         log.info("读取到匹配值： {}", faceSim);
+        FileUtil.del(path);
         if(faceSim < 0) {
             // 人脸错误
             return ApiResponse.error(ResponseCode.SERVICE_UNAVAILABLE, "人脸不清晰");
@@ -421,7 +422,6 @@ public class UserController {
         String token = userService.loginByFace(account);
         // 删除临时文件
 
-        FileUtil.del(path);
         if(StrUtil.isBlank(token)) {
             return ApiResponse.error(ResponseCode.BAD_REQUEST);
         }
