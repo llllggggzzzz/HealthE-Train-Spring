@@ -17,5 +17,6 @@ public interface AnswerService extends IService<Answer> {
     Boolean updateLikesOfAnswer(Long answerId);
     Boolean subLikesOfAnswer(Long answerId);
     List<Answer> findAnswerListByAskId(Long askId);
+    Answer getBestAnswer(Long askId);
 
 }

@@ -7,6 +7,7 @@ import com.conv.HealthETrain.domain.Answer;
 import com.conv.HealthETrain.domain.Ask;
 import com.conv.HealthETrain.service.AnswerService;
 import com.conv.HealthETrain.mapper.AnswerMapper;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -60,6 +61,13 @@ public class AnswerServiceImpl extends ServiceImpl<AnswerMapper, Answer>
         QueryWrapper<Answer> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("ask_id", askId);
         return answerMapper.selectList(queryWrapper);
+    }
+
+    @Override
+    public Answer getBestAnswer(Long askId) {
+        QueryWrapper<Answer> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("ask_id", askId).orderByDesc("likes").last("limit 1");
+        return answerMapper.selectOne(queryWrapper);
     }
 }
 
