@@ -23,13 +23,11 @@ public interface InformationPortalClient {
     @GetMapping("/users/account/{account}")
     User getUserInfoByAccount(@PathVariable("account") String account);
 
-
     @GetMapping("/userList")
     List<User> getAllUsers();
 
     @GetMapping("/userList/{id}")
     User getUser(@PathVariable Long id);
-
 
     // 获取网站所有学生用户的信息
     @GetMapping("/users/students")
@@ -37,4 +35,8 @@ public interface InformationPortalClient {
 
     @GetMapping("/category/{categoryId}")
     String getCategoryNameById(@PathVariable("categoryId") Long categoryId);
+
+    @GetMapping("/users/info/ids/{ids}")
+    List<User> getUserByIds(@PathVariable("ids") String ids);
+
 }
