@@ -3,6 +3,7 @@ package com.conv.HealthETrain.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Console;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
@@ -17,6 +18,7 @@ import com.conv.HealthETrain.factory.JellyfinFactory;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.ScheduleService;
 import com.conv.HealthETrain.service.VideoService;
+import com.conv.HealthETrain.utils.JellyfinUtil;
 import com.conv.HealthETrain.utils.UniqueIdGenerator;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
@@ -260,8 +262,37 @@ public class VideoController {
      * @return
      */
     @PostMapping("/new")
-    public ApiResponse<Object> addVideo(@RequestBody Video video) {
+    public ApiResponse<Object> addVideo(@RequestBody Video video) throws IOException, InterruptedException {
         video.setVideoId(null);
+        // 将视频文件放置在媒体库中, 并进行ffmpeg处理
+        Long sectionId = video.getSectionId();
+        Section section = lessonClient.getSectionInfo(sectionId);
+        if(section != null) {
+            Long chapterId = section.getChapterId();
+            Chapter chapterInfo = lessonClient.getChapterInfo(chapterId);
+            if(chapterInfo != null){
+                Long lessonId = chapterInfo.getLessonId();
+                ApiResponse<Lesson> lesson = lessonClient.getLessonById(lessonId.toString());
+                if(lesson.getData() != null) {
+                    Lesson lessonData = lesson.getData();
+                    String lessonName = lessonData.getLessonName();
+                    Integer lessonType = lessonData.getLessonType();
+                    String libName = lessonType + "-" + lessonName + "-" + lessonId;
+                    JellyfinUtil jellyfinUtil = JellyfinFactory.build(JellyfinFactory.configPath);
+                    jellyfinUtil.createMediaLibrary("/video/"+libName, libName, "");
+                    // 加入媒体库中
+                    jellyfinUtil.saveFile(video.getPath(), libName, true, true);
+                    video.setSaveLibrary(libName);
+                }
+            }
+        }
+
+        // 进行视频ffmpeg处理
+        String input = video.getPath();
+        String output = video.getPath();
+        String command = String.format("ffmpeg -i %s -c copy -movflags frag_keyframe+empty_moov+default_base_moof -y %s", input, output);
+        runFFmpegCommand(command);
+
         boolean save = videoService.save(video);
         if (save) {
             return ApiResponse.success();
@@ -270,4 +301,53 @@ public class VideoController {
         }
     }
 
+    /**
+     * 运行给定的FFmpeg命令
+     * @param command FFmpeg命令
+     * @return true 如果命令成功执行，否则 false
+     * @throws IOException 如果发生IO异常
+     * @throws InterruptedException 如果进程等待中断
+     */
+    public static boolean runFFmpegCommand(String command) throws IOException, InterruptedException {
+        // 创建进程构建器
+        ProcessBuilder builder = new ProcessBuilder();
+        // 设置命令和参数
+        builder.command("bash", "-c", command); // Linux 或 macOS 下的写法
+        // builder.command("cmd.exe", "/c", command); // Windows 下的写法
+        Console.log("run exec");
+        // 启动进程
+        Process process = builder.start();
+
+        // 等待进程执行完成
+        int exitCode = process.waitFor();
+        Console.log("succeed {}", exitCode);
+        // 打印命令执行结果
+        if (exitCode == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static void main(String[] args) {
+        String input = "/home/john/Desktop/test.mp4";
+        String output = "/home/john/Desktop/testtt.mp4";
+
+        String command = String.format("ffmpeg -i %s -c copy -movflags frag_keyframe+empty_moov+default_base_moof -y %s", input, output);
+
+        try {
+            boolean success = runFFmpegCommand(command);
+
+            if (success) {
+                System.out.println("FFmpeg命令成功执行");
+            } else {
+                System.err.println("FFmpeg命令执行失败");
+            }
+
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
+

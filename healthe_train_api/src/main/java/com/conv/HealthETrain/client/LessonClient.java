@@ -40,6 +40,8 @@ public interface LessonClient {
     Checkpoint getCheckPoint(@PathVariable("sectionId") Long sectionId,
                              @PathVariable("userId") Long userId);
 
+
+
     @GetMapping("/study/user/{id}")
     ApiResponse<List<LessonInfoDTO>> getLessons(@PathVariable("id") Long id);
 
