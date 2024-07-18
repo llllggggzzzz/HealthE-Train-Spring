@@ -87,6 +87,12 @@
             <scope>compile</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
+            <version>1.5.7</version>
+        </dependency>
+
         <!--redis依赖-->
         <dependency>
             <groupId>org.springframework.boot</groupId>

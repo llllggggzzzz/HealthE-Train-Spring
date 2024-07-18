@@ -299,7 +299,12 @@ public class VideoController {
         runFFmpegCommand(command);
 
         boolean save = videoService.save(video);
-        if (save) {
+
+        // 更新Section的videoId
+        ApiResponse<Boolean> booleanApiResponse = lessonClient.sectionSetVideo(video.getSectionId(), video.getVideoId());
+        boolean result = booleanApiResponse.getData();
+
+        if (save && result) {
             return ApiResponse.success();
         } else {
             return ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR, "发布视频失败");

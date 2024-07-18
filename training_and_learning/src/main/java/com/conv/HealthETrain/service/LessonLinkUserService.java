@@ -19,6 +19,8 @@ public interface LessonLinkUserService extends IService<LessonLinkUser> {
     // 查询某课程的所有学生Id
     public List<Long> getStudentsIdByLessonId (Long userId);
 
+    boolean checkLessonSelected(Long userId, Long lessonId);
+
     // 删除指定课程内的学生
     boolean deleteLessonStudents(Long lessonId,List<Long> userIdList);
 }
