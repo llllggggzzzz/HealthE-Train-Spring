@@ -17,6 +17,7 @@ import com.conv.HealthETrain.domain.VO.SectionCheckVO;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.*;
+import com.conv.HealthETrain.utils.ConfigUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
@@ -24,6 +25,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.web.bind.annotation.*;
+
+import static com.conv.HealthETrain.utils.ImageUploadHandler.uploadBase64ToGitHub;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -585,8 +588,19 @@ public class LessonController {
 
         // 1. 更新Lesson表
         // TODO: 课程封面
+        String token = ConfigUtil.getImgSaveToken();
+        String repo = ConfigUtil.getImgSaveRepo();
+        String pathPrefix = ConfigUtil.getImgSaveFolder();
+        String commitMessage = "上传图片到图床";
+        String base64EncodeFile = lessonDetailInfo.getLessonCover().split(",")[1];
+
+        String path = uploadBase64ToGitHub(token, repo, pathPrefix, base64EncodeFile, commitMessage);
+
+        log.info("base64: {}", lessonDetailInfo.getLessonCover());
+        log.info("image path: {}", path);
+
         Lesson lesson = new Lesson(null, lessonDetailInfo.getLessonName(), lessonDetailInfo.getLessonType(),
-                lessonDetailInfo.getStartTime(), lessonDetailInfo.getEndTime(), lessonDetailInfo.getLessonCover());
+                lessonDetailInfo.getStartTime(), lessonDetailInfo.getEndTime(), path);
 
         Long lessonId = lessonService.insertLesson(lesson);
         // 2. 更新LessonDetail表
