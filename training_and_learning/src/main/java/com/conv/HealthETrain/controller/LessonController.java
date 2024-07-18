@@ -3,7 +3,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.collection.ListUtil;
 import cn.hutool.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.conv.HealthETrain.client.CoursewareClient;
 import com.conv.HealthETrain.client.InformationPortalClient;
+import com.conv.HealthETrain.client.VideoClient;
 import com.conv.HealthETrain.domain.*;
 import com.conv.HealthETrain.domain.DTO.*;
 import com.conv.HealthETrain.domain.Lesson;
@@ -34,7 +36,6 @@ import java.util.concurrent.TimeUnit;
 @AllArgsConstructor
 @Slf4j
 public class LessonController {
-
     private final LessonLinkUserService lessonLinkUserService;
 
     private final LessonLinkTeacherService lessonLinkTeacherService;
@@ -54,6 +55,11 @@ public class LessonController {
     private final CheckpointService checkpointService;
 
     private final LessonLinkCategoryService lessonLinkCategoryService;
+
+    private final CoursewareClient coursewareClient;
+
+    private final VideoClient videoClient;
+
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
@@ -452,6 +458,7 @@ public class LessonController {
         stringRedisTemplate.opsForValue().set(cacheKey, jsonData, 10, TimeUnit.MINUTES);
         return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonStudentSituationDTO);
     }
+
     // 删除指定课程的同学（批量删除）
     @DeleteMapping ("/lesson/{id}/students")
     public ApiResponse<Object> deleteLessonStudents(@PathVariable("id") Long lessonId,
@@ -494,12 +501,45 @@ public class LessonController {
     }
 
     /**
+     * 获取课程详情信息
+     * @param lessonId
+     * @return
+     */
+    @GetMapping("/lesson/detail/{id}")
+    public ApiResponse<LessonDetailInfoDTO> getLessonDetailInfo(@PathVariable("id") Long lessonId) {
+        Lesson lesson = lessonService.getById(lessonId);
+        LessonDetail lessonDetail = lessonDetailService.getByLessonId(lessonId);
+
+        // 如果课程是必修，则查询对应的种类
+        List<Boolean> lessonCategories = null;
+        if (lesson.getLessonType() == 1) {
+            List<Long> categoryIds = lessonLinkCategoryService.getCategoriesByLessonId(lessonId);
+
+            lessonCategories = new ArrayList<>();
+            for (int i = 1; i <= 7; i++) {
+                if (categoryIds.contains((long) i)) {
+                    lessonCategories.add(true);
+                    continue;
+                }
+                lessonCategories.add(false);
+            }
+        }
+
+        LessonDetailInfoDTO lessonDetailInfoDTO = new LessonDetailInfoDTO(
+                lessonId, lesson.getLessonName(), lesson.getLessonType(), lesson.getStartTime(),
+                lesson.getEndTime(), lesson.getLessonCover(), lessonCategories, lessonDetail.getLessonOverview(),
+                lessonDetail.getLessonObject(), lessonDetail.getPreliminaryKnowledge(), lessonDetail.getLessonMaterial());
+
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lessonDetailInfoDTO);
+    }
+
+    /**
      * 获取教师的所有课程
      * @param tdId
      * @return
      */
     @GetMapping("/lesson/teacher/{id}")
-    public ApiResponse<Object> getAllTeacherLessons(@PathVariable("id") Long tdId) {
+    public ApiResponse<List<LessonDetailInfoDTO>> getAllTeacherLessons(@PathVariable("id") Long tdId) {
         List<Long> lessonIds = lessonLinkTeacherService.getLessonsByTeacherId(tdId);
         List<LessonDetailInfoDTO> lessonDetailInfoDTOS = new ArrayList<>();
 
@@ -544,6 +584,7 @@ public class LessonController {
         // 更新的表有 Lesson LessonDetail LessonLinkTeacher LessonLinkCategory
 
         // 1. 更新Lesson表
+        // TODO: 课程封面
         Lesson lesson = new Lesson(null, lessonDetailInfo.getLessonName(), lessonDetailInfo.getLessonType(),
                 lessonDetailInfo.getStartTime(), lessonDetailInfo.getEndTime(), lessonDetailInfo.getLessonCover());
 
@@ -554,6 +595,7 @@ public class LessonController {
         boolean saveLessonDetail = lessonDetailService.save(lessonDetail);
 
         // 3. 更新LessonLinkTeacher表
+        // TODO
         LessonLinkTeacher lessonLinkTeacher = new LessonLinkTeacher(null, lessonId, tdId);
         boolean saveLLinkT = lessonLinkTeacherService.save(lessonLinkTeacher);
 
@@ -580,6 +622,75 @@ public class LessonController {
         }
         return  ApiResponse.error(ResponseCode.INTERNAL_SERVER_ERROR, "更新失败");
     }
+
+    /**
+     * 根据课程ID查询课程
+     * @param lessonId
+     * @return
+     */
+    @GetMapping("/lesson/simple/{id}")
+    public ApiResponse<Lesson> getLessonById(@PathVariable("id") String lessonId) {
+        Lesson lesson = lessonService.getById(Long.parseLong(lessonId));
+        if (lesson == null) {
+            return ApiResponse.error(ResponseCode.NOT_FOUND, "未找到课程");
+        }
+        return ApiResponse.success(ResponseCode.SUCCEED, "成功", lesson);
+    }
+
+
+    /**
+     * 根据课程ID查询课程详细章节信息
+     * @param lessonId
+     * @return
+     */
+    @GetMapping("/lesson/part/{id}")
+    public ApiResponse<LessonPartInfoDTO> getLessonPartById(@PathVariable("id") Long lessonId) {
+        LessonPartInfoDTO result = new LessonPartInfoDTO();
+        result.setLessonId(lessonId);
+
+        // chapters
+        List<ChapterInfoDTO> chapterInfoDTOS = new ArrayList<>();
+        chapterService.getChaptersByLessonId(lessonId).forEach(chapter -> {
+            ChapterInfoDTO chapterInfoDTO = new ChapterInfoDTO();
+
+            chapterInfoDTO.setChapterId(chapter.getChapterId());
+            chapterInfoDTO.setChapterTitle(chapter.getChapterTitle());
+            chapterInfoDTO.setChapterOrder(chapter.getChapterOrder());
+
+            // sections
+            List<Section> sections = sectionService.getSectionsByChapterId(chapter.getChapterId());
+            List<SectionInfoDTO> sectionInfoDTOS = new ArrayList<>();
+            sections.forEach(section -> {
+                SectionInfoDTO sectionInfoDTO = new SectionInfoDTO();
+                sectionInfoDTO.setSectionId(section.getSectionId());
+                sectionInfoDTO.setSectionTitle(section.getSectionTitle());
+                sectionInfoDTO.setSectionOrder(section.getSectionOrder());
+
+                // Video 部分
+                Video video = videoClient.getVideoBySectionId(section.getSectionId()).getData();
+                if (video != null) {
+                    sectionInfoDTO.setVideoLength(video.getLength());
+                    sectionInfoDTO.setVideoPath(video.getPath());
+                    sectionInfoDTO.setVideoSize(video.getSize());
+                }
+
+                // Courseware 部分
+                Courseware courseware = coursewareClient.getCoursewareBySectionId(section.getSectionId()).getData();
+                if (courseware != null) {
+                    sectionInfoDTO.setCourseware(courseware);
+                }
+
+                sectionInfoDTOS.add(sectionInfoDTO);
+            });
+
+            chapterInfoDTO.setSections(sectionInfoDTOS);
+            chapterInfoDTOS.add(chapterInfoDTO);
+        });
+
+        result.setChapters(chapterInfoDTOS);
+        return  ApiResponse.success(ResponseCode.SUCCEED, "成功", result);
+    }
+
     @GetMapping("/paper/lessonInfo/{tdId}")
     public ApiResponse<List<LessonSelectDTO>> getLessonSelectDTOsByTeacherId(@PathVariable("tdId")Long tdId) throws JsonProcessingException {
         String redisKey = "teacher:" + tdId + ":lessonInfo";

@@ -13,4 +13,6 @@ import java.util.List;
 public interface ChapterService extends IService<Chapter> {
 
     List<Chapter> getChaptersByLessonId(Long id);
+
+    Chapter addChapter(Chapter chapter);
 }

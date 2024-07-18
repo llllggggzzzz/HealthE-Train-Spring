@@ -29,6 +29,12 @@ public class ChapterServiceImpl extends ServiceImpl<ChapterMapper, Chapter>
         List<Chapter> chapters = chapterMapper.selectList(lambdaQueryWrapper);
         return chapters;
     }
+
+    @Override
+    public Chapter addChapter(Chapter chapter) {
+        chapterMapper.insert(chapter);
+        return chapter;
+    }
 }
 
 
