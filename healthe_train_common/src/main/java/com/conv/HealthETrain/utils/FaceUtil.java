@@ -27,7 +27,7 @@ public class FaceUtil {
 
     // 人脸比对阙值
     @Getter
-    private static final Double faceSimThreshold = 0.7;
+    private static final Double faceSimThreshold = 0.55;
 
 
     public static String getTargetFacePath(Long userId) {

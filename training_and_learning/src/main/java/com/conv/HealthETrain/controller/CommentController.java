@@ -3,9 +3,11 @@ package com.conv.HealthETrain.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import com.conv.HealthETrain.client.InformationPortalClient;
+import com.conv.HealthETrain.client.VideoClient;
 import com.conv.HealthETrain.domain.DTO.CommentDTO;
 import com.conv.HealthETrain.domain.POJP.Comment;
 import com.conv.HealthETrain.domain.User;
+import com.conv.HealthETrain.domain.Video;
 import com.conv.HealthETrain.enums.ResponseCode;
 import com.conv.HealthETrain.response.ApiResponse;
 import com.conv.HealthETrain.service.CommentService;
@@ -13,6 +15,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +28,7 @@ public class CommentController {
     private final CommentService commentService;
 
     private final InformationPortalClient informationPortalClient;
+    private final VideoClient videoClient;
 
     /**
      * @description 根据sectionId查询用户评论并返回
@@ -33,7 +37,14 @@ public class CommentController {
      */
     @GetMapping("/section/{id}")
     public ApiResponse<List<CommentDTO>> getComments(@PathVariable("id") Long id) {
-        List<Comment> comments = commentService.getCommentsBySectionId(id);
+        Video video = videoClient.getVideoById(id);
+        if(video == null) {
+            return  ApiResponse.success(new ArrayList<>());
+        }
+
+        Long sectionId = video.getSectionId();
+        List<Comment> comments = commentService.getCommentsBySectionId(sectionId);
+        log.info("得到评论列表： {}", comments);
         if (comments.isEmpty()) return ApiResponse.success();
         List<CommentDTO> commentDTOS = CollUtil.newArrayList();
         for (Comment comment: comments) {

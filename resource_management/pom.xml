@@ -43,6 +43,8 @@
             <version>1.5.2</version>
         </dependency>
 
+
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -51,6 +53,11 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bytedeco</groupId>
+            <artifactId>javacv-platform</artifactId>
         </dependency>
 
         <dependency>
@@ -72,6 +79,7 @@
             <groupId>org.springframework.cloud</groupId>
             <artifactId>spring-cloud-starter-openfeign</artifactId>
         </dependency>
+
         <dependency>
             <groupId>com.conv.HealthETrain</groupId>
             <artifactId>healthe_train_api</artifactId>

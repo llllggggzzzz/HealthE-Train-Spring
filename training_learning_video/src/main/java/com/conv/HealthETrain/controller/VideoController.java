@@ -64,6 +64,11 @@ public class VideoController {
         return ApiResponse.success(videoLoadDTO);
     }
 
+    @GetMapping("/{videoId}")
+    public Video getVideoById(@PathVariable("videoId") Long videoId) {
+        return videoService.getById(videoId);
+    }
+
     /**
      * @description 读取固定长度,返回给前端
      * @param uuid websocket标识

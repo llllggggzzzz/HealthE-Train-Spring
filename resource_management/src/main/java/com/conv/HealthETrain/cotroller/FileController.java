@@ -1,5 +1,6 @@
 package com.conv.HealthETrain.cotroller;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.file.FileReader;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import com.conv.HealthETrain.enums.ResponseCode;
@@ -7,13 +8,13 @@ import com.conv.HealthETrain.response.ApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.bytedeco.ffmpeg.avformat.AVFormatContext;
+import org.bytedeco.ffmpeg.avutil.AVDictionary;
+import org.bytedeco.ffmpeg.global.avformat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -21,8 +22,8 @@ import java.util.List;
 @RequestMapping("/file")
 @Slf4j
 public class FileController {
-    private static final String fileBaseAddress = "/home/liusg/Desktop/file";
-    private static final String fileMD5BaseAddress = "/home/liusg/Desktop/md5";
+    private static final String fileBaseAddress = "/home/john/Desktop/file";
+    private static final String fileMD5BaseAddress = "/home/john/Desktop/md5";
 
     @GetMapping("/{md5}")
     public ApiResponse<List<String>> checkFileByMd5(@PathVariable("md5") String md5) {
@@ -89,7 +90,7 @@ public class FileController {
         if(FileUtil.exist(md5Path) && FileUtil.isDirectory(md5Path)) {
             // 读取所有md5片段, 写入到savePath组成最后的文件
             mergeFiles(md5Path, savePath);
-            return ApiResponse.success(md5Path);
+            return ApiResponse.success(savePath);
         }
         return ApiResponse.error(ResponseCode.UNPROCESSABLE_ENTITY);
     }
@@ -109,6 +110,37 @@ public class FileController {
 //                FileUtil.del(chunkFile);
             }
         }
+    }
+
+    /**
+     * 获取视频时长
+     * @param videoPath
+     * @return
+     */
+    @GetMapping("/video/duration")
+    public ApiResponse<Object> getVideoDuration(@RequestParam("videoPath") String videoPath) {
+        // 获取视频时长
+        long duration = getVideoDurationUtil(videoPath);
+
+        return ApiResponse.success(duration);
+    }
+
+    private long getVideoDurationUtil(String videoPath) {
+        AVFormatContext pFormatContext = avformat.avformat_alloc_context();
+
+        if (avformat.avformat_open_input(pFormatContext, videoPath, null, null) != 0) {
+            throw new RuntimeException("Couldn't open video file: " + videoPath);
+        }
+
+        if (avformat.avformat_find_stream_info(pFormatContext, (AVDictionary) null) < 0) {
+            throw new RuntimeException("Couldn't retrieve stream info from video file: " + videoPath);
+        }
+
+        long duration = pFormatContext.duration() / (1000 * 1000); // 转换为秒
+
+        avformat.avformat_close_input(pFormatContext);
+
+        return duration;
     }
 
 }

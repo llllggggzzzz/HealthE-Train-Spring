@@ -15,4 +15,6 @@ public interface VideoClient {
     @GetMapping("/video/section/{id}")
     ApiResponse<Video> getVideoBySectionId(@PathVariable("id") Long sectionId);
 
+    @GetMapping("/video/{videoId}")
+    Video getVideoById(@PathVariable("videoId") Long videoId);
 }
